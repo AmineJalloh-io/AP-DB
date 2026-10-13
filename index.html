@@ -1,0 +1,2719 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AfriPay | Admin Dashboard — Real-Time</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='44' fill='%230a2b3c'/><text x='50' y='62' text-anchor='middle' font-family='Arial Black' font-size='40' font-weight='900' fill='%23FFD966'>AP</text></svg>">
+
+<!-- The Supabase SDK is now loaded dynamically by the boot sequence (with CDN fallbacks),
+     so a slow/blocked CDN can never freeze the page. -->
+
+<style>
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
+    body { background: linear-gradient(145deg, #eef2f7 0%, #d9e2ec 100%); min-height: 100vh; padding: 0.8rem; color: #1e3b4a; }
+
+    .dashboard { max-width: 1400px; margin: 0 auto; }
+    .topbar {
+        background: linear-gradient(135deg, #0a2b3c 0%, #1c4e6c 100%);
+        border-radius: 1.2rem; padding: 0.8rem 1.2rem; color: white;
+        display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
+        gap: 0.6rem; box-shadow: 0 10px 30px -8px rgba(0,0,0,0.3); margin-bottom: 1rem;
+    }
+    .brand { display: flex; align-items: center; gap: 0.7rem; }
+    .brand-logo { width: 42px; height: 42px; border-radius: 50%; background: #fff; padding: 2px; box-shadow: 0 2px 8px rgba(0,0,0,0.3), 0 0 0 2px rgba(255,215,0,0.45); }
+    .brand-text { font-size: 1.4rem; font-weight: 800; letter-spacing: -0.5px; background: linear-gradient(135deg, #FFF, #FFD966, #6bc6ff); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .brand-sub { font-size: 0.7rem; opacity: 0.75; font-weight: 500; }
+    .connection-status { display: inline-flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.12); padding: 4px 12px; border-radius: 30px; font-size: 0.72rem; font-weight: 600; }
+    .conn-dot { width: 8px; height: 8px; border-radius: 50%; background: #f39c12; animation: pulse 1.5s infinite; }
+    .conn-dot.online { background: #2ecc71; }
+    .conn-dot.offline { background: #e74c3c; animation: none; }
+    @keyframes pulse { 0%,100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(0.85); } }
+    .clock { font-size: 0.78rem; font-weight: 600; background: rgba(0,0,0,0.2); padding: 4px 12px; border-radius: 30px; }
+    .last-updated { font-size: 0.65rem; opacity: 0.7; padding: 2px 8px; }
+
+    .boot-error {
+        display: none; background: linear-gradient(135deg, #fdeaea, #fbd7d7);
+        color: #a93226; border: 1.5px solid #f5b7b1; border-radius: 0.9rem;
+        padding: 0.75rem 1rem; font-size: 0.8rem; font-weight: 600;
+        margin-bottom: 1rem; line-height: 1.55; word-break: break-word;
+    }
+    .boot-error .be-title { font-weight: 800; margin-bottom: 2px; }
+    .boot-error .be-detail { font-weight: 500; font-size: 0.72rem; color: #922b21; opacity: 0.9; }
+
+    .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0.7rem; margin-bottom: 1rem; }
+    .kpi-card { background: white; border-radius: 1rem; padding: 0.9rem 1rem; box-shadow: 0 6px 18px -6px rgba(0,0,0,0.12); border-left: 4px solid #2c7da0; position: relative; overflow: hidden; }
+    .kpi-card::after { content: ''; position: absolute; top: -20px; right: -20px; width: 70px; height: 70px; border-radius: 50%; background: rgba(44,125,160,0.06); }
+    .kpi-card.green { border-left-color: #27ae60; }
+    .kpi-card.orange { border-left-color: #f39c12; }
+    .kpi-card.purple { border-left-color: #8e44ad; }
+    .kpi-card.red { border-left-color: #e74c3c; }
+    .kpi-card.teal { border-left-color: #16a085; }
+    .kpi-card.dark { border-left-color: #34495e; }
+    .kpi-label { font-size: 0.68rem; color: #7f8c8d; text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px; }
+    .kpi-value { font-size: 1.8rem; font-weight: 800; color: #0f2b3d; line-height: 1.1; margin-top: 2px; }
+    .kpi-sub { font-size: 0.68rem; color: #95a5a6; margin-top: 2px; }
+
+    .tabs { display: flex; flex-wrap: wrap; gap: 0.4rem; background: white; border-radius: 1rem; padding: 0.4rem; box-shadow: 0 6px 18px -8px rgba(0,0,0,0.12); margin-bottom: 1rem; }
+    .tab-btn { flex: 1; min-width: 96px; background: transparent; border: none; padding: 0.6rem 0.9rem; border-radius: 0.7rem; font-weight: 700; font-size: 0.78rem; color: #1c6e8f; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 6px; }
+    .tab-btn:hover { background: #f0f6fb; }
+    .tab-btn.active { background: linear-gradient(135deg, #0a2b3c, #1c4e6c); color: white; box-shadow: 0 4px 12px -2px rgba(10,43,60,0.4); }
+    .tab-badge { background: #f39c12; color: white; font-size: 0.62rem; font-weight: 800; padding: 1px 7px; border-radius: 30px; min-width: 20px; text-align: center; }
+    .tab-badge.danger { background: #e74c3c; }
+
+    .panel { background: white; border-radius: 1rem; padding: 1rem 1.1rem; box-shadow: 0 6px 18px -8px rgba(0,0,0,0.12); display: none; }
+    .panel.active { display: block; }
+    .panel-header { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.6rem; padding-bottom: 0.7rem; border-bottom: 2px solid #eef2f7; margin-bottom: 0.8rem; }
+    .panel-title { font-size: 1.1rem; font-weight: 800; color: #0f2b3d; display: flex; align-items: center; gap: 0.5rem; }
+    .panel-actions { display: flex; gap: 0.4rem; flex-wrap: wrap; align-items: center; }
+    .btn-mini { background: #eef2f7; border: none; color: #1c6e8f; font-weight: 700; font-size: 0.72rem; padding: 5px 12px; border-radius: 30px; cursor: pointer; height: 30px; display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; }
+    .btn-mini:hover { background: #dce8f0; }
+    .btn-mini:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn-mini.green { background: #27ae60; color: white; }
+    .btn-mini.blue { background: #2c7da0; color: white; }
+    .btn-mini.red { background: #e74c3c; color: white; }
+    .btn-mini.orange { background: #f39c12; color: white; }
+    .btn-mini.purple { background: #8e44ad; color: white; }
+    .btn-mini.dark { background: #34495e; color: white; }
+
+    .search-input, .filter-select { flex: 1; min-width: 160px; padding: 6px 14px; border-radius: 30px; border: 1.5px solid #e0e8f0; font-size: 0.82rem; height: 34px; outline: none; background: white; }
+    .filter-select { flex: 0; min-width: 130px; cursor: pointer; font-weight: 600; color: #1e3b4a; }
+    .search-input:focus, .filter-select:focus { border-color: #f4a261; box-shadow: 0 0 0 3px rgba(244,162,97,0.15); }
+
+    .list-wrap { max-height: 65vh; overflow-y: auto; border-radius: 0.6rem; border: 1px solid #eef2f7; }
+    .list-row { padding: 0.7rem 0.9rem; border-bottom: 1px solid #f0f4f8; display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem; transition: background 0.15s; }
+    .list-row:hover { background: #f8fbfd; }
+    .list-row:last-child { border-bottom: none; }
+    .list-row.suspended { background: #fff8f8; opacity: 0.75; }
+    .list-row.suspended:hover { background: #fdf1f1; opacity: 0.9; }
+    .list-row.suspended .row-title { color: #a93226; }
+
+    .row-avatar { width: 38px; height: 38px; border-radius: 50%; background: #f0f6fb; color: #1c6e8f; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; font-weight: 800; flex-shrink: 0; overflow: hidden; }
+    .row-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .row-avatar.susp { background: #fdeaea; color: #c0392b; }
+    .row-main { flex: 1; min-width: 160px; }
+    .row-title { font-weight: 700; font-size: 0.85rem; color: #0f2b3d; }
+    .row-sub { font-size: 0.72rem; color: #7f8c8d; margin-top: 2px; }
+    .row-meta { display: flex; gap: 0.4rem; flex-wrap: wrap; align-items: center; }
+    .badge { font-size: 0.62rem; font-weight: 800; padding: 3px 9px; border-radius: 30px; text-transform: uppercase; letter-spacing: 0.3px; }
+    .badge.blue { background: #e8f0f8; color: #1c6e8f; }
+    .badge.green { background: #e8f8f0; color: #27ae60; }
+    .badge.orange { background: #fef4e6; color: #c97e2a; }
+    .badge.red { background: #fdeaea; color: #c0392b; }
+    .badge.purple { background: #f3eaf8; color: #8e44ad; }
+    .badge.gray { background: #eef2f7; color: #7f8c8d; }
+    .badge.dark { background: #e4e9ee; color: #34495e; }
+    .row-amount { font-weight: 800; font-size: 0.95rem; color: #0f2b3d; white-space: nowrap; }
+    .row-actions { display: flex; gap: 4px; flex-wrap: wrap; }
+
+    .empty-state { text-align: center; padding: 2.5rem 1rem; color: #95a5a6; font-size: 0.85rem; }
+    .empty-state .em-icon { font-size: 2.5rem; margin-bottom: 0.5rem; }
+
+    .modal { display: none; position: fixed; inset: 0; background: rgba(10,43,60,0.6); backdrop-filter: blur(3px); align-items: center; justify-content: center; z-index: 1000; padding: 1rem; }
+    .modal.open { display: flex; }
+    .modal-card { background: white; border-radius: 1rem; padding: 1.2rem; max-width: 560px; width: 100%; max-height: 88vh; overflow-y: auto; box-shadow: 0 20px 50px rgba(0,0,0,0.35); position: relative; }
+    .modal-card h3 { font-size: 1.1rem; color: #0f2b3d; margin-bottom: 0.8rem; display: flex; align-items: center; gap: 0.5rem; }
+    .modal-close { position: absolute; top: 12px; right: 14px; background: #eef2f7; border: none; width: 32px; height: 32px; border-radius: 50%; font-size: 1.2rem; cursor: pointer; color: #1c6e8f; }
+    .modal-close:hover { background: #dce8f0; }
+    .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; }
+    .detail-item { background: #f8fafc; border-radius: 0.6rem; padding: 0.6rem 0.8rem; }
+    .detail-item .di-label { font-size: 0.65rem; color: #7f8c8d; text-transform: uppercase; font-weight: 700; }
+    .detail-item .di-value { font-size: 0.85rem; color: #0f2b3d; font-weight: 700; word-break: break-word; margin-top: 2px; }
+    .detail-item.full { grid-column: span 2; }
+    .detail-item.danger { background: #fdeaea; }
+    .detail-item.danger .di-label { color: #c0392b; }
+    .detail-item.danger .di-value { color: #c0392b; }
+    .detail-item.info { background: #eef7ff; }
+    .detail-item.info .di-label { color: #1c6e8f; }
+    .detail-item.info .di-value { color: #1c6e8f; }
+
+    .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(20px); background: #1e2f3c; color: white; padding: 10px 22px; border-radius: 40px; font-size: 0.85rem; font-weight: 600; z-index: 2000; opacity: 0; visibility: hidden; transition: all 0.3s; box-shadow: 0 8px 20px rgba(0,0,0,0.3); max-width: 88%; text-align: center; }
+    .toast.show { opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0); }
+    .toast.success { background: linear-gradient(135deg, #27ae60, #229954); }
+    .toast.error { background: linear-gradient(135deg, #e74c3c, #c0392b); }
+    .toast.info { background: linear-gradient(135deg, #2c7da0, #1c6e8f); }
+    .toast.warn { background: linear-gradient(135deg, #f39c12, #d68910); }
+
+    .chat-live { background: #f8fafc; border-radius: 0.8rem; padding: 0.8rem; max-height: 60vh; overflow-y: auto; display: flex; flex-direction: column; gap: 0.4rem; }
+    .chat-bubble { background: white; border-radius: 0.7rem; padding: 0.5rem 0.8rem; max-width: 75%; font-size: 0.8rem; box-shadow: 0 1px 3px rgba(0,0,0,0.05); align-self: flex-start; border-left: 3px solid #2c7da0; }
+    .chat-bubble .cb-name { font-weight: 800; color: #1c6e8f; font-size: 0.72rem; }
+    .chat-bubble .cb-time { font-size: 0.62rem; color: #95a5a6; margin-left: 6px; }
+    .chat-bubble .cb-msg { margin-top: 3px; color: #1e3b4a; }
+
+    .status-select { padding: 4px 10px; border-radius: 20px; border: 1px solid #d0dce8; font-size: 0.7rem; font-weight: 700; background: white; cursor: pointer; color: #1e3b4a; }
+    .status-select.pending { border-color: #e74c3c; color: #c0392b; }
+    .status-select.reviewing { border-color: #f39c12; color: #c97e2a; }
+    .status-select.resolved { border-color: #27ae60; color: #1e8449; }
+
+    .sub-panel-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.6rem; padding: 0.8rem 0 0.6rem; margin-top: 1rem; border-top: 2px dashed #eef2f7; }
+    .pending-info { font-size: 0.72rem; color: #7f8c8d; font-weight: 600; background: #f8fafc; padding: 6px 14px; border-radius: 30px; display: inline-flex; align-items: center; gap: 8px; }
+
+    /* ---- Reason picker modal ---- */
+    .reason-grid { display: grid; grid-template-columns: 1fr; gap: 0.45rem; margin: 0.5rem 0 0.7rem; }
+    .reason-option { display: flex; align-items: flex-start; gap: 0.7rem; padding: 0.65rem 0.85rem; border-radius: 0.7rem; border: 1.5px solid #e0e8f0; background: #f8fafc; cursor: pointer; transition: all 0.15s; }
+    .reason-option:hover { background: #eef7ff; border-color: #a8cfe0; }
+    .reason-option.selected { background: #eef7ff; border-color: #2c7da0; box-shadow: 0 0 0 3px rgba(44,125,160,0.12); }
+    .reason-option input { display: none; }
+    .reason-opt-icon { font-size: 1.3rem; line-height: 1; flex-shrink: 0; margin-top: 2px; }
+    .reason-opt-body { flex: 1; }
+    .reason-opt-title { font-weight: 800; font-size: 0.85rem; color: #0f2b3d; }
+    .reason-opt-desc { font-size: 0.7rem; color: #7f8c8d; margin-top: 1px; }
+
+    .reason-note { width: 100%; min-height: 70px; padding: 0.6rem 0.8rem; border-radius: 0.7rem; border: 1.5px solid #e0e8f0; font-size: 0.82rem; font-family: inherit; resize: vertical; outline: none; }
+    .reason-note:focus { border-color: #f4a261; box-shadow: 0 0 0 3px rgba(244,162,97,0.15); }
+    .modal-footnote { font-size: 0.7rem; color: #95a5a6; margin-top: 0.4rem; }
+
+    .row-actions button.busy { opacity: 0.55; pointer-events: none; }
+
+    .act-row { display: flex; justify-content: space-between; padding: 0.35rem 0; border-bottom: 1px dashed #eef2f7; font-size: 0.78rem; }
+    .act-row:last-child { border-bottom: none; }
+    .act-row .ak { color: #7f8c8d; font-weight: 600; }
+    .act-row .av { color: #0f2b3d; font-weight: 800; }
+
+    .susp-history-item { background: #fff8f8; border-left: 3px solid #e74c3c; padding: 0.5rem 0.7rem; border-radius: 0.4rem; margin-bottom: 0.4rem; font-size: 0.75rem; }
+    .susp-history-item .sh-meta { font-size: 0.65rem; color: #95a5a6; margin-top: 2px; }
+
+    .diag-block { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.78rem; line-height: 1.65; color: #0f2b3d; }
+    .diag-block .ok { color: #1e8449; }
+    .diag-block .fail { color: #c0392b; }
+
+    .skeleton { background: linear-gradient(90deg, #f0f4f8 25%, #e4ecf2 50%, #f0f4f8 75%); background-size: 200% 100%; animation: shimmer 1.4s infinite; border-radius: 6px; height: 14px; margin: 6px 0; }
+    @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+    .skeleton-row { padding: 0.7rem 0.9rem; border-bottom: 1px solid #f0f4f8; }
+    .skeleton-row .skeleton.w40 { width: 40%; }
+    .skeleton-row .skeleton.w60 { width: 60%; }
+    .skeleton-row .skeleton.w25 { width: 25%; }
+
+    .load-status { font-size: 0.7rem; color: #7f8c8d; padding: 4px 10px; background: #f8fafc; border-radius: 20px; display: inline-flex; align-items: center; gap: 6px; }
+    .load-status .mini-dot { width: 6px; height: 6px; border-radius: 50%; background: #f39c12; animation: pulse 1.5s infinite; }
+    .load-status.done .mini-dot { background: #2ecc71; animation: none; }
+    .load-status.failed .mini-dot { background: #e74c3c; animation: none; }
+
+    @media (max-width: 640px) {
+        .kpi-value { font-size: 1.4rem; }
+        .tab-btn { min-width: 80px; font-size: 0.68rem; padding: 0.5rem 0.4rem; }
+        .detail-grid { grid-template-columns: 1fr; }
+        .detail-item.full { grid-column: span 1; }
+        .list-row { padding: 0.6rem 0.6rem; }
+        .row-actions { width: 100%; }
+        .search-input, .filter-select { min-width: 120px; }
+    }
+
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: #f0f4f8; border-radius: 10px; }
+    ::-webkit-scrollbar-thumb { background: #c0d0dc; border-radius: 10px; }
+    ::-webkit-scrollbar-thumb:hover { background: #a0b8c8; }
+</style>
+</head>
+<body>
+
+<div class="dashboard">
+
+    <div class="topbar">
+        <div class="brand">
+            <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='44' fill='%230a2b3c'/><text x='50' y='62' text-anchor='middle' font-family='Arial Black' font-size='40' font-weight='900' fill='%23FFD966'>AP</text></svg>" class="brand-logo" alt="AP" />
+            <div>
+                <div class="brand-text">AfriPay</div>
+                <div class="brand-sub">Admin Dashboard · Real-Time</div>
+            </div>
+        </div>
+        <div style="display:flex; gap:0.5rem; align-items:center; flex-wrap:wrap;">
+            <button class="btn-mini green" id="globalRefreshBtn" style="height:32px;">🔄 Refresh All</button>
+            <button class="btn-mini dark" id="diagnoseUsers" style="height:32px;">🩺 Diagnose Users</button>
+            <div class="connection-status">
+                <span class="conn-dot" id="connDot"></span>
+                <span id="connText">Connecting…</span>
+            </div>
+            <div class="clock" id="clock">--:--:--</div>
+            <div class="last-updated" id="lastUpdated"></div>
+        </div>
+    </div>
+
+    <div class="boot-error" id="bootError"></div>
+
+    <div class="kpi-grid">
+        <div class="kpi-card">
+            <div class="kpi-label">💳 Transactions</div>
+            <div class="kpi-value" id="kpiTx">0</div>
+            <div class="kpi-sub" id="kpiTxSub">0 confirmed</div>
+        </div>
+        <div class="kpi-card green">
+            <div class="kpi-label">💵 Total Volume</div>
+            <div class="kpi-value" id="kpiVolume">0</div>
+            <div class="kpi-sub" id="kpiVolumeSub">Across all currencies</div>
+        </div>
+        <div class="kpi-card orange">
+            <div class="kpi-label">🏢 Agents</div>
+            <div class="kpi-value" id="kpiAgents">0</div>
+            <div class="kpi-sub" id="kpiAgentsSub">0 approved</div>
+        </div>
+        <div class="kpi-card purple">
+            <div class="kpi-label">🚨 Complaints</div>
+            <div class="kpi-value" id="kpiComplaints">0</div>
+            <div class="kpi-sub" id="kpiComplaintsSub">0 pending</div>
+        </div>
+        <div class="kpi-card red">
+            <div class="kpi-label">💰 PayBacks</div>
+            <div class="kpi-value" id="kpiPaybacks">0</div>
+            <div class="kpi-sub" id="kpiPaybacksSub">0.00 total</div>
+        </div>
+        <div class="kpi-card teal">
+            <div class="kpi-label">✅ Approvals</div>
+            <div class="kpi-value" id="kpiApprovals">0</div>
+            <div class="kpi-sub" id="kpiApprovalsSub">0 pending items</div>
+        </div>
+        <div class="kpi-card dark">
+            <div class="kpi-label">⏸️ Suspended</div>
+            <div class="kpi-value" id="kpiSuspended">0</div>
+            <div class="kpi-sub" id="kpiSuspendedSub">0 accounts total</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-label">🧑 Users</div>
+            <div class="kpi-value" id="kpiUsers">0</div>
+            <div class="kpi-sub" id="kpiUsersSub">0 registered</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-label">📧 Subscribers</div>
+            <div class="kpi-value" id="kpiSubs">0</div>
+            <div class="kpi-sub">Newsletter list</div>
+        </div>
+    </div>
+
+    <div class="tabs">
+        <button class="tab-btn active" data-tab="transactions">💳 Transactions</button>
+        <button class="tab-btn" data-tab="agents">🏢 Agents <span class="tab-badge danger" id="badgeAgents" style="display:none;">0</span></button>
+        <button class="tab-btn" data-tab="businesses">🏪 Businesses <span class="tab-badge danger" id="badgeBusinesses" style="display:none;">0</span></button>
+        <button class="tab-btn" data-tab="clients">👥 Clients <span class="tab-badge danger" id="badgeClients" style="display:none;">0</span></button>
+        <button class="tab-btn" data-tab="users">🧑 Users <span class="tab-badge danger" id="badgeUsers" style="display:none;">0</span></button>
+        <button class="tab-btn" data-tab="complaints">🚨 Complaints <span class="tab-badge" id="badgeComplaints" style="display:none;">0</span></button>
+        <button class="tab-btn" data-tab="approvals">✅ Approvals <span class="tab-badge" id="badgeApprovals" style="display:none;">0</span></button>
+        <button class="tab-btn" data-tab="paybacks">💰 PayBacks</button>
+        <button class="tab-btn" data-tab="subscribers">📧 Subscribers</button>
+        <button class="tab-btn" data-tab="chat">💬 Live Chat</button>
+    </div>
+
+    <!-- ======================= TRANSACTIONS ======================= -->
+    <div class="panel active" id="panel-transactions">
+        <div class="panel-header">
+            <div class="panel-title">💳 Transactions</div>
+            <div class="panel-actions">
+                <input type="text" class="search-input" id="searchTx" placeholder="Search TX ID, sender, agent…" />
+                <span class="load-status" id="txLoadStatus"><span class="mini-dot"></span>Starting…</span>
+                <button class="btn-mini blue" id="refreshTx">🔄 Refresh</button>
+                <button class="btn-mini green" id="exportTx">⬇️ CSV</button>
+            </div>
+        </div>
+        <div class="list-wrap" id="listTx">
+            <div class="skeleton-row"><div class="skeleton w40"></div><div class="skeleton w60"></div><div class="skeleton w25"></div></div>
+            <div class="skeleton-row"><div class="skeleton w40"></div><div class="skeleton w60"></div><div class="skeleton w25"></div></div>
+            <div class="skeleton-row"><div class="skeleton w40"></div><div class="skeleton w60"></div><div class="skeleton w25"></div></div>
+        </div>
+    </div>
+
+    <!-- ============================= AGENTS ============================= -->
+    <div class="panel" id="panel-agents">
+        <div class="panel-header">
+            <div class="panel-title">🏢 Registered Agents</div>
+            <div class="panel-actions">
+                <input type="text" class="search-input" id="searchAgents" placeholder="Search business, owner, country…" />
+                <select class="filter-select" id="agentStatusFilter">
+                    <option value="all">All Statuses</option>
+                    <option value="active">✅ Active</option>
+                    <option value="suspended">⏸ Suspended</option>
+                </select>
+                <button class="btn-mini blue" id="refreshAgents">🔄 Refresh</button>
+                <button class="btn-mini green" id="exportAgents">⬇️ CSV</button>
+            </div>
+        </div>
+        <div style="margin-bottom:0.6rem;">
+            <span class="pending-info">⏸️ Suspend halts activity (asks for reason) · ▶️ Restore reactivates · 🗑️ Delete removes permanently</span>
+        </div>
+        <div class="list-wrap" id="listAgents">
+            <div class="empty-state"><div class="em-icon">⏳</div>Loading agents…</div>
+        </div>
+    </div>
+
+    <!-- ============================ BUSINESSES ============================ -->
+    <div class="panel" id="panel-businesses">
+        <div class="panel-header">
+            <div class="panel-title">🏪 Registered Businesses</div>
+            <div class="panel-actions">
+                <input type="text" class="search-input" id="searchBusinesses" placeholder="Search business, contact, city…" />
+                <select class="filter-select" id="businessStatusFilter">
+                    <option value="all">All Statuses</option>
+                    <option value="active">✅ Active</option>
+                    <option value="suspended">⏸ Suspended</option>
+                </select>
+                <button class="btn-mini blue" id="refreshBusinesses">🔄 Refresh</button>
+                <button class="btn-mini green" id="exportBusinesses">⬇️ CSV</button>
+            </div>
+        </div>
+        <div style="margin-bottom:0.6rem;">
+            <span class="pending-info">⏸️ Suspend halts activity (asks for reason) · ▶️ Restore reactivates · 🗑️ Delete removes permanently</span>
+        </div>
+        <div class="list-wrap" id="listBusinesses">
+            <div class="empty-state"><div class="em-icon">⏳</div>Loading businesses…</div>
+        </div>
+    </div>
+
+    <!-- ============================== CLIENTS ============================== -->
+    <div class="panel" id="panel-clients">
+        <div class="panel-header">
+            <div class="panel-title">👥 Registered Clients</div>
+            <div class="panel-actions">
+                <input type="text" class="search-input" id="searchClients" placeholder="Search client name, phone, city…" />
+                <select class="filter-select" id="clientStatusFilter">
+                    <option value="all">All Statuses</option>
+                    <option value="active">✅ Active</option>
+                    <option value="suspended">⏸ Suspended</option>
+                </select>
+                <button class="btn-mini blue" id="refreshClients">🔄 Refresh</button>
+                <button class="btn-mini green" id="exportClients">⬇️ CSV</button>
+            </div>
+        </div>
+        <div style="margin-bottom:0.6rem;">
+            <span class="pending-info">⏸️ Suspend halts activity (asks for reason) · ▶️ Restore reactivates · 🗑️ Delete removes permanently</span>
+        </div>
+        <div class="list-wrap" id="listClients">
+            <div class="empty-state"><div class="em-icon">⏳</div>Loading clients…</div>
+        </div>
+    </div>
+
+    <!-- =============================== USERS =============================== -->
+    <div class="panel" id="panel-users">
+        <div class="panel-header">
+            <div class="panel-title">🧑 Registered Users — Account Control</div>
+            <div class="panel-actions">
+                <input type="text" class="search-input" id="searchUsers" placeholder="Search name, email, phone, role…" />
+                <select class="filter-select" id="userStatusFilter">
+                    <option value="all">All Statuses</option>
+                    <option value="active">✅ Active</option>
+                    <option value="suspended">⏸ Suspended</option>
+                </select>
+                <select class="filter-select" id="userRoleFilter">
+                    <option value="all">All Roles</option>
+                    <option value="user">User</option>
+                    <option value="customer">Customer</option>
+                    <option value="merchant">Merchant</option>
+                    <option value="admin">Admin</option>
+                </select>
+                <button class="btn-mini blue" id="refreshUsers">🔄 Refresh</button>
+                <button class="btn-mini green" id="exportUsers">⬇️ CSV</button>
+                <button class="btn-mini dark" id="showViolationLog">📋 Violation Log</button>
+                <button class="btn-mini purple" id="showUserSource">🔎 Source</button>
+            </div>
+        </div>
+        <div style="margin-bottom:0.6rem; display:flex; flex-wrap:wrap; gap:0.5rem; align-items:center;">
+            <span class="pending-info">⏸️ Suspend asks for a <strong>violation reason</strong> · ▶️ Restore reactivates · 🗑️ Delete removes from entire app</span>
+            <span class="pending-info" id="userCounts" style="background:#eef7ff;">—</span>
+            <span class="pending-info" id="userSourceInfo" style="background:#f3eaf8; color:#8e44ad; display:none;">—</span>
+        </div>
+        <div class="list-wrap" id="listUsers">
+            <div class="empty-state"><div class="em-icon">⏳</div>Loading users…</div>
+        </div>
+    </div>
+
+    <!-- ============================= COMPLAINTS ============================= -->
+    <div class="panel" id="panel-complaints">
+        <div class="panel-header">
+            <div class="panel-title">🚨 User Complaints</div>
+            <div class="panel-actions">
+                <input type="text" class="search-input" id="searchComplaints" placeholder="Search name, phone, category…" />
+                <button class="btn-mini blue" id="refreshComplaints">🔄 Refresh</button>
+            </div>
+        </div>
+        <div class="list-wrap" id="listComplaints">
+            <div class="empty-state"><div class="em-icon">⏳</div>Loading complaints…</div>
+        </div>
+    </div>
+
+    <!-- ===================== APPROVALS PANEL ===================== -->
+    <div class="panel" id="panel-approvals">
+        <div class="panel-header">
+            <div class="panel-title">✅ Approvals Center</div>
+            <div class="panel-actions">
+                <input type="text" class="search-input" id="searchPending" placeholder="Search name, business, phone, country…" />
+                <select class="filter-select" id="pendingTypeFilter">
+                    <option value="all">All Types</option>
+                    <option value="agent">🧑‍💼 Agents</option>
+                    <option value="business">🏪 Businesses</option>
+                    <option value="product">📦 Products</option>
+                    <option value="service">🛠️ Services</option>
+                </select>
+                <button class="btn-mini blue" id="refreshPending">🔄 Refresh</button>
+                <button class="btn-mini orange" id="toggleReviewed">👁️ Show Reviewed</button>
+            </div>
+        </div>
+
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem; margin-bottom:0.6rem;">
+            <span class="pending-info" id="pendingCountInfo">—</span>
+            <span class="pending-info" style="background:#eef7ff;">💡 Approving copies the item into the live tables</span>
+        </div>
+
+        <div class="list-wrap" id="listPending">
+            <div class="empty-state"><div class="em-icon">⏳</div>Loading approvals…</div>
+        </div>
+
+        <div class="sub-panel-head">
+            <div class="panel-title" style="font-size:0.95rem;">👥 Agent-Added Clients (queue)</div>
+            <div class="panel-actions">
+                <input type="text" class="search-input" id="searchAgentClients" placeholder="Search client name, phone, agent…" style="min-width:160px;" />
+                <button class="btn-mini blue" id="refreshAgentClients">🔄 Refresh</button>
+            </div>
+        </div>
+        <div class="list-wrap" id="listAgentClients" style="max-height:48vh;">
+            <div class="empty-state"><div class="em-icon">⏳</div>Loading clients…</div>
+        </div>
+    </div>
+
+    <!-- ============================= PAYBACKS ============================= -->
+    <div class="panel" id="panel-paybacks">
+        <div class="panel-header">
+            <div class="panel-title">💰 Agent PayBacks</div>
+            <div class="panel-actions">
+                <input type="text" class="search-input" id="searchPaybacks" placeholder="Search agent, TX ID…" />
+                <button class="btn-mini blue" id="refreshPaybacks">🔄 Refresh</button>
+                <button class="btn-mini green" id="exportPaybacks">⬇️ CSV</button>
+            </div>
+        </div>
+        <div class="list-wrap" id="listPaybacks">
+            <div class="empty-state"><div class="em-icon">⏳</div>Loading paybacks…</div>
+        </div>
+    </div>
+
+    <!-- ============================ SUBSCRIBERS ============================ -->
+    <div class="panel" id="panel-subscribers">
+        <div class="panel-header">
+            <div class="panel-title">📧 Newsletter Subscribers</div>
+            <div class="panel-actions">
+                <input type="text" class="search-input" id="searchSubs" placeholder="Search email…" />
+                <button class="btn-mini blue" id="refreshSubs">🔄 Refresh</button>
+                <button class="btn-mini green" id="exportSubs">⬇️ CSV</button>
+            </div>
+        </div>
+        <div class="list-wrap" id="listSubs">
+            <div class="empty-state"><div class="em-icon">⏳</div>Loading subscribers…</div>
+        </div>
+    </div>
+
+    <!-- =============================== CHAT =============================== -->
+    <div class="panel" id="panel-chat">
+        <div class="panel-header">
+            <div class="panel-title">💬 Live Chat Messages</div>
+            <div class="panel-actions">
+                <button class="btn-mini blue" id="refreshChat">🔄 Refresh</button>
+                <button class="btn-mini red" id="clearChatView">🗑️ Clear view</button>
+            </div>
+        </div>
+        <div class="chat-live" id="chatLive">
+            <div class="empty-state"><div class="em-icon">💬</div>Waiting for messages…</div>
+        </div>
+    </div>
+
+</div>
+
+<!-- ============ Detail Modal ============ -->
+<div class="modal" id="detailModal">
+    <div class="modal-card">
+        <button class="modal-close" id="closeModal">✕</button>
+        <h3 id="modalTitle">📋 Details</h3>
+        <div class="detail-grid" id="modalBody"></div>
+        <div id="modalActions" style="display:none; gap:0.5rem; margin-top:1rem; justify-content:flex-end; flex-wrap:wrap;"></div>
+    </div>
+</div>
+
+<!-- ============ Suspend Reason Modal ============ -->
+<div class="modal" id="reasonModal">
+    <div class="modal-card" style="max-width:520px;">
+        <button class="modal-close" id="closeReasonModal">✕</button>
+        <h3 id="reasonTitle">⏸️ Suspend Account</h3>
+        <p style="font-size:0.8rem; color:#7f8c8d; margin-bottom:0.7rem;" id="reasonSubtitle">
+            Select the violation reason for suspending this account.
+        </p>
+        <div class="reason-grid" id="reasonGrid"></div>
+        <label style="font-size:0.72rem; font-weight:700; color:#7f8c8d; text-transform:uppercase; letter-spacing:0.3px;">Additional Notes (optional)</label>
+        <textarea class="reason-note" id="reasonNote" placeholder="Add context, e.g. incident report reference, observed behavior, affected parties…"></textarea>
+        <div style="display:flex; justify-content:flex-end; gap:0.5rem; margin-top:1rem;">
+            <button class="btn-mini" id="cancelReason">Cancel</button>
+            <button class="btn-mini red" id="confirmReason" disabled>⏸️ Suspend Account</button>
+        </div>
+        <div class="modal-footnote">💡 The account remains in the system. You can restore it at any time.</div>
+    </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- =====================================================================
+     WATCHDOG  —  lives in its OWN <script> block so that a syntax error in
+     the main application script can never prevent it from running.
+     It guarantees the header never stays on "Connecting…" forever.
+====================================================================== -->
+<script>
+(function () {
+    window.__afripayBoot = { started: Date.now(), ok: false, errors: [] };
+
+    function flagBoot(title, detail) {
+        try {
+            if (window.__afripayBoot.errors.length < 6) {
+                window.__afripayBoot.errors.push(title);
+            }
+            var txt = document.getElementById('connText');
+            var dot = document.getElementById('connDot');
+            if (txt) txt.textContent = 'Error';
+            if (dot) dot.className = 'conn-dot offline';
+
+            var box = document.getElementById('bootError');
+            if (box) {
+                var existing = box.getAttribute('data-count');
+                var n = existing ? parseInt(existing, 10) + 1 : 1;
+                box.setAttribute('data-count', String(n));
+                var extra = n > 1 ? ' <span class="be-detail">(+' + (n - 1) + ' more — see console)</span>' : '';
+                box.style.display = 'block';
+                box.innerHTML = '<div class="be-title">⚠️ ' + title + '</div>' +
+                    (detail ? '<div class="be-detail">' + detail + '</div>' : '') + extra;
+            }
+        } catch (_) { /* never throw from the watchdog */ }
+    }
+    window.__afripayFlagBoot = flagBoot;
+
+    window.addEventListener('error', function (e) {
+        var msg;
+        if (e && e.target && e.target.tagName === 'SCRIPT') {
+            msg = 'Failed to load script: ' + (e.target.src || '(inline)');
+        } else if (e && e.message) {
+            msg = e.message + (e.lineno ? '  (line ' + e.lineno + ')' : '');
+        } else {
+            msg = 'Unknown script error';
+        }
+        flagBoot('Script error', msg);
+    }, true);
+
+    window.addEventListener('unhandledrejection', function (e) {
+        var r = e && e.reason;
+        var msg = (r && r.message) ? r.message : String(r || 'unknown');
+        flagBoot('Unhandled promise rejection', msg);
+    });
+
+    // Hard watchdog: 30 seconds to allow for cold starts and slow CDNs
+    window.setTimeout(function () {
+        if (window.__afripayBoot.ok) return;
+        flagBoot(
+            'The dashboard is taking longer than expected to load data.',
+            'This is usually due to a slow internet connection, an adblocker blocking the CDN, or a cold-starting database. ' +
+            'Please wait a moment or press F12 → Console for details.'
+        );
+        var wrap = document.getElementById('listTx');
+        if (wrap && wrap.querySelector('.skeleton-row')) {
+            wrap.innerHTML = '<div class="empty-state"><div class="em-icon">⏱️</div>' +
+                'Transactions are taking too long to load.<br><br>' +
+                '<button class="btn-mini blue" onclick="location.reload()">🔄 Reload page</button></div>';
+        }
+        var st = document.getElementById('txLoadStatus');
+        if (st) { st.innerHTML = '<span class="mini-dot"></span>Timed out'; st.classList.add('failed'); }
+    }, 30000);
+})();
+</script>
+
+<script>
+// ============================================================
+// ███  SUPABASE CONFIGURATION  ███
+// ============================================================
+const SUPABASE_URL = 'https://adxtvefswcosnooezdha.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFkeHR2ZWZzd2Nvc25vb2V6ZGhhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODkwNzU1NzQsImV4cCI6MjEwNDY1MTU3NH0.zfeZdUzCHcRCcBCkgrtvp5uriqcK0FyI5xGiHNMk42A';
+
+// NOTE: named `sb` (not `supabase`) on purpose — this avoids any clash with the
+// global `window.supabase` object created by the SDK.
+let sb = null;
+let TX_LAST_ERROR = null;
+
+// ============================================================
+// ███  SDK LOADER (with CDN fallbacks)  ███
+// ============================================================
+function loadScriptTag(src, ms) {
+    return new Promise(function (resolve, reject) {
+        var s = document.createElement('script');
+        var done = false;
+        var timer = setTimeout(function () {
+            if (done) return;
+            done = true;
+            reject(new Error('Timed out loading ' + src));
+        }, ms);
+
+        s.src = src;
+        s.async = true;
+        s.onload = function () {
+            if (done) return;
+            done = true; clearTimeout(timer); resolve();
+        };
+        s.onerror = function () {
+            if (done) return;
+            done = true; clearTimeout(timer);
+            reject(new Error('Failed to load ' + src));
+        };
+        document.head.appendChild(s);
+    });
+}
+
+async function ensureSupabaseSDK() {
+    if (window.supabase && typeof window.supabase.createClient === 'function') return true;
+
+    const sources = [
+        'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2',
+        'https://unpkg.com/@supabase/supabase-js@2',
+        'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js'
+    ];
+
+    for (const src of sources) {
+        try {
+            await loadScriptTag(src, 8000);
+            if (window.supabase && typeof window.supabase.createClient === 'function') {
+                console.log('✅ Supabase SDK loaded from', src);
+                return true;
+            }
+        } catch (e) {
+            console.warn('⚠️ SDK source failed:', src, e.message);
+        }
+    }
+    return false;
+}
+
+// ============================================================
+// ███  UTILITIES  ███
+// ============================================================
+function withTimeout(promise, ms, label) {
+    let timer = null;
+    const timeout = new Promise(function (_, reject) {
+        timer = setTimeout(function () {
+            reject(new Error((label || 'query') + ' timed out after ' + ms + 'ms'));
+        }, ms);
+    });
+    return Promise.race([promise, timeout]).finally(function () {
+        if (timer) clearTimeout(timer);
+    });
+}
+
+function markBootComplete() {
+    if (window.__afripayBoot) window.__afripayBoot.ok = true;
+}
+
+// ============================================================
+// ███  VIOLATION REASONS  ███
+// ============================================================
+const VIOLATION_REASONS = [
+    { key: 'principles_violation', label: 'Principles Violation', icon: '📜', desc: 'Breached app principles, terms, or community guidelines' },
+    { key: 'mismanagement',        label: 'Mismanagement',        icon: '⚙️', desc: 'Poor handling of funds, accounts, or responsibilities' },
+    { key: 'fraud',                label: 'Fraud / Scam',         icon: '🚫', desc: 'Engaged in fraudulent, deceptive, or scam activity' },
+    { key: 'abuse',                label: 'Abuse / Harassment',   icon: '⚠️', desc: 'Abused or harassed other users or the platform' },
+    { key: 'spam',                 label: 'Spam / Misuse',        icon: '📢', desc: 'Spamming, bulk misuse, or inappropriate content' },
+    { key: 'security',             label: 'Security Concern',     icon: '🔒', desc: 'Suspicious, unsafe, or compromised account activity' },
+    { key: 'inactivity',           label: 'Inactivity',           icon: '💤', desc: 'Prolonged inactivity or abandoned account' },
+    { key: 'other',                label: 'Other Violation',      icon: '📝', desc: 'Other reason — please describe in the notes below' }
+];
+function getReason(key) {
+    return VIOLATION_REASONS.find(r => r.key === key) || { key, label: key, icon: '❓', desc: '' };
+}
+
+// ============================================================
+// STATE
+// ============================================================
+const State = {
+    transactions: [], agents: [], businesses: [], clients: [], users: [],
+    complaints: [], paybacks: [], subscribers: [], chat: [],
+    pendingItems: [], agentClients: [],
+    activeTab: 'transactions', channels: [], realtimeConnected: false,
+    lastUpdated: null, showReviewed: false,
+    stage2Loaded: false, realtimeSubscribed: false
+};
+
+const ACCOUNT_TABLES = {
+    agents:     { label: 'Agent',    emoji: '🏢', table: 'agents' },
+    businesses: { label: 'Business', emoji: '🏪', table: 'businesses' },
+    clients:    { label: 'Client',   emoji: '👥', table: 'clients' },
+    users:      { label: 'User',     emoji: '🧑', table: 'users' }
+};
+const CASCADE_MAP = {
+    agents:     [{ table: 'agent_clients', column: 'agent_id' }],
+    businesses: [{ table: 'products',      column: 'business_id' }],
+    clients:    [],
+    users:      []
+};
+
+// ============================================================
+// HELPERS
+// ============================================================
+const $ = id => document.getElementById(id);
+const val = id => { const el = $(id); return el ? el.value : ''; };
+function on(id, evt, fn) { const el = $(id); if (!el) return null; el.addEventListener(evt, fn); return el; }
+
+const escapeHTML = str => {
+    if (str == null) return '';
+    const map = { '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#x27;','/':'&#x2F;' };
+    return String(str).replace(/[&<>"'\/]/g, s => map[s]);
+};
+
+/* Safe identifier for inline handlers — guarantees the id can never break out
+   of the surrounding JS string / HTML attribute. */
+const safeId = v => String(v == null ? '' : v).replace(/[^a-zA-Z0-9_\-]/g, '');
+
+/* Normalises a `data` column that may arrive as an object OR a JSON string. */
+const asObj = v => {
+    if (!v) return {};
+    if (typeof v === 'string') { try { const p = JSON.parse(v); return (p && typeof p === 'object') ? p : {}; } catch (e) { return {}; } }
+    return typeof v === 'object' ? v : {};
+};
+
+const fmtMoney = n => {
+    const v = parseFloat(n) || 0;
+    return v.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+};
+const fmtDate = iso => {
+    if (!iso) return '—';
+    try { return new Date(iso).toLocaleString(); } catch { return iso; }
+};
+const shortDate = iso => {
+    if (!iso) return '—';
+    try {
+        const d = new Date(iso);
+        const now = new Date();
+        const diff = (now - d) / 1000;
+        if (diff < 60) return `${Math.floor(diff)}s ago`;
+        if (diff < 3600) return `${Math.floor(diff/60)}m ago`;
+        if (diff < 86400) return `${Math.floor(diff/3600)}h ago`;
+        return d.toLocaleDateString();
+    } catch { return iso; }
+};
+const logError = (where, e) => {
+    console.error(`❌ ${where}:`, { message: e?.message, details: e?.details, hint: e?.hint, code: e?.code });
+};
+
+function showToast(msg, type = 'info', dur = 2800) {
+    const el = $('toast');
+    if (!el) return;
+    el.textContent = msg;
+    el.className = 'toast show ' + type;
+    clearTimeout(el._hide);
+    el._hide = setTimeout(() => { el.className = 'toast ' + type; }, dur);
+}
+
+function updateClock() {
+    const el = $('clock');
+    if (el) el.textContent = new Date().toLocaleTimeString();
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+function touchLastUpdated() {
+    State.lastUpdated = new Date();
+    const el = $('lastUpdated');
+    if (el) el.textContent = `Updated ${State.lastUpdated.toLocaleTimeString()}`;
+}
+function setConnection(status) {
+    const dot = $('connDot'), txt = $('connText');
+    if (dot) dot.className = 'conn-dot ' + (status === 'online' ? 'online' : status === 'offline' ? 'offline' : '');
+    if (txt) txt.textContent = status === 'online' ? 'Live' : status === 'offline' ? 'Offline' : 'Connecting…';
+}
+function setBadge(id, n) {
+    const el = $(id);
+    if (!el) return;
+    if (n > 0) { el.style.display = 'inline-block'; el.textContent = n; }
+    else { el.style.display = 'none'; }
+}
+function setTxLoadStatus(text, done) {
+    const el = $('txLoadStatus');
+    if (!el) return;
+    el.classList.remove('failed');
+    el.innerHTML = '<span class="mini-dot"></span>' + escapeHTML(text);
+    el.classList.toggle('done', !!done);
+}
+function setTxLoadFailed(text) {
+    const el = $('txLoadStatus');
+    if (!el) return;
+    el.classList.remove('done');
+    el.classList.add('failed');
+    el.innerHTML = '<span class="mini-dot"></span>' + escapeHTML(text);
+}
+
+/* Cheap change-detector so 60s polling doesn't needlessly re-render (which
+   would reset the user's scroll position). */
+function listSignature(arr, keys) {
+    if (!Array.isArray(arr) || !arr.length) return '0';
+    return arr.length + '#' + arr.map(r => keys.map(k => String(r[k] == null ? '' : r[k])).join('~')).join('|');
+}
+
+// ============================================================
+// SUSPENSION HELPERS
+// ============================================================
+function isSuspended(rec) {
+    if (!rec) return false;
+    if (rec.suspended === true) return true;
+    if (rec.is_suspended === true) return true;
+    if (rec.is_active === false) return true;
+    if (rec.active === false) return true;
+    const s = String(rec.status || '').toLowerCase();
+    return s === 'suspended' || s === 'disabled' || s === 'blocked';
+}
+
+async function writeSuspendedFlag(table, id, suspend) {
+    const attempts = [
+        { col: 'suspended',    val: !!suspend },
+        { col: 'is_suspended', val: !!suspend },
+        { col: 'is_active',    val: !suspend },
+        { col: 'active',       val: !suspend },
+        { col: 'status',       val: suspend ? 'suspended' : 'active' }
+    ];
+    let lastErr = null;
+    for (const a of attempts) {
+        try {
+            const { error } = await sb.from(table).update({ [a.col]: a.val }).eq('id', id);
+            if (!error) return a.col;
+            lastErr = error;
+        } catch (e) { lastErr = e; }
+    }
+    throw lastErr || new Error('No supported suspend column found on "' + table + '"');
+}
+
+async function writeSuspensionMeta(table, id, reasonKey, reasonLabel, notes) {
+    const payload = {
+        suspension_reason: reasonKey,
+        suspension_label: reasonLabel,
+        suspension_notes: notes || null,
+        suspended_at: new Date().toISOString(),
+        suspended_by: 'admin'
+    };
+    try {
+        const { error } = await sb.from(table).update(payload).eq('id', id);
+        if (!error) return true;
+        const { error: e2 } = await sb.from(table).update({ suspension_reason: reasonKey }).eq('id', id);
+        return !e2;
+    } catch (e) { return false; }
+}
+
+async function clearSuspensionMeta(table, id) {
+    try {
+        const { error } = await sb.from(table).update({
+            suspension_reason: null,
+            suspension_label: null,
+            suspension_notes: null,
+            suspended_at: null,
+            suspended_by: null
+        }).eq('id', id);
+        if (!error) return true;
+    } catch (e) { /* fall through to the narrower update */ }
+    try {
+        const { error } = await sb.from(table).update({ suspension_reason: null }).eq('id', id);
+        return !error;
+    } catch (e) { return false; }
+}
+
+function applySuspendedLocally(rec, suspend, meta = {}) {
+    if (!rec) return;
+    rec.suspended = !!suspend;
+    if (suspend) {
+        if (rec.status && rec.status !== 'suspended') rec._prevStatus = rec.status;
+        rec.status = 'suspended';
+        if (meta.reasonKey) {
+            rec.suspension_reason = meta.reasonKey;
+            rec.suspension_label = meta.reasonLabel;
+            rec.suspension_notes = meta.notes || null;
+            rec.suspended_at = new Date().toISOString();
+            rec.suspended_by = 'admin';
+        }
+    } else {
+        if (rec._prevStatus) { rec.status = rec._prevStatus; delete rec._prevStatus; }
+        else if (rec.status === 'suspended') rec.status = 'active';
+        delete rec.suspension_reason;
+        delete rec.suspension_label;
+        delete rec.suspension_notes;
+        delete rec.suspended_at;
+        delete rec.suspended_by;
+    }
+}
+
+function getAccountList(type) {
+    return { agents: State.agents, businesses: State.businesses, clients: State.clients, users: State.users }[type] || [];
+}
+function setAccountList(type, arr) {
+    if (type === 'agents') State.agents = arr;
+    else if (type === 'businesses') State.businesses = arr;
+    else if (type === 'clients') State.clients = arr;
+    else if (type === 'users') State.users = arr;
+}
+function renderAccountList(type) {
+    if (type === 'agents')          renderAgents(val('searchAgents'));
+    else if (type === 'businesses') renderBusinesses(val('searchBusinesses'));
+    else if (type === 'clients')    renderClients(val('searchClients'));
+    else if (type === 'users')      renderUsers(val('searchUsers'));
+}
+function accountTitle(rec, type) {
+    if (!rec) return '—';
+    if (type === 'agents') return rec.business_name || rec.owner_name || 'Agent';
+    if (type === 'businesses') return rec.name || 'Business';
+    if (type === 'clients') return rec.name || 'Client';
+    if (type === 'users') return rec.full_name || rec.name || rec.username || rec.email || rec.phone || 'User';
+    return '—';
+}
+
+// ============================================================
+// SUSPEND REASON MODAL
+// ============================================================
+const SuspendReasonCtx = { type: null, id: null, selectedKey: null };
+
+function openSuspendReasonModal(type, id) {
+    const meta = ACCOUNT_TABLES[type] || { label: 'Account', emoji: '📋' };
+    const rec = getAccountList(type).find(r => String(r.id) === String(id));
+    if (!rec) { showToast('❌ Account not found', 'error'); return; }
+    const title = accountTitle(rec, type);
+
+    SuspendReasonCtx.type = type;
+    SuspendReasonCtx.id = id;
+    SuspendReasonCtx.selectedKey = null;
+
+    $('reasonTitle').innerHTML = `⏸️ Suspend ${meta.emoji} ${escapeHTML(meta.label)}`;
+    $('reasonSubtitle').innerHTML = `You are about to suspend <strong>${escapeHTML(title)}</strong>.<br>Select the violation reason and add any notes.`;
+    $('reasonNote').value = '';
+
+    $('reasonGrid').innerHTML = VIOLATION_REASONS.map(r => `
+        <label class="reason-option" data-key="${r.key}">
+            <input type="radio" name="suspReason" value="${r.key}" />
+            <span class="reason-opt-icon">${r.icon}</span>
+            <div class="reason-opt-body">
+                <div class="reason-opt-title">${escapeHTML(r.label)}</div>
+                <div class="reason-opt-desc">${escapeHTML(r.desc)}</div>
+            </div>
+        </label>
+    `).join('');
+
+    $('reasonGrid').querySelectorAll('.reason-option').forEach(opt => {
+        opt.addEventListener('click', () => {
+            $('reasonGrid').querySelectorAll('.reason-option').forEach(o => o.classList.remove('selected'));
+            opt.classList.add('selected');
+            SuspendReasonCtx.selectedKey = opt.dataset.key;
+            $('confirmReason').disabled = false;
+        });
+    });
+
+    $('confirmReason').disabled = true;
+    $('reasonModal').classList.add('open');
+}
+function closeReasonModal() {
+    $('reasonModal').classList.remove('open');
+    SuspendReasonCtx.type = null;
+    SuspendReasonCtx.id = null;
+    SuspendReasonCtx.selectedKey = null;
+}
+
+async function confirmSuspendFromModal() {
+    const { type, id, selectedKey } = SuspendReasonCtx;
+    if (!type || !id || !selectedKey) return;
+    const reason = getReason(selectedKey);
+    const notes = ($('reasonNote').value || '').trim();
+    const meta = ACCOUNT_TABLES[type];
+    const rec = getAccountList(type).find(r => String(r.id) === String(id));
+    const title = accountTitle(rec, type);
+
+    closeReasonModal();
+
+    if (!rec) { showToast('❌ Account no longer available', 'error'); return; }
+    if (!sb) { showToast('❌ Supabase not configured', 'error'); return; }
+
+    const snapshot = Object.assign({}, rec);
+    applySuspendedLocally(rec, true, { reasonKey: selectedKey, reasonLabel: reason.label, notes });
+    renderAccountList(type);
+    updateKPIs();
+
+    try {
+        await writeSuspendedFlag(meta.table, id, true);
+        await writeSuspensionMeta(meta.table, id, selectedKey, reason.label, notes);
+        showToast(`${reason.icon} ${meta.label} suspended (${reason.label}): ${title}`, 'warn', 4200);
+        touchLastUpdated();
+    } catch (e) {
+        logError('confirmSuspend', e);
+        Object.keys(rec).forEach(k => { if (!(k in snapshot)) delete rec[k]; });
+        Object.assign(rec, snapshot);
+        renderAccountList(type);
+        updateKPIs();
+        showToast('❌ Could not suspend: ' + (e.message || 'unknown error'), 'error', 4600);
+    }
+}
+
+// ============================================================
+// SUSPEND / RESTORE
+// ============================================================
+async function toggleSuspend(type, id, suspend) {
+    if (!sb) { showToast('❌ Supabase not configured', 'error'); return; }
+    const rec = getAccountList(type).find(r => String(r.id) === String(id));
+    if (!rec) { showToast('❌ Account not found', 'error'); return; }
+    const meta = ACCOUNT_TABLES[type];
+    const title = accountTitle(rec, type);
+
+    if (suspend) { openSuspendReasonModal(type, id); return; }
+
+    if (!confirm(`▶️ RESTORE ${meta.label.toUpperCase()}?\n\n"${title}"\n\nThis account will become active again.`)) return;
+
+    const snapshot = Object.assign({}, rec);
+    applySuspendedLocally(rec, false);
+    renderAccountList(type);
+    updateKPIs();
+
+    try {
+        await writeSuspendedFlag(meta.table, id, false);
+        await clearSuspensionMeta(meta.table, id);
+        showToast(`▶️ Restored: ${title}`, 'success', 3200);
+        touchLastUpdated();
+    } catch (e) {
+        logError('toggleSuspend-restore', e);
+        Object.keys(rec).forEach(k => { if (!(k in snapshot)) delete rec[k]; });
+        Object.assign(rec, snapshot);
+        renderAccountList(type);
+        updateKPIs();
+        showToast('❌ Could not restore: ' + (e.message || 'unknown error'), 'error', 4600);
+    }
+}
+
+// ============================================================
+// DELETE ACCOUNT
+// ============================================================
+async function deleteAccount(type, id) {
+    if (!sb) { showToast('❌ Supabase not configured', 'error'); return; }
+    const rec = getAccountList(type).find(r => String(r.id) === String(id));
+    if (!rec) { showToast('❌ Account not found', 'error'); return; }
+    const meta = ACCOUNT_TABLES[type];
+    const title = accountTitle(rec, type);
+    const cascades = CASCADE_MAP[type] || [];
+
+    let msg = `🗑️ DELETE ${meta.label.toUpperCase()} PERMANENTLY?\n\n"${title}"\n\n`;
+    if (cascades.length) msg += `This will also remove related records in: ${cascades.map(c => c.table).join(', ')}\n\n`;
+    msg += `The account will be removed from the ENTIRE application system.\nThis action CANNOT be undone.`;
+    if (!confirm(msg)) return;
+    if (!confirm(`Are you absolutely sure?\n\nSecond confirmation for: ${title}`)) return;
+
+    const btn = document.querySelector('.row-actions button[data-del="' + safeId(id) + '"]');
+    if (btn) btn.classList.add('busy');
+
+    try {
+        for (const c of cascades) {
+            try {
+                const { error } = await sb.from(c.table).delete().eq(c.column, id);
+                if (error) console.warn(`⚠️ cascade ${c.table} failed:`, error.message);
+            } catch (e) { console.warn(`⚠️ cascade ${c.table} threw:`, e); }
+        }
+        const { error } = await sb.from(meta.table).delete().eq('id', id);
+        if (error) throw error;
+
+        setAccountList(type, getAccountList(type).filter(r => String(r.id) !== String(id)));
+        renderAccountList(type);
+        updateKPIs();
+        showToast(`🗑️ ${meta.label} deleted: ${title}`, 'success', 3600);
+        touchLastUpdated();
+    } catch (e) {
+        logError('deleteAccount', e);
+        showToast('❌ Delete failed: ' + (e.message || 'unknown error'), 'error', 4800);
+        if (btn) btn.classList.remove('busy');
+        renderAccountList(type);
+    }
+}
+
+// ============================================================
+// SUPABASE FETCHERS (with timeout + column projection)
+// ============================================================
+async function fetchTransactions() {
+    TX_LAST_ERROR = null;
+    if (!sb) { TX_LAST_ERROR = 'Supabase not configured'; return []; }
+
+    const projection = 'id, tx_id, provider_tx_id, transfer_code, sender_name, sender_phone, agent_name, agent_phone, client_name, client_phone, amount, charge, gst, total, currency, mode, status, created_at';
+
+    // Attempt 1: projected columns, ordered
+    try {
+        const { data, error } = await withTimeout(
+            sb.from('transactions').select(projection).order('created_at', { ascending: false }).limit(100),
+            5000, 'transactions'
+        );
+        if (error) throw error;
+        return data || [];
+    } catch (e) {
+        logError('fetchTransactions(projected)', e);
+    }
+
+    // Attempt 2: wildcard select (covers missing columns / missing created_at)
+    try {
+        const { data, error } = await withTimeout(
+            sb.from('transactions').select('*').limit(100),
+            4500, 'transactions-fallback'
+        );
+        if (error) throw error;
+        return (data || []).slice().sort((a, b) =>
+            String(b.created_at || '').localeCompare(String(a.created_at || ''))
+        );
+    } catch (e) {
+        logError('fetchTransactions(wildcard)', e);
+        TX_LAST_ERROR = e.message || 'query failed';
+        return [];
+    }
+}
+
+async function fetchAgents() {
+    if (!sb) return [];
+    try {
+        const { data, error } = await withTimeout(
+            sb.from('agents').select('*').order('created_at', { ascending: false }).limit(500),
+            6000, 'agents'
+        );
+        if (error) throw error;
+        return data || [];
+    } catch (e) {
+        logError('fetchAgents', e);
+        try {
+            const { data, error } = await withTimeout(sb.from('agents').select('*').limit(500), 6000, 'agents-fallback');
+            if (error) throw error;
+            return data || [];
+        } catch (e2) { logError('fetchAgents-fallback', e2); return []; }
+    }
+}
+async function fetchComplaints() {
+    if (!sb) return [];
+    try {
+        const { data, error } = await withTimeout(
+            sb.from('complaints').select('*').order('created_at', { ascending: false }).limit(500),
+            6000, 'complaints'
+        );
+        if (error) throw error;
+        return data || [];
+    } catch (e) { logError('fetchComplaints', e); return []; }
+}
+async function fetchPaybacks() {
+    if (!sb) return [];
+    try {
+        const { data, error } = await withTimeout(
+            sb.from('paybacks').select('*').order('created_at', { ascending: false }).limit(500),
+            6000, 'paybacks'
+        );
+        if (error) throw error;
+        return data || [];
+    } catch (e) { logError('fetchPaybacks', e); return []; }
+}
+async function fetchSubscribers() {
+    if (!sb) return [];
+    try {
+        const { data, error } = await withTimeout(
+            sb.from('subscribers').select('*').order('subscribed_at', { ascending: false }).limit(500),
+            6000, 'subscribers'
+        );
+        if (error) throw error;
+        return data || [];
+    } catch (e) {
+        logError('fetchSubscribers', e);
+        try {
+            const { data, error } = await withTimeout(sb.from('subscribers').select('*').limit(500), 6000, 'subs-fb');
+            if (error) throw error;
+            return data || [];
+        } catch (e2) { return []; }
+    }
+}
+async function fetchChat() {
+    if (!sb) return [];
+    try {
+        const { data, error } = await withTimeout(
+            sb.from('chat_messages').select('*').order('created_at', { ascending: true }).limit(200),
+            6000, 'chat'
+        );
+        if (error) throw error;
+        return data || [];
+    } catch (e) { logError('fetchChat', e); return []; }
+}
+async function fetchPendingItems() {
+    if (!sb) return [];
+    try {
+        const { data, error } = await withTimeout(
+            sb.from('pending_items').select('*').order('submitted_at', { ascending: false }).limit(500),
+            6000, 'pending_items'
+        );
+        if (error) throw error;
+        return data || [];
+    } catch (e) { logError('fetchPendingItems', e); return []; }
+}
+async function fetchAgentClients() {
+    if (!sb) return [];
+    try {
+        const { data, error } = await withTimeout(
+            sb.from('agent_clients').select('*').order('created_at', { ascending: false }).limit(500),
+            6000, 'agent_clients'
+        );
+        if (error) throw error;
+        return data || [];
+    } catch (e) { logError('fetchAgentClients', e); return []; }
+}
+
+async function safeFetch(table, orderCol = 'created_at', limit = 500) {
+    if (!sb) return [];
+    try {
+        let q = sb.from(table).select('*');
+        if (orderCol) q = q.order(orderCol, { ascending: false });
+        if (limit) q = q.limit(limit);
+        const { data, error } = await withTimeout(q, 6000, table);
+        if (error) throw error;
+        return data || [];
+    } catch (e) {
+        try {
+            const { data, error } = await withTimeout(sb.from(table).select('*').limit(limit || 500), 6000, table + '-fb');
+            if (error) throw error;
+            return data || [];
+        } catch (e2) { logError('safeFetch:' + table, e2); return []; }
+    }
+}
+const fetchBusinesses = () => safeFetch('businesses');
+const fetchClients    = () => safeFetch('clients');
+
+// ============================================================
+// ROBUST USER FETCHER
+// ============================================================
+const USER_SOURCES = [
+    'users', 'profiles', 'app_users', 'registrations',
+    'customers', 'accounts', 'user_profiles', 'members'
+];
+let USER_RESOLVED_SOURCE = null;
+
+async function fetchUsers() {
+    if (!sb) return [];
+
+    // Fast path — a previously resolved source.
+    if (USER_RESOLVED_SOURCE) {
+        try {
+            const { data, error } = await withTimeout(
+                sb.from(USER_RESOLVED_SOURCE).select('*').limit(2000),
+                6000, 'users-cached'
+            );
+            if (!error) {
+                setUserSourceInfo(USER_RESOLVED_SOURCE, (data || []).length);
+                return data || [];
+            }
+        } catch (e) { /* fall through and re-probe */ }
+        USER_RESOLVED_SOURCE = null;
+    }
+
+    // Probe each candidate. A table that responds WITHOUT error exists — even if
+    // it is currently empty. Remember the first empty one as a fallback so a
+    // brand-new (still empty) `users` table is still picked up correctly.
+    let emptyCandidate = null;
+
+    for (const table of USER_SOURCES) {
+        try {
+            const { data, error } = await withTimeout(
+                sb.from(table).select('*').limit(2000), 6000, table + '-probe'
+            );
+            if (error) continue;
+            if (!Array.isArray(data)) continue;
+            if (data.length > 0) {
+                console.log(`✅ Users resolved to table "${table}" (${data.length} rows)`);
+                USER_RESOLVED_SOURCE = table;
+                setUserSourceInfo(table, data.length);
+                return data;
+            }
+            if (!emptyCandidate) emptyCandidate = table;
+        } catch (e) { /* try next */ }
+    }
+
+    if (emptyCandidate) {
+        console.log(`ℹ️ Users resolved to empty table "${emptyCandidate}"`);
+        USER_RESOLVED_SOURCE = emptyCandidate;
+        setUserSourceInfo(emptyCandidate, 0);
+        return [];
+    }
+
+    try {
+        const { data, error } = await withTimeout(sb.from('all_registered_users').select('*').limit(2000), 6000, 'view');
+        if (!error && Array.isArray(data)) {
+            console.log('✅ Users resolved to view "all_registered_users"');
+            USER_RESOLVED_SOURCE = 'all_registered_users';
+            setUserSourceInfo('all_registered_users', data.length);
+            return data;
+        }
+    } catch (e) { /* ignore */ }
+
+    try {
+        const { data, error } = await withTimeout(sb.rpc('list_registered_users'), 6000, 'rpc');
+        if (!error && Array.isArray(data)) {
+            console.log('✅ Users resolved via RPC list_registered_users');
+            setUserSourceInfo('RPC:list_registered_users', data.length);
+            return data;
+        }
+    } catch (e) { /* ignore */ }
+
+    console.warn('⚠️ No user source found. Run the SQL setup in Supabase.');
+    setUserSourceInfo('none', 0);
+    return [];
+}
+function setUserSourceInfo(source, count) {
+    const el = $('userSourceInfo');
+    if (!el) return;
+    el.style.display = 'inline-flex';
+    el.textContent = `🔎 Source: ${source} · ${count} row(s)`;
+}
+
+async function updateComplaintStatus(id, status) {
+    if (!sb) return null;
+    try { const { data, error } = await sb.from('complaints').update({ status }).eq('id', id).select().single(); if (error) throw error; return data; }
+    catch (e) { logError('updateComplaintStatus', e); return null; }
+}
+
+// ============================================================
+// ROW-ACTION BUILDERS
+// ============================================================
+function accountActionButtons(type, rec) {
+    const id = safeId(rec.id);
+    const suspended = isSuspended(rec);
+    return `
+        <button class="btn-mini blue" onclick="showAccountDetail('${type}','${id}')">👁️ View</button>
+        ${suspended
+            ? `<button class="btn-mini green" onclick="toggleSuspend('${type}','${id}',false)">▶️ Restore</button>`
+            : `<button class="btn-mini orange" onclick="toggleSuspend('${type}','${id}',true)">⏸️ Suspend</button>`}
+        <button class="btn-mini red" data-del="${id}" onclick="deleteAccount('${type}','${id}')">🗑️ Delete</button>
+    `;
+}
+function suspendedBadge(rec) {
+    if (!isSuspended(rec)) return '';
+    if (rec.suspension_label) {
+        const reason = getReason(rec.suspension_reason);
+        return `<span class="badge red" title="${escapeHTML(rec.suspension_notes || reason.desc)}">⏸ ${escapeHTML(reason.icon)} ${escapeHTML(rec.suspension_label)}</span>`;
+    }
+    return `<span class="badge red">⏸ Suspended</span>`;
+}
+
+// ============================================================
+// RENDERERS
+// ============================================================
+function renderTransactions(filter = '') {
+    const wrap = $('listTx');
+    if (!wrap) return;
+    const q = filter.toLowerCase();
+    let items = State.transactions;
+    if (q) items = items.filter(t =>
+        (t.tx_id || '').toLowerCase().includes(q) ||
+        (t.sender_name || '').toLowerCase().includes(q) ||
+        (t.sender_phone || '').toLowerCase().includes(q) ||
+        (t.agent_name || '').toLowerCase().includes(q) ||
+        (t.provider_tx_id || '').toLowerCase().includes(q)
+    );
+
+    if (!items.length) {
+        if (TX_LAST_ERROR) {
+            wrap.innerHTML = `<div class="empty-state">
+                <div class="em-icon">⚠️</div>
+                Could not load transactions.<br>
+                <span style="font-size:0.72rem;color:#bdc3c7;">${escapeHTML(TX_LAST_ERROR)}</span><br><br>
+                <button class="btn-mini blue" id="retryTxInline">🔄 Try again</button>
+            </div>`;
+            on('retryTxInline', 'click', () => { const b = $('refreshTx'); if (b) b.click(); });
+            setTxLoadFailed('Failed');
+        } else {
+            wrap.innerHTML = `<div class="empty-state"><div class="em-icon">💳</div>No transactions found${q ? ' for "'+escapeHTML(q)+'"' : ''}.</div>`;
+            setTxLoadStatus('Empty', true);
+        }
+        return;
+    }
+
+    wrap.innerHTML = items.map(t => {
+        const mode = String(t.mode || 'Local').toLowerCase().includes('int') ? 'blue' : 'green';
+        const tid = safeId(t.id);
+        return `
+            <div class="list-row">
+                <div class="row-avatar">${escapeHTML(String(t.currency || 'SLL').substring(0,3))}</div>
+                <div class="row-main">
+                    <div class="row-title">${escapeHTML(t.tx_id || 'TX')}</div>
+                    <div class="row-sub">👤 ${escapeHTML(t.sender_name || '—')} (${escapeHTML(t.sender_phone || '—')}) → 🏪 ${escapeHTML(t.agent_name || '—')}</div>
+                    <div class="row-sub" style="margin-top:3px;">
+                        <span class="badge ${mode}">${escapeHTML(t.mode || 'Local')}</span>
+                        <span class="badge blue">${escapeHTML(t.currency || '—')}</span>
+                        <span class="badge gray">${shortDate(t.created_at)}</span>
+                    </div>
+                </div>
+                <div class="row-amount">${escapeHTML(t.currency || '')} ${fmtMoney(t.total)}</div>
+                <div class="row-actions">
+                    <button class="btn-mini blue" onclick="showTxDetail('${tid}')">👁️ View</button>
+                </div>
+            </div>`;
+    }).join('');
+    setTxLoadStatus(`${items.length} loaded`, true);
+}
+
+function renderAgents(filter = '') {
+    const wrap = $('listAgents');
+    if (!wrap) return;
+    const q = filter.toLowerCase();
+    const statusF = val('agentStatusFilter') || 'all';
+    let items = State.agents;
+    if (statusF === 'active') items = items.filter(a => !isSuspended(a));
+    else if (statusF === 'suspended') items = items.filter(a => isSuspended(a));
+    if (q) items = items.filter(a =>
+        (a.business_name || '').toLowerCase().includes(q) ||
+        (a.owner_name || '').toLowerCase().includes(q) ||
+        (a.city || '').toLowerCase().includes(q) ||
+        (a.country_code || '').toLowerCase().includes(q) ||
+        (a.mobile_money || '').toLowerCase().includes(q)
+    );
+    if (!items.length) { wrap.innerHTML = `<div class="empty-state"><div class="em-icon">🏢</div>No agents found.</div>`; return; }
+    wrap.innerHTML = items.map(a => {
+        const suspended = isSuspended(a);
+        const initials = String(a.business_name || 'AG').substring(0,2).toUpperCase();
+        return `
+            <div class="list-row ${suspended ? 'suspended' : ''}">
+                <div class="row-avatar ${suspended ? 'susp' : ''}">${escapeHTML(initials)}</div>
+                <div class="row-main">
+                    <div class="row-title">${escapeHTML(a.business_name || '—')}</div>
+                    <div class="row-sub">👤 ${escapeHTML(a.owner_name || '—')} · 📍 ${escapeHTML(a.city || '—')} · ${escapeHTML(a.country_code || '—')}</div>
+                    <div class="row-sub" style="margin-top:3px;">
+                        ${suspendedBadge(a)}
+                        <span class="badge ${a.approved ? 'green' : 'orange'}">${a.approved ? '✓ Approved' : '⏳ Pending'}</span>
+                        <span class="badge blue">💳 ${fmtMoney(a.collateral_limit)}</span>
+                    </div>
+                </div>
+                <div class="row-actions">${accountActionButtons('agents', a)}</div>
+            </div>`;
+    }).join('');
+}
+
+function renderBusinesses(filter = '') {
+    const wrap = $('listBusinesses');
+    if (!wrap) return;
+    const q = filter.toLowerCase();
+    const statusF = val('businessStatusFilter') || 'all';
+    let items = State.businesses;
+    if (statusF === 'active') items = items.filter(b => !isSuspended(b));
+    else if (statusF === 'suspended') items = items.filter(b => isSuspended(b));
+    if (q) items = items.filter(b =>
+        (b.name || '').toLowerCase().includes(q) ||
+        (b.contact || '').toLowerCase().includes(q) ||
+        (b.city || '').toLowerCase().includes(q) ||
+        (b.type || '').toLowerCase().includes(q)
+    );
+    if (!items.length) { wrap.innerHTML = `<div class="empty-state"><div class="em-icon">🏪</div>No businesses found.</div>`; return; }
+    wrap.innerHTML = items.map(b => {
+        const suspended = isSuspended(b);
+        return `
+            <div class="list-row ${suspended ? 'suspended' : ''}">
+                <div class="row-avatar ${suspended ? 'susp' : ''}" style="${suspended ? '' : 'background:#fef4e6;color:#c97e2a;'}">${escapeHTML(b.icon || '🏪')}</div>
+                <div class="row-main">
+                    <div class="row-title">${escapeHTML(b.name || '—')}</div>
+                    <div class="row-sub">📞 ${escapeHTML(b.contact || '—')} · 💳 ${escapeHTML(b.mobile_money || '—')}</div>
+                    <div class="row-sub" style="margin-top:3px;">
+                        ${suspendedBadge(b)}
+                        <span class="badge blue">🏷️ ${escapeHTML(b.type || 'Other')}</span>
+                        <span class="badge gray">📍 ${escapeHTML(b.city || '—')}, ${escapeHTML(b.country || '—')}</span>
+                    </div>
+                </div>
+                <div class="row-actions">${accountActionButtons('businesses', b)}</div>
+            </div>`;
+    }).join('');
+}
+
+function renderClients(filter = '') {
+    const wrap = $('listClients');
+    if (!wrap) return;
+    const q = filter.toLowerCase();
+    const statusF = val('clientStatusFilter') || 'all';
+    let items = State.clients;
+    if (statusF === 'active') items = items.filter(c => !isSuspended(c));
+    else if (statusF === 'suspended') items = items.filter(c => isSuspended(c));
+    if (q) items = items.filter(c =>
+        (c.name || '').toLowerCase().includes(q) ||
+        (c.phone || '').toLowerCase().includes(q) ||
+        (c.city || '').toLowerCase().includes(q)
+    );
+    if (!items.length) { wrap.innerHTML = `<div class="empty-state"><div class="em-icon">👥</div>No clients found.</div>`; return; }
+    wrap.innerHTML = items.map(c => {
+        const suspended = isSuspended(c);
+        return `
+            <div class="list-row ${suspended ? 'suspended' : ''}">
+                <div class="row-avatar ${suspended ? 'susp' : ''}">👤</div>
+                <div class="row-main">
+                    <div class="row-title">${escapeHTML(c.name || '—')}</div>
+                    <div class="row-sub">📱 ${escapeHTML(c.phone || '—')} · 📍 ${escapeHTML(c.city || '—')}, ${escapeHTML(c.country || '—')}</div>
+                    <div class="row-sub" style="margin-top:3px;">
+                        ${suspendedBadge(c)}
+                        ${c.agent_id ? `<span class="badge blue">Agent: ${escapeHTML(String(c.agent_id).substring(0,12))}</span>` : ''}
+                        <span class="badge gray">${shortDate(c.created_at)}</span>
+                    </div>
+                </div>
+                <div class="row-actions">${accountActionButtons('clients', c)}</div>
+            </div>`;
+    }).join('');
+}
+
+function renderUsers(filter = '') {
+    const wrap = $('listUsers');
+    if (!wrap) return;
+    const q = filter.toLowerCase();
+    const statusF = val('userStatusFilter') || 'all';
+    const roleF   = val('userRoleFilter') || 'all';
+
+    let items = State.users;
+    if (statusF === 'active') items = items.filter(u => !isSuspended(u));
+    else if (statusF === 'suspended') items = items.filter(u => isSuspended(u));
+    if (roleF !== 'all') items = items.filter(u => String(u.role || 'user').toLowerCase() === roleF);
+    if (q) items = items.filter(u => {
+        const name = (u.full_name || u.name || u.username || '').toLowerCase();
+        return name.includes(q) ||
+            (u.email || '').toLowerCase().includes(q) ||
+            (u.phone || '').toLowerCase().includes(q) ||
+            (u.country || '').toLowerCase().includes(q) ||
+            (u.role || '').toLowerCase().includes(q);
+    });
+
+    const info = $('userCounts');
+    if (info) {
+        const total = State.users.length;
+        const suspended = State.users.filter(isSuspended).length;
+        const active = total - suspended;
+        info.innerHTML = `👥 <strong>${total}</strong> total · ✅ <strong>${active}</strong> active · ⏸️ <strong>${suspended}</strong> suspended`;
+    }
+
+    if (!items.length) {
+        wrap.innerHTML = `<div class="empty-state"><div class="em-icon">🧑</div>No users found${q ? ' for "'+escapeHTML(q)+'"' : ''}.<br><span style="font-size:0.75rem; color:#bdc3c7;">If this is unexpected, click <strong>🩺 Diagnose Users</strong> in the top bar.</span></div>`;
+        return;
+    }
+
+    wrap.innerHTML = items.map(u => {
+        const suspended = isSuspended(u);
+        const name = u.full_name || u.name || u.username || u.email || '—';
+        const initials = String(name).substring(0,2).toUpperCase();
+        return `
+            <div class="list-row ${suspended ? 'suspended' : ''}">
+                <div class="row-avatar ${suspended ? 'susp' : ''}">${escapeHTML(initials)}</div>
+                <div class="row-main">
+                    <div class="row-title">${escapeHTML(name)}</div>
+                    <div class="row-sub">
+                        ${u.email ? `📧 ${escapeHTML(u.email)}` : ''}
+                        ${u.phone ? ` · 📱 ${escapeHTML(u.phone)}` : ''}
+                    </div>
+                    <div class="row-sub" style="margin-top:3px;">
+                        ${suspendedBadge(u)}
+                        ${u.role ? `<span class="badge purple">${escapeHTML(u.role)}</span>` : `<span class="badge purple">user</span>`}
+                        ${u.country ? `<span class="badge gray">🌍 ${escapeHTML(u.country)}</span>` : ''}
+                        ${suspended && u.suspended_at ? `<span class="badge gray">Suspended ${shortDate(u.suspended_at)}</span>` : `<span class="badge gray">${shortDate(u.created_at)}</span>`}
+                    </div>
+                    ${suspended && u.suspension_notes ? `<div class="row-sub" style="margin-top:3px; color:#a93226; font-style:italic;">📝 ${escapeHTML(String(u.suspension_notes).substring(0,110))}${String(u.suspension_notes).length>110?'…':''}</div>` : ''}
+                </div>
+                <div class="row-actions">${accountActionButtons('users', u)}</div>
+            </div>`;
+    }).join('');
+}
+
+function renderComplaints(filter = '') {
+    const wrap = $('listComplaints');
+    if (!wrap) return;
+    const q = filter.toLowerCase();
+    let items = State.complaints;
+    if (q) items = items.filter(c =>
+        (c.name || '').toLowerCase().includes(q) ||
+        (c.phone || '').toLowerCase().includes(q) ||
+        (c.category || '').toLowerCase().includes(q)
+    );
+    if (!items.length) { wrap.innerHTML = `<div class="empty-state"><div class="em-icon">🚨</div>No complaints found.</div>`; return; }
+    wrap.innerHTML = items.map(c => {
+        const status = (c.status || 'pending').toLowerCase();
+        const statusClass = status === 'resolved' ? 'green' : (status === 'reviewing' ? 'orange' : 'red');
+        const cid = safeId(c.id);
+        return `
+            <div class="list-row">
+                <div class="row-avatar" style="background:#fdeaea; color:#c0392b;">🚨</div>
+                <div class="row-main">
+                    <div class="row-title">${escapeHTML(c.category || 'Complaint')}</div>
+                    <div class="row-sub">👤 ${escapeHTML(c.name || '—')} · 📱 ${escapeHTML(c.phone || '—')}</div>
+                    <div class="row-sub" style="margin-top:3px; color:#555;">${escapeHTML((c.details || '').substring(0, 120))}${(c.details||'').length > 120 ? '…' : ''}</div>
+                    <div class="row-sub" style="margin-top:3px;">
+                        <span class="badge ${statusClass}">${status.toUpperCase()}</span>
+                        <span class="badge gray">${shortDate(c.created_at)}</span>
+                    </div>
+                </div>
+                <div class="row-actions" style="flex-direction:column; gap:4px;">
+                    <select class="status-select ${status}" onchange="changeComplaintStatus('${cid}', this.value)">
+                        <option value="pending" ${status==='pending'?'selected':''}>Pending</option>
+                        <option value="reviewing" ${status==='reviewing'?'selected':''}>Reviewing</option>
+                        <option value="resolved" ${status==='resolved'?'selected':''}>Resolved</option>
+                    </select>
+                    <button class="btn-mini blue" onclick="showComplaintDetail('${cid}')">👁️ View</button>
+                </div>
+            </div>`;
+    }).join('');
+}
+
+function renderPending(filter = '') {
+    const wrap = $('listPending');
+    if (!wrap) return;
+    const q = (filter || '').toLowerCase();
+    const typeFilter = val('pendingTypeFilter') || 'all';
+    let items = State.pendingItems.slice();
+    if (!State.showReviewed) items = items.filter(p => (p.status || 'pending') === 'pending');
+    if (typeFilter !== 'all') items = items.filter(p => p.type === typeFilter);
+    if (q) items = items.filter(p => {
+        const d = asObj(p.data);
+        return JSON.stringify(d).toLowerCase().includes(q) ||
+               (p.submitted_by || '').toLowerCase().includes(q) ||
+               (p.country || '').toLowerCase().includes(q);
+    });
+    const pendingCount = State.pendingItems.filter(p => (p.status || 'pending') === 'pending').length;
+    const info = $('pendingCountInfo');
+    if (info) info.innerHTML = `⏳ <strong>${pendingCount}</strong> pending · 🗂️ <strong>${State.pendingItems.length - pendingCount}</strong> reviewed`;
+    if (!items.length) { wrap.innerHTML = `<div class="empty-state"><div class="em-icon">✅</div>No approvals to show.</div>`; return; }
+    wrap.innerHTML = items.map(p => {
+        const d = asObj(p.data);
+        const status = (p.status || 'pending').toLowerCase();
+        const statusClass = status === 'approved' ? 'green' : (status === 'rejected' ? 'red' : 'orange');
+        const typeIcon = { agent:'🧑‍💼', business:'🏪', product:'📦', service:'🛠️' }[p.type] || '📄';
+        const title = d.businessName || d.name || '(untitled)';
+        const pid = safeId(p.id);
+        return `
+            <div class="list-row">
+                <div class="row-avatar">${typeIcon}</div>
+                <div class="row-main">
+                    <div class="row-title">${escapeHTML(title)}</div>
+                    <div class="row-sub">Type: ${escapeHTML(p.type || '—')} · 👤 ${escapeHTML(p.submitted_by || '—')}</div>
+                    <div class="row-sub" style="margin-top:3px;">
+                        <span class="badge ${statusClass}">${status.toUpperCase()}</span>
+                        <span class="badge gray">${shortDate(p.submitted_at)}</span>
+                    </div>
+                </div>
+                <div class="row-actions">
+                    ${status === 'pending' ? `
+                        <button class="btn-mini green" onclick="approvePendingItem('${pid}')">✅ Approve</button>
+                        <button class="btn-mini red" onclick="rejectPendingItem('${pid}')">❌ Reject</button>
+                    ` : ''}
+                    <button class="btn-mini blue" onclick="showPendingDetail('${pid}')">👁️ View</button>
+                </div>
+            </div>`;
+    }).join('');
+}
+
+function renderAgentClients(filter = '') {
+    const wrap = $('listAgentClients');
+    if (!wrap) return;
+    const q = (filter || '').toLowerCase();
+    let items = State.agentClients;
+    if (q) items = items.filter(c =>
+        String(c.name || '').toLowerCase().includes(q) ||
+        String(c.phone || '').toLowerCase().includes(q) ||
+        String(c.agent_id || '').toLowerCase().includes(q)
+    );
+    if (!items.length) { wrap.innerHTML = `<div class="empty-state"><div class="em-icon">👥</div>No agent clients.</div>`; return; }
+    wrap.innerHTML = items.map(c => {
+        const status = (c.status || 'pending').toLowerCase();
+        const statusClass = status === 'approved' ? 'green' : (status === 'rejected' ? 'red' : 'orange');
+        const cid = safeId(c.id);
+        return `
+            <div class="list-row">
+                <div class="row-avatar" style="background:#e8f0f8; color:#1c6e8f;">👤</div>
+                <div class="row-main">
+                    <div class="row-title">${escapeHTML(c.name || '—')}</div>
+                    <div class="row-sub">📱 ${escapeHTML(c.phone || '—')} · 📍 ${escapeHTML(c.city || '—')}, ${escapeHTML(c.country || '—')}</div>
+                    <div class="row-sub" style="margin-top:3px;">
+                        <span class="badge ${statusClass}">${status.toUpperCase()}</span>
+                        <span class="badge blue">Agent: ${escapeHTML(String(c.agent_id || '—').substring(0,14))}</span>
+                        <span class="badge gray">${shortDate(c.created_at)}</span>
+                    </div>
+                </div>
+                <div class="row-actions">
+                    ${status === 'pending' ? `
+                        <button class="btn-mini green" onclick="approveClient('${cid}')">✅ Approve</button>
+                        <button class="btn-mini red" onclick="rejectClient('${cid}')">❌ Reject</button>
+                    ` : ''}
+                </div>
+            </div>`;
+    }).join('');
+}
+
+function renderPaybacks(filter = '') {
+    const wrap = $('listPaybacks');
+    if (!wrap) return;
+    const q = filter.toLowerCase();
+    let items = State.paybacks;
+    if (q) items = items.filter(p =>
+        (p.agent_business_name || '').toLowerCase().includes(q) ||
+        (p.agent_name || '').toLowerCase().includes(q) ||
+        (p.provider_tx_id || '').toLowerCase().includes(q)
+    );
+    if (!items.length) { wrap.innerHTML = `<div class="empty-state"><div class="em-icon">💰</div>No paybacks found.</div>`; return; }
+    wrap.innerHTML = items.map(p => `
+        <div class="list-row">
+            <div class="row-avatar" style="background:#fef4e6; color:#c97e2a;">💰</div>
+            <div class="row-main">
+                <div class="row-title">${escapeHTML(p.agent_business_name || '—')}</div>
+                <div class="row-sub">👤 ${escapeHTML(p.agent_name || '—')} · 🌍 ${escapeHTML(p.agent_nationality || '—')}</div>
+                <div class="row-sub" style="margin-top:3px;">
+                    <span class="badge orange">Cashed: ${fmtMoney(p.cashed_out_amount)}</span>
+                    <span class="badge green">Agent: ${fmtMoney(p.agent_commission)}</span>
+                    <span class="badge blue">Platform: ${fmtMoney(p.platform_share)}</span>
+                </div>
+            </div>
+            <div class="row-amount" style="color:#e67e22;">+${fmtMoney(p.agent_commission)}</div>
+            <div class="row-actions"><button class="btn-mini blue" onclick="showPaybackDetail('${safeId(p.id)}')">👁️ View</button></div>
+        </div>
+    `).join('');
+}
+
+function renderSubs(filter = '') {
+    const wrap = $('listSubs');
+    if (!wrap) return;
+    const q = filter.toLowerCase();
+    let items = State.subscribers;
+    if (q) items = items.filter(s => (s.email || '').toLowerCase().includes(q));
+    if (!items.length) { wrap.innerHTML = `<div class="empty-state"><div class="em-icon">📧</div>No subscribers found.</div>`; return; }
+    wrap.innerHTML = items.map(s => `
+        <div class="list-row">
+            <div class="row-avatar" style="background:#f3eaf8; color:#8e44ad;">📧</div>
+            <div class="row-main">
+                <div class="row-title">${escapeHTML(s.email || '—')}</div>
+                <div class="row-sub">📅 ${fmtDate(s.subscribed_at)}</div>
+            </div>
+        </div>
+    `).join('');
+}
+
+function renderChat() {
+    const wrap = $('chatLive');
+    if (!wrap) return;
+    if (!State.chat.length) { wrap.innerHTML = `<div class="empty-state"><div class="em-icon">💬</div>Waiting for messages…</div>`; return; }
+    wrap.innerHTML = State.chat.slice(-100).map(m => `
+        <div class="chat-bubble">
+            <span class="cb-name">${escapeHTML(m.sender_name || 'Anonymous')}</span>
+            <span class="cb-time">${shortDate(m.created_at)}</span>
+            <div class="cb-msg">${escapeHTML(m.message || '')}</div>
+        </div>
+    `).join('');
+    wrap.scrollTop = wrap.scrollHeight;
+}
+
+// ============================================================
+// MODALS
+// ============================================================
+function openModal(title, bodyHTML, actionsHTML = '') {
+    $('modalTitle').textContent = title;
+    $('modalBody').innerHTML = bodyHTML;
+    const act = $('modalActions');
+    if (actionsHTML) { act.innerHTML = actionsHTML; act.style.display = 'flex'; }
+    else { act.innerHTML = ''; act.style.display = 'none'; }
+    $('detailModal').classList.add('open');
+}
+function closeModal() {
+    $('detailModal').classList.remove('open');
+    $('modalActions').style.display = 'none';
+    $('modalActions').innerHTML = '';
+}
+function di(label, value, full = false, cls = '') {
+    return `<div class="detail-item ${full ? 'full' : ''} ${cls}">
+        <div class="di-label">${escapeHTML(label)}</div>
+        <div class="di-value">${escapeHTML(String(value ?? '—'))}</div>
+    </div>`;
+}
+
+function buildUserActivitySummary(user) {
+    const identifiers = [
+        user.phone, user.email, user.username, user.name, user.full_name
+    ].filter(Boolean).map(v => String(v).toLowerCase());
+
+    const txMatches = State.transactions.filter(t => {
+        const fields = [t.sender_phone, t.sender_name, t.client_phone, t.client_name].filter(Boolean).map(v => String(v).toLowerCase());
+        return fields.some(f => identifiers.includes(f));
+    });
+    const totalVol = txMatches.reduce((s, t) => s + (parseFloat(t.total) || 0), 0);
+    const compMatches = State.complaints.filter(c => {
+        const fields = [c.phone, c.name].filter(Boolean).map(v => String(v).toLowerCase());
+        return fields.some(f => identifiers.includes(f));
+    });
+
+    return { txCount: txMatches.length, totalVolume: totalVol, compCount: compMatches.length };
+}
+
+function showAccountDetail(type, id) {
+    const rec = getAccountList(type).find(r => String(r.id) === String(id));
+    if (!rec) { showToast('❌ Account not found', 'error'); return; }
+    const meta = ACCOUNT_TABLES[type] || { label: 'Account', emoji: '📋' };
+    const suspended = isSuspended(rec);
+
+    let html = `<div class="detail-item full ${suspended ? 'danger' : 'info'}">
+        <div class="di-label">${suspended ? 'Account Status — Suspended' : 'Account Status — Active'}</div>
+        <div class="di-value">${suspended ? '⏸ Activity halted · still in system (restorable)' : '✅ Full access · all features enabled'}</div>
+    </div>`;
+
+    if (suspended) {
+        const reason = rec.suspension_reason ? getReason(rec.suspension_reason) : null;
+        html += di('Violation Reason', reason ? `${reason.icon} ${reason.label}` : (rec.suspension_label || 'Not recorded'), true);
+        if (rec.suspension_notes) html += di('Notes', rec.suspension_notes, true);
+        if (rec.suspended_at) html += di('Suspended At', fmtDate(rec.suspended_at));
+        if (rec.suspended_by) html += di('Suspended By', rec.suspended_by);
+    }
+
+    if (type === 'users' || type === 'clients') {
+        const a = buildUserActivitySummary(rec);
+        html += `<div class="detail-item full info" style="padding:0.6rem 0.8rem;">
+            <div class="di-label" style="color:#1c6e8f;">📊 Activity Summary</div>
+            <div style="margin-top:4px;">
+                <div class="act-row"><span class="ak">Transactions</span><span class="av">${a.txCount}</span></div>
+                <div class="act-row"><span class="ak">Volume (matched)</span><span class="av">${fmtMoney(a.totalVolume)}</span></div>
+                <div class="act-row"><span class="ak">Complaints filed</span><span class="av">${a.compCount}</span></div>
+            </div>
+        </div>`;
+    }
+
+    html += `<div class="detail-item full" style="background:#f8fafc; padding:0.4rem 0.8rem;">
+        <div class="di-label">Full Record</div></div>`;
+    Object.keys(rec).forEach(k => {
+        if (k.startsWith('_') || k === 'suspension_notes') return;
+        let v = rec[k];
+        if (v && typeof v === 'object') v = JSON.stringify(v);
+        if (k === 'password' || k === 'pin') v = v ? '••••••' : '—';
+        const isLong = String(v ?? '').length > 45;
+        html += di(k, (v === null || v === undefined || v === '') ? '—' : v, isLong);
+    });
+
+    const sid = safeId(id);
+    const actions = `
+        ${suspended
+            ? `<button class="btn-mini green" onclick="toggleSuspend('${type}','${sid}',false); closeModal();">▶️ Restore Account</button>`
+            : `<button class="btn-mini orange" onclick="closeModal(); setTimeout(()=>toggleSuspend('${type}','${sid}',true),120);">⏸️ Suspend Account</button>`}
+        <button class="btn-mini red" onclick="closeModal(); setTimeout(()=>deleteAccount('${type}','${sid}'),120);">🗑️ Delete Account</button>
+    `;
+    openModal(`${meta.emoji} ${meta.label} Details`, html, actions);
+}
+
+function showTxDetail(id) {
+    const t = State.transactions.find(x => String(x.id) === String(id));
+    if (!t) return;
+    const html = `
+        ${di('TX ID', t.tx_id)} ${di('Provider TX ID', t.provider_tx_id)}
+        ${di('Transfer Code', t.transfer_code)} ${di('Status', t.status || 'confirmed')}
+        ${di('Mode', t.mode)} ${di('Currency', t.currency)}
+        ${di('Sender', `${t.sender_name || '—'} (${t.sender_phone || '—'})`, true)}
+        ${di('Agent', t.agent_name)} ${di('Agent Phone', t.agent_phone)}
+        ${di('Base Amount', fmtMoney(t.amount))} ${di('Charge (4%)', fmtMoney(t.charge))}
+        ${di('GST', fmtMoney(t.gst))} ${di('Total', fmtMoney(t.total))}
+        ${di('Created At', fmtDate(t.created_at), true)}
+    `;
+    openModal('💳 Transaction Details', html);
+}
+function showComplaintDetail(id) {
+    const c = State.complaints.find(x => String(x.id) === String(id));
+    if (!c) return;
+    openModal('🚨 Complaint Details', `
+        ${di('Category', c.category, true)} ${di('Status', c.status || 'pending')}
+        ${di('Name', c.name)} ${di('Phone', c.phone)}
+        ${di('Submitted', fmtDate(c.created_at))} ${di('Details', c.details, true)}
+    `);
+}
+function showPaybackDetail(id) {
+    const p = State.paybacks.find(x => String(x.id) === String(id));
+    if (!p) return;
+    openModal('💰 PayBack Details', `
+        ${di('Agent Business', p.agent_business_name, true)} ${di('Agent Name', p.agent_name)}
+        ${di('Cashed Out', fmtMoney(p.cashed_out_amount))} ${di('Agent Commission', fmtMoney(p.agent_commission))}
+        ${di('Platform Share', fmtMoney(p.platform_share))} ${di('Provider TX ID', p.provider_tx_id)}
+        ${di('Submitted', fmtDate(p.created_at), true)}
+    `);
+}
+function showPendingDetail(id) {
+    const p = State.pendingItems.find(x => String(x.id) === String(id));
+    if (!p) return;
+    const d = asObj(p.data);
+    let html = '';
+    html += di('Type', (p.type || '').toUpperCase());
+    html += di('Status', (p.status || 'pending').toUpperCase());
+    html += di('Submitted By', p.submitted_by || '—');
+    html += di('Country', p.country || '—');
+    html += di('Submitted At', fmtDate(p.submitted_at), true);
+    Object.keys(d).forEach(k => {
+        let v = d[k];
+        if (v && typeof v === 'object') v = JSON.stringify(v);
+        html += di(k, v === '' || v === null || v === undefined ? '—' : v, true);
+    });
+    const status = (p.status || 'pending').toLowerCase();
+    const actions = status === 'pending' ? `
+        <button class="btn-mini green" onclick="approvePendingItem('${safeId(p.id)}'); closeModal();">✅ Approve</button>
+        <button class="btn-mini red" onclick="rejectPendingItem('${safeId(p.id)}'); closeModal();">❌ Reject</button>
+    ` : '';
+    openModal('📋 Pending Item Details', html, actions);
+}
+
+function showViolationLog() {
+    const suspended = [
+        ...State.agents.filter(isSuspended).map(r => ({ ...r, _type: 'Agent', _title: accountTitle(r, 'agents') })),
+        ...State.businesses.filter(isSuspended).map(r => ({ ...r, _type: 'Business', _title: accountTitle(r, 'businesses') })),
+        ...State.clients.filter(isSuspended).map(r => ({ ...r, _type: 'Client', _title: accountTitle(r, 'clients') })),
+        ...State.users.filter(isSuspended).map(r => ({ ...r, _type: 'User', _title: accountTitle(r, 'users') }))
+    ];
+
+    if (!suspended.length) {
+        openModal('📋 Violation Log', `<div class="empty-state" style="padding:1.5rem;">
+            <div class="em-icon">🎉</div>No suspended accounts. All clean.
+        </div>`);
+        return;
+    }
+
+    const body = suspended.map(s => {
+        const reason = s.suspension_reason ? getReason(s.suspension_reason) : null;
+        const reasonLine = reason ? `${reason.icon} ${escapeHTML(reason.label)}` : (s.suspension_label ? escapeHTML(s.suspension_label) : 'Reason not recorded');
+        return `<div class="susp-history-item">
+            <div><strong>${escapeHTML(s._type)}:</strong> ${escapeHTML(s._title)}</div>
+            <div style="margin-top:3px;">${reasonLine}</div>
+            ${s.suspension_notes ? `<div style="margin-top:3px; font-style:italic;">"${escapeHTML(s.suspension_notes)}"</div>` : ''}
+            <div class="sh-meta">⏱ ${s.suspended_at ? fmtDate(s.suspended_at) : 'Time not recorded'} · by ${escapeHTML(s.suspended_by || 'admin')}</div>
+        </div>`;
+    }).join('');
+
+    openModal('📋 Violation Log', `
+        <div class="detail-item full danger" style="margin-bottom:0.7rem;">
+            <div class="di-label">Total Suspended</div>
+            <div class="di-value">${suspended.length} account(s) currently suspended</div>
+        </div>
+        ${body}
+    `);
+}
+
+async function changeComplaintStatus(id, status) {
+    const prev = State.complaints.find(c => String(c.id) === String(id));
+    if (!prev) return;
+    const prevStatus = prev.status;
+    prev.status = status;
+    renderComplaints(val('searchComplaints'));
+    updateKPIs();
+    const res = await updateComplaintStatus(id, status);
+    if (res) {
+        showToast(`✅ Complaint marked as ${status}`, 'success', 2000);
+        const i = State.complaints.findIndex(c => String(c.id) === String(id));
+        if (i >= 0) State.complaints[i] = res;
+        renderComplaints(val('searchComplaints'));
+        updateKPIs();
+    } else {
+        prev.status = prevStatus;
+        renderComplaints(val('searchComplaints'));
+        updateKPIs();
+        showToast('❌ Failed to update status', 'error', 3000);
+    }
+}
+
+// ============================================================
+// APPROVE / REJECT
+// ============================================================
+async function approvePendingItem(id) {
+    if (!sb) { showToast('❌ Supabase not configured', 'error'); return; }
+    const p = State.pendingItems.find(x => String(x.id) === String(id));
+    if (!p) return;
+    const d = asObj(p.data);
+    if (!confirm(`Approve this ${p.type}?\n\n${d.businessName || d.name || ''}`)) return;
+    try {
+        if (p.type === 'agent') {
+            const rec = {
+                business_name: d.businessName, business_address: d.businessAddress || '',
+                city: d.city || '', reg_number: d.regNumber || '', business_type: d.businessType || 'Service',
+                owner_name: d.ownerName || '', id_type: d.idType || 'National ID', id_number: d.idNumber || '',
+                mobile_money: d.mobileMoney || '', country_code: d.countryCode || '',
+                password: d.password || '', pin: d.pin || '',
+                collateral_amount: d.collateralLimit || d.collateralAmount || 0,
+                collateral_limit: d.collateralLimit || d.collateralAmount || 0,
+                currency: d.currency || 'GNF', approved: true, nin: d.nin || ''
+            };
+            const { error } = await sb.from('agents').upsert(rec, { onConflict: 'business_name' });
+            if (error) throw error;
+        } else if (p.type === 'business') {
+            const rec = {
+                local_id: 'biz_' + Date.now(), name: d.name, contact: d.contact || null,
+                mobile_money: d.mobileMoney || null, type: d.type || 'Other', icon: d.icon || '🏪',
+                website: d.website || null, address: d.address || null, city: d.city || null,
+                country: d.country || null, password: d.password || null, pin: d.pin || null
+            };
+            const { error } = await sb.from('businesses').upsert(rec, { onConflict: 'name' });
+            if (error) throw error;
+        } else if (p.type === 'product' || p.type === 'service') {
+            const { data: biz, error: bErr } = await sb.from('businesses').select('id').eq('name', d.businessName).limit(1);
+            if (bErr) throw bErr;
+            if (!biz || !biz.length) throw new Error(`Business "${d.businessName}" not found.`);
+            const { error } = await sb.from('products').insert({
+                business_id: biz[0].id, name: d.name, price: parseFloat(d.price) || 0,
+                quantity: parseInt(d.quantity) || 1, quality: d.quality || 'Brand new', icon: d.icon || null
+            });
+            if (error) throw error;
+        } else throw new Error('Unknown pending type: ' + p.type);
+
+        const { error: uErr } = await sb.from('pending_items').update({
+            status: 'approved', reviewed_at: new Date().toISOString(), reviewed_by: 'admin'
+        }).eq('id', p.id);
+        if (uErr) throw uErr;
+
+        const local = State.pendingItems.find(x => String(x.id) === String(id));
+        if (local) { local.status = 'approved'; local.reviewed_at = new Date().toISOString(); local.reviewed_by = 'admin'; }
+        renderPending(val('searchPending'));
+        updateKPIs();
+        showToast('✅ Approved: ' + (d.businessName || d.name || p.type), 'success', 3200);
+        await refreshAll();
+    } catch (e) { logError('approvePendingItem', e); showToast('❌ Failed: ' + (e.message || 'unknown'), 'error', 4500); }
+}
+
+async function rejectPendingItem(id) {
+    if (!sb) { showToast('❌ Supabase not configured', 'error'); return; }
+    const p = State.pendingItems.find(x => String(x.id) === String(id));
+    if (!p) return;
+    const d = asObj(p.data);
+    if (!confirm(`Reject this ${p.type}?\n\n${d.businessName || d.name || ''}`)) return;
+    try {
+        const { error } = await sb.from('pending_items').update({
+            status: 'rejected', reviewed_at: new Date().toISOString(), reviewed_by: 'admin'
+        }).eq('id', p.id);
+        if (error) throw error;
+        const local = State.pendingItems.find(x => String(x.id) === String(id));
+        if (local) { local.status = 'rejected'; local.reviewed_at = new Date().toISOString(); local.reviewed_by = 'admin'; }
+        renderPending(val('searchPending'));
+        updateKPIs();
+        showToast('❌ Rejected: ' + (d.businessName || d.name || p.type), 'info', 2800);
+    } catch (e) { logError('rejectPendingItem', e); showToast('❌ Failed', 'error', 3500); }
+}
+
+async function approveClient(id) {
+    if (!sb) { showToast('❌ Supabase not configured', 'error'); return; }
+    const c = State.agentClients.find(x => String(x.id) === String(id));
+    if (!c) return;
+    if (!confirm(`Approve client "${c.name}"?`)) return;
+    let ok = false, lastErr = null;
+    try {
+        const { error } = await sb.from('agent_clients').update({ status: 'approved', reviewed_at: new Date().toISOString() }).eq('id', id);
+        if (!error) ok = true; else lastErr = error;
+    } catch (e) { lastErr = e; }
+    if (!ok) {
+        try {
+            const { error } = await sb.from('clients').insert({
+                name: c.name, phone: c.phone, address: c.address || null, city: c.city || null,
+                country: c.country || null, agent_id: c.agent_id || null
+            });
+            if (!error) ok = true; else lastErr = error;
+        } catch (e) { lastErr = e; }
+    }
+    if (!ok) { logError('approveClient', lastErr); showToast('❌ Failed to approve client', 'error', 4200); return; }
+    const local = State.agentClients.find(x => String(x.id) === String(id));
+    if (local) local.status = 'approved';
+    renderAgentClients(val('searchAgentClients'));
+    updateKPIs();
+    showToast('✅ Client approved: ' + (c.name || ''), 'success', 3000);
+    await refreshAll();
+}
+
+async function rejectClient(id) {
+    if (!sb) { showToast('❌ Supabase not configured', 'error'); return; }
+    const c = State.agentClients.find(x => String(x.id) === String(id));
+    if (!c) return;
+    if (!confirm(`Reject and remove client "${c.name}"?`)) return;
+    try {
+        const { error } = await sb.from('agent_clients').delete().eq('id', id);
+        if (error) throw error;
+        State.agentClients = State.agentClients.filter(x => String(x.id) !== String(id));
+        renderAgentClients(val('searchAgentClients'));
+        updateKPIs();
+        showToast('❌ Client rejected & removed', 'info', 2800);
+    } catch (e) { logError('rejectClient', e); showToast('❌ Failed', 'error', 3500); }
+}
+
+// ============================================================
+// DIAGNOSTICS
+// ============================================================
+async function diagnoseUserSources() {
+    if (!sb) { showToast('❌ Supabase not configured', 'error'); return; }
+    showToast('🩺 Probing user tables…', 'info', 2000);
+
+    const report = [];
+    for (const t of USER_SOURCES.concat(['all_registered_users'])) {
+        try {
+            const { count, error } = await withTimeout(
+                sb.from(t).select('*', { count: 'exact', head: true }),
+                4000, t
+            );
+            if (error) report.push(`❌ ${t} — ${error.message}`);
+            else       report.push(`✅ ${t} — ${count} row(s)`);
+        } catch (e) {
+            report.push(`❌ ${t} — ${e.message || 'unreachable'}`);
+        }
+    }
+    try {
+        const { data, error } = await withTimeout(sb.rpc('list_registered_users'), 4000, 'rpc');
+        report.push(error ? `❌ RPC list_registered_users — ${error.message}`
+                          : `✅ RPC list_registered_users — ${(data||[]).length} row(s)`);
+    } catch (e) { report.push(`❌ RPC — ${e.message}`); }
+
+    const rendered = report.map(r => {
+        const cls = r.startsWith('✅') ? 'ok' : (r.startsWith('❌') ? 'fail' : '');
+        return `<div class="${cls}">${escapeHTML(r)}</div>`;
+    }).join('');
+
+    openModal('🩺 User Source Diagnostics', `
+        <div class="detail-item full" style="background:#f8fafc;">
+            <div class="di-label">Probe results</div>
+            <div class="diag-block" style="margin-top:4px;">${rendered}</div>
+        </div>
+        <div class="detail-item full info" style="margin-top:0.6rem;">
+            <div class="di-label">Currently resolved source</div>
+            <div class="di-value">${escapeHTML(USER_RESOLVED_SOURCE || 'none (using view/RPC fallback)')}</div>
+        </div>
+        <div class="detail-item full" style="margin-top:0.6rem; background:#fff8f8;">
+            <div class="di-label" style="color:#c0392b;">If every row shows ❌ or 0</div>
+            <div class="di-value" style="font-size:0.75rem; color:#7f8c8d; font-weight:500;">
+                Run the SQL setup in Supabase (the <strong>users</strong> and <strong>profiles</strong> tables,
+                the <strong>on_auth_user_created</strong> trigger, RLS policies,
+                and the <strong>all_registered_users</strong> view).
+            </div>
+        </div>
+    `);
+}
+
+// ============================================================
+// CSV EXPORT
+// ============================================================
+function exportCSV(rows, filename) {
+    if (!rows.length) { showToast('Nothing to export', 'error'); return; }
+    const keys = Array.from(rows.reduce((set, r) => { Object.keys(r).forEach(k => set.add(k)); return set; }, new Set()));
+    const csv = [
+        keys.join(','),
+        ...rows.map(r => keys.map(k => {
+            let v = r[k] ?? '';
+            if (typeof v === 'object') v = JSON.stringify(v);
+            v = String(v).replace(/"/g, '""');
+            return `"${v}"`;
+        }).join(','))
+    ].join('\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = filename;
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast('✅ CSV downloaded', 'success');
+}
+
+// ============================================================
+// KPI UPDATER
+// ============================================================
+function updateKPIs() {
+    const setTxt = (id, v) => { const el = $(id); if (el) el.textContent = v; };
+
+    setTxt('kpiTx', State.transactions.length);
+    setTxt('kpiTxSub', `${State.transactions.filter(t => (t.status || 'confirmed') === 'confirmed').length} confirmed`);
+
+    const byCur = {};
+    State.transactions.forEach(t => {
+        const c = t.currency || 'SLL';
+        byCur[c] = (byCur[c] || 0) + (parseFloat(t.total) || 0);
+    });
+    const volEntries = Object.entries(byCur).sort((a,b) => b[1] - a[1]).slice(0, 2);
+    if (!volEntries.length) { setTxt('kpiVolume', '0'); setTxt('kpiVolumeSub', 'No data'); }
+    else {
+        setTxt('kpiVolume', `${fmtMoney(volEntries[0][1])} ${volEntries[0][0]}`);
+        setTxt('kpiVolumeSub', volEntries.length > 1
+            ? `+ ${fmtMoney(volEntries[1][1])} ${volEntries[1][0]}`
+            : `${State.transactions.length} tx total`);
+    }
+
+    setTxt('kpiAgents', State.agents.length);
+    setTxt('kpiAgentsSub', `${State.agents.filter(a => a.approved).length} approved`);
+    setTxt('kpiComplaints', State.complaints.length);
+    setTxt('kpiComplaintsSub', `${State.complaints.filter(c => (c.status || 'pending') === 'pending').length} pending`);
+    setTxt('kpiPaybacks', State.paybacks.length);
+    setTxt('kpiPaybacksSub', `${fmtMoney(State.paybacks.reduce((s, p) => s + (parseFloat(p.agent_commission) || 0), 0))} total`);
+    setTxt('kpiSubs', State.subscribers.length);
+
+    setTxt('kpiUsers', State.users.length);
+    setTxt('kpiUsersSub', `${State.users.filter(isSuspended).length} suspended`);
+
+    const pendingItems = State.pendingItems.filter(p => (p.status || 'pending') === 'pending').length;
+    const pendingClients = State.agentClients.filter(c => (c.status || 'pending') === 'pending').length;
+    const totalPending = pendingItems + pendingClients;
+    setTxt('kpiApprovals', totalPending);
+    setTxt('kpiApprovalsSub', `${pendingItems} item(s) · ${pendingClients} client(s)`);
+
+    const sAgents = State.agents.filter(isSuspended).length;
+    const sBiz = State.businesses.filter(isSuspended).length;
+    const sClients = State.clients.filter(isSuspended).length;
+    const sUsers = State.users.filter(isSuspended).length;
+    const totalSuspended = sAgents + sBiz + sClients + sUsers;
+    const totalAccounts = State.agents.length + State.businesses.length + State.clients.length + State.users.length;
+
+    setTxt('kpiSuspended', totalSuspended);
+    setTxt('kpiSuspendedSub', `${totalAccounts} account(s) in system`);
+
+    const bComplaints = $('badgeComplaints');
+    if (bComplaints) {
+        const n = State.complaints.filter(c => (c.status || 'pending') === 'pending').length;
+        if (n > 0) { bComplaints.style.display = 'inline-block'; bComplaints.textContent = n; } else bComplaints.style.display = 'none';
+    }
+    const bAgents = $('badgeAgents');
+    if (bAgents) {
+        const n = sAgents || State.agents.filter(a => !a.approved).length;
+        if (n > 0) { bAgents.style.display = 'inline-block'; bAgents.textContent = n; } else bAgents.style.display = 'none';
+    }
+    const bApprovals = $('badgeApprovals');
+    if (bApprovals) {
+        if (totalPending > 0) { bApprovals.style.display = 'inline-block'; bApprovals.textContent = totalPending; } else bApprovals.style.display = 'none';
+    }
+    setBadge('badgeBusinesses', sBiz);
+    setBadge('badgeClients', sClients);
+    setBadge('badgeUsers', sUsers);
+
+    touchLastUpdated();
+}
+
+// ============================================================
+// NOTICES
+// ============================================================
+function showOfflineStates() {
+    ['listAgents','listBusinesses','listClients','listUsers','listComplaints',
+     'listPending','listAgentClients','listPaybacks','listSubs','chatLive'].forEach(id => {
+        const el = $(id);
+        if (el) el.innerHTML = `<div class="empty-state"><div class="em-icon">🔌</div>No data — Supabase is not connected.</div>`;
+    });
+}
+
+function renderSdkMissingNotice() {
+    const wrap = $('listTx');
+    if (wrap) {
+        wrap.innerHTML = `<div class="empty-state">
+            <div class="em-icon">🔌</div>
+            Could not load the Supabase library.<br>
+            <span style="font-size:0.75rem;color:#bdc3c7;">
+                Check your internet connection / content blockers, then reload.
+            </span><br><br>
+            <button class="btn-mini blue" onclick="location.reload()">🔄 Reload page</button>
+        </div>`;
+    }
+    showOfflineStates();
+}
+
+// ============================================================
+// MASTER REFRESH — Two-stage loader
+// Stage 1: Transactions render immediately
+// Stage 2: Everything else in parallel, non-blocking
+// ============================================================
+function runStage2(name, fetcher, assign, renderFn) {
+    return fetcher()
+        .then(v => {
+            assign(v);
+            try { renderFn(); } catch (e) { logError('render:' + name, e); }
+        })
+        .catch(e => logError('stage2:' + name, e));
+}
+
+async function refreshAll() {
+    if (!sb) {
+        setConnection('offline');
+        setTxLoadFailed('Offline');
+        renderSdkMissingNotice();
+        return;
+    }
+
+    // ---- STAGE 1: Transactions (visible immediately) ----
+    setTxLoadStatus('Loading…', false);
+    try {
+        const tx = await fetchTransactions();
+        State.transactions = tx;
+        renderTransactions(val('searchTx'));
+        updateKPIs();
+        if (TX_LAST_ERROR) {
+            setConnection('offline');
+            setTxLoadFailed('Failed');
+        } else {
+            setConnection('online');
+        }
+    } catch (e) {
+        logError('refreshAll.stage1', e);
+        TX_LAST_ERROR = e.message || 'unknown error';
+        setTxLoadFailed('Failed');
+        setConnection('offline');
+        renderTransactions(val('searchTx'));
+    } finally {
+        touchLastUpdated();
+    }
+
+    // ---- STAGE 2: Everything else, parallel & non-blocking ----
+    await Promise.allSettled([
+        runStage2('agents',        fetchAgents,        v => State.agents = v,        () => renderAgents(val('searchAgents'))),
+        runStage2('complaints',    fetchComplaints,    v => State.complaints = v,    () => renderComplaints(val('searchComplaints'))),
+        runStage2('paybacks',      fetchPaybacks,      v => State.paybacks = v,      () => renderPaybacks(val('searchPaybacks'))),
+        runStage2('subscribers',   fetchSubscribers,   v => State.subscribers = v,   () => renderSubs(val('searchSubs'))),
+        runStage2('chat',          fetchChat,          v => State.chat = v,          renderChat),
+        runStage2('pending',       fetchPendingItems,  v => State.pendingItems = v,  () => renderPending(val('searchPending'))),
+        runStage2('agentClients',  fetchAgentClients,  v => State.agentClients = v,  () => renderAgentClients(val('searchAgentClients'))),
+        runStage2('businesses',    fetchBusinesses,    v => State.businesses = v,    () => renderBusinesses(val('searchBusinesses'))),
+        runStage2('clients',       fetchClients,       v => State.clients = v,       () => renderClients(val('searchClients'))),
+        runStage2('users',         fetchUsers,         v => State.users = v,         () => renderUsers(val('searchUsers')))
+    ]);
+
+    State.stage2Loaded = true;
+    updateKPIs();
+    touchLastUpdated();
+}
+
+// ============================================================
+// REALTIME
+// ============================================================
+function safeSubscribe(name, builder) {
+    if (!sb) return null;
+    try { const ch = builder(); State.channels.push(ch); console.log(`📡 ${name}`); return ch; }
+    catch (e) { logError(`subscribe ${name}`, e); return null; }
+}
+
+function subscribeRealtime() {
+    if (!sb) return;
+    if (State.realtimeSubscribed) return;   // never double-subscribe
+    State.realtimeSubscribed = true;
+
+    // NOTE: transactions intentionally NOT subscribed (removed for performance).
+    // The dashboard polls them every 60 seconds instead.
+
+    safeSubscribe('agents', () => sb.channel('dash_agents_rt')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'agents' }, (payload) => {
+            if (payload.eventType === 'INSERT') State.agents.unshift(payload.new);
+            else if (payload.eventType === 'UPDATE') {
+                const i = State.agents.findIndex(a => a.id === payload.new.id);
+                if (i >= 0) State.agents[i] = payload.new; else State.agents.unshift(payload.new);
+            } else if (payload.eventType === 'DELETE') State.agents = State.agents.filter(a => a.id !== payload.old.id);
+            renderAgents(val('searchAgents')); updateKPIs();
+        }).subscribe());
+
+    ['businesses', 'clients'].forEach(tbl => {
+        safeSubscribe(tbl, () => sb.channel('dash_' + tbl + '_rt')
+            .on('postgres_changes', { event: '*', schema: 'public', table: tbl }, async () => {
+                if (tbl === 'businesses') State.businesses = await fetchBusinesses();
+                if (tbl === 'clients')    State.clients    = await fetchClients();
+                renderAccountList(tbl); updateKPIs();
+            }).subscribe());
+    });
+
+    ['users', 'profiles'].forEach(tbl => {
+        safeSubscribe(tbl, () => sb.channel('dash_' + tbl + '_rt')
+            .on('postgres_changes', { event: '*', schema: 'public', table: tbl }, async (payload) => {
+                console.log(`📡 ${tbl} realtime:`, payload.eventType);
+                USER_RESOLVED_SOURCE = null;
+                State.users = await fetchUsers();
+                renderUsers(val('searchUsers'));
+                updateKPIs();
+                if (payload.eventType === 'INSERT') {
+                    const rec = payload.new || {};
+                    const name = rec.full_name || rec.name || rec.email || 'new user';
+                    showToast(`🧑 New registration: ${name}`, 'success', 3600);
+                }
+            }).subscribe());
+    });
+
+    safeSubscribe('complaints', () => sb.channel('dash_complaints_rt')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'complaints' }, (payload) => {
+            if (payload.eventType === 'INSERT') State.complaints.unshift(payload.new);
+            else if (payload.eventType === 'UPDATE') {
+                const i = State.complaints.findIndex(c => c.id === payload.new.id);
+                if (i >= 0) State.complaints[i] = payload.new;
+            }
+            renderComplaints(val('searchComplaints')); updateKPIs();
+        }).subscribe());
+
+    safeSubscribe('pending_items', () => sb.channel('dash_pending_rt')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'pending_items' }, async () => {
+            State.pendingItems = await fetchPendingItems();
+            renderPending(val('searchPending')); updateKPIs();
+        }).subscribe());
+
+    safeSubscribe('agent_clients', () => sb.channel('dash_aclients_rt')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'agent_clients' }, async () => {
+            State.agentClients = await fetchAgentClients();
+            renderAgentClients(val('searchAgentClients')); updateKPIs();
+        }).subscribe());
+
+    safeSubscribe('paybacks', () => sb.channel('dash_paybacks_rt')
+        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'paybacks' }, (payload) => {
+            State.paybacks.unshift(payload.new); renderPaybacks(val('searchPaybacks')); updateKPIs();
+        }).subscribe());
+
+    safeSubscribe('subscribers', () => sb.channel('dash_subs_rt')
+        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'subscribers' }, (payload) => {
+            State.subscribers.unshift(payload.new); renderSubs(val('searchSubs')); updateKPIs();
+        }).subscribe());
+
+    safeSubscribe('chat', () => sb.channel('dash_chat_rt')
+        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'chat_messages' }, (payload) => {
+            State.chat.push(payload.new); if (State.chat.length > 200) State.chat.shift(); renderChat();
+        }).subscribe());
+}
+
+// ============================================================
+// POLLING
+// ============================================================
+function startPolling() {
+    // Transactions: light poll every 60s
+    setInterval(async () => {
+        if (!sb) return;
+        try {
+            const tx = await fetchTransactions();
+            const prevSig = listSignature(State.transactions, ['id', 'status', 'total']);
+            const newSig  = listSignature(tx, ['id', 'status', 'total']);
+            if (prevSig !== newSig) {
+                State.transactions = tx;
+                renderTransactions(val('searchTx'));
+                updateKPIs();
+            }
+            touchLastUpdated();
+        } catch (e) { /* silent */ }
+    }, 60000);
+
+    // Everything else: every 60s, offset by 5s so both don't fire at once
+    setTimeout(() => {
+        setInterval(async () => {
+            if (!sb) return;
+            try {
+                const results = await Promise.allSettled([
+                    fetchAgents(), fetchComplaints(), fetchPaybacks(), fetchSubscribers(),
+                    fetchPendingItems(), fetchAgentClients(),
+                    fetchBusinesses(), fetchClients(), fetchUsers()
+                ]);
+                const [ag, co, pb, sbx, pi, ac, biz, cli, usr] = results.map(r =>
+                    r.status === 'fulfilled' ? r.value : []
+                );
+
+                const sigKeys = ['id', 'status', 'suspended', 'is_suspended', 'is_active'];
+                const changed =
+                    listSignature(ag, sigKeys)  !== listSignature(State.agents, sigKeys) ||
+                    listSignature(usr, sigKeys) !== listSignature(State.users, sigKeys) ||
+                    listSignature(biz, sigKeys) !== listSignature(State.businesses, sigKeys) ||
+                    listSignature(cli, sigKeys) !== listSignature(State.clients, sigKeys) ||
+                    listSignature(pi, ['id', 'status']) !== listSignature(State.pendingItems, ['id', 'status']) ||
+                    listSignature(co, ['id', 'status']) !== listSignature(State.complaints, ['id', 'status']);
+
+                State.agents = ag; State.complaints = co;
+                State.users = usr; State.paybacks = pb;
+                State.subscribers = sbx; State.pendingItems = pi;
+                State.agentClients = ac; State.businesses = biz; State.clients = cli;
+
+                if (changed) {
+                    renderAgents(val('searchAgents'));
+                    renderComplaints(val('searchComplaints'));
+                    renderUsers(val('searchUsers'));
+                    renderBusinesses(val('searchBusinesses'));
+                    renderClients(val('searchClients'));
+                    renderPending(val('searchPending'));
+                    updateKPIs();
+                }
+            } catch (e) { /* silent */ }
+        }, 60000);
+    }, 5000);
+}
+
+// ============================================================
+// TAB SWITCH
+// ============================================================
+function switchTab(tab) {
+    State.activeTab = tab;
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+    document.querySelectorAll('.panel').forEach(p => p.classList.toggle('active', p.id === 'panel-' + tab));
+}
+
+// ============================================================
+// EVENTS
+// ============================================================
+function setupEvents() {
+    document.querySelectorAll('.tab-btn').forEach(b => {
+        b.addEventListener('click', () => switchTab(b.dataset.tab));
+    });
+
+    const searchMap = {
+        searchTx:          renderTransactions,
+        searchAgents:      renderAgents,
+        searchBusinesses:  renderBusinesses,
+        searchClients:     renderClients,
+        searchUsers:       renderUsers,
+        searchComplaints:  renderComplaints,
+        searchPaybacks:    renderPaybacks,
+        searchSubs:        renderSubs
+    };
+    Object.keys(searchMap).forEach(id => {
+        on(id, 'input', () => searchMap[id](val(id)));
+    });
+
+    on('agentStatusFilter',    'change', () => renderAgents(val('searchAgents')));
+    on('businessStatusFilter', 'change', () => renderBusinesses(val('searchBusinesses')));
+    on('clientStatusFilter',   'change', () => renderClients(val('searchClients')));
+    on('userStatusFilter',     'change', () => renderUsers(val('searchUsers')));
+    on('userRoleFilter',       'change', () => renderUsers(val('searchUsers')));
+
+    on('searchPending',      'input',  () => renderPending(val('searchPending')));
+    on('pendingTypeFilter',  'change', () => renderPending(val('searchPending')));
+    on('searchAgentClients', 'input',  () => renderAgentClients(val('searchAgentClients')));
+
+    on('refreshPending', 'click', async () => {
+        State.pendingItems = await fetchPendingItems();
+        renderPending(val('searchPending')); updateKPIs();
+        showToast('🔄 Approvals refreshed', 'info');
+    });
+    on('refreshAgentClients', 'click', async () => {
+        State.agentClients = await fetchAgentClients();
+        renderAgentClients(val('searchAgentClients')); updateKPIs();
+        showToast('🔄 Clients refreshed', 'info');
+    });
+    on('toggleReviewed', 'click', (e) => {
+        State.showReviewed = !State.showReviewed;
+        e.currentTarget.textContent = State.showReviewed ? '🙈 Hide Reviewed' : '👁️ Show Reviewed';
+        renderPending(val('searchPending'));
+    });
+
+    on('refreshTx', 'click', async () => {
+        setTxLoadStatus('Refreshing…', false);
+        State.transactions = await fetchTransactions();
+        renderTransactions(val('searchTx'));
+        updateKPIs();
+        showToast('🔄 Transactions refreshed', 'info');
+    });
+    on('refreshAgents', 'click', async () => { State.agents = await fetchAgents(); renderAgents(val('searchAgents')); updateKPIs(); showToast('🔄 Agents refreshed', 'info'); });
+    on('refreshBusinesses', 'click', async () => { State.businesses = await fetchBusinesses(); renderBusinesses(val('searchBusinesses')); updateKPIs(); showToast('🔄 Businesses refreshed', 'info'); });
+    on('refreshClients', 'click', async () => { State.clients = await fetchClients(); renderClients(val('searchClients')); updateKPIs(); showToast('🔄 Clients refreshed', 'info'); });
+    on('refreshUsers', 'click', async () => {
+        USER_RESOLVED_SOURCE = null;
+        State.users = await fetchUsers();
+        renderUsers(val('searchUsers'));
+        updateKPIs();
+        showToast('🔄 Users refreshed', 'info');
+    });
+    on('refreshComplaints', 'click', async () => { State.complaints = await fetchComplaints(); renderComplaints(val('searchComplaints')); updateKPIs(); showToast('🔄 Complaints refreshed', 'info'); });
+    on('refreshPaybacks', 'click', async () => { State.paybacks = await fetchPaybacks(); renderPaybacks(val('searchPaybacks')); updateKPIs(); showToast('🔄 Paybacks refreshed', 'info'); });
+    on('refreshSubs', 'click', async () => { State.subscribers = await fetchSubscribers(); renderSubs(val('searchSubs')); updateKPIs(); showToast('🔄 Subscribers refreshed', 'info'); });
+    on('refreshChat', 'click', async () => { State.chat = await fetchChat(); renderChat(); showToast('🔄 Chat refreshed', 'info'); });
+
+    on('showViolationLog', 'click', showViolationLog);
+
+    on('showUserSource', 'click', () => {
+        openModal('🔎 User Data Source', `
+            <div class="detail-item full info">
+                <div class="di-label">Resolved source</div>
+                <div class="di-value">${escapeHTML(USER_RESOLVED_SOURCE || 'none — using view/RPC fallback')}</div>
+            </div>
+            <div class="detail-item full" style="margin-top:0.6rem; background:#f8fafc;">
+                <div class="di-label">How to ensure new signups appear</div>
+                <div class="di-value" style="font-size:0.78rem; color:#7f8c8d; font-weight:500;">
+                    1. Ensure the <strong>users</strong> table exists with columns: name, full_name, phone, email, city, country, emoji, role, nin, id_number, avatar_data_url, suspended, suspension_reason, suspension_label, suspension_notes, suspended_at, suspended_by, created_at.<br>
+                    2. Add the <strong>on_auth_user_created</strong> trigger for auth mirroring.<br>
+                    3. Set RLS policies so the admin can read + write.<br>
+                    4. Publish <strong>users</strong> and <strong>profiles</strong> to Realtime.<br>
+                    Click <strong>🩺 Diagnose Users</strong> to check each.
+                </div>
+            </div>
+        `);
+    });
+    on('diagnoseUsers', 'click', diagnoseUserSources);
+
+    on('closeReasonModal', 'click', closeReasonModal);
+    on('cancelReason', 'click', closeReasonModal);
+    on('confirmReason', 'click', confirmSuspendFromModal);
+    on('reasonModal', 'click', (e) => { if (e.target === $('reasonModal')) closeReasonModal(); });
+
+    on('globalRefreshBtn', 'click', async () => {
+        showToast('🔄 Refreshing all…', 'info', 1500);
+        USER_RESOLVED_SOURCE = null;
+        await refreshAll();
+        showToast('✅ All refreshed', 'success', 1800);
+    });
+
+    on('clearChatView', 'click', () => {
+        State.chat = []; renderChat();
+        showToast('🗑️ Chat view cleared (cloud data preserved)', 'info');
+    });
+
+    on('exportTx', 'click',         () => exportCSV(State.transactions, 'afripay_transactions.csv'));
+    on('exportAgents', 'click',     () => exportCSV(State.agents, 'afripay_agents.csv'));
+    on('exportBusinesses', 'click', () => exportCSV(State.businesses, 'afripay_businesses.csv'));
+    on('exportClients', 'click',    () => exportCSV(State.clients, 'afripay_clients.csv'));
+    on('exportUsers', 'click',      () => exportCSV(State.users, 'afripay_users.csv'));
+    on('exportPaybacks', 'click',   () => exportCSV(State.paybacks, 'afripay_paybacks.csv'));
+    on('exportSubs', 'click',       () => exportCSV(State.subscribers, 'afripay_subscribers.csv'));
+
+    on('closeModal', 'click', closeModal);
+    on('detailModal', 'click', (e) => { if (e.target === $('detailModal')) closeModal(); });
+
+    // Esc closes whichever modal is open
+    document.addEventListener('keydown', (e) => {
+        if (e.key !== 'Escape') return;
+        if ($('reasonModal').classList.contains('open')) closeReasonModal();
+        else if ($('detailModal').classList.contains('open')) closeModal();
+    });
+
+    window.showTxDetail = showTxDetail;
+    window.showComplaintDetail = showComplaintDetail;
+    window.showPaybackDetail = showPaybackDetail;
+    window.showPendingDetail = showPendingDetail;
+    window.showAccountDetail = showAccountDetail;
+    window.changeComplaintStatus = changeComplaintStatus;
+    window.approvePendingItem = approvePendingItem;
+    window.rejectPendingItem = rejectPendingItem;
+    window.approveClient = approveClient;
+    window.rejectClient = rejectClient;
+    window.toggleSuspend = toggleSuspend;
+    window.deleteAccount = deleteAccount;
+    window.closeModal = closeModal;
+    window.closeReasonModal = closeReasonModal;
+}
+
+// ============================================================
+// INIT
+// ============================================================
+async function initDashboard() {
+    // 1) Never leave the header stuck on "Connecting…" — set a state right away.
+    setConnection('connecting');
+    setTxLoadStatus('Connecting…', false);
+
+    // 2) Make sure the Supabase SDK actually loaded (with CDN fallbacks).
+    const sdkOk = await ensureSupabaseSDK();
+    if (!sdkOk) {
+        console.error('❌ Supabase SDK could not be loaded from any CDN.');
+        setConnection('offline');
+        renderSdkMissingNotice();
+        markBootComplete();
+        return;
+    }
+
+    // 3) Create the client.
+    try {
+        sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        console.log('✅ Supabase client initialized (Dashboard)');
+    } catch (e) {
+        logError('createClient', e);
+        sb = null;
+    }
+    if (!sb) {
+        setConnection('offline');
+        renderSdkMissingNotice();
+        markBootComplete();
+        return;
+    }
+
+    // 4) Wire the UI. A single missing element must never kill the boot.
+    try { setupEvents(); } catch (e) { logError('setupEvents', e); }
+
+    // 5) Mark boot as complete NOW so the watchdog timer stops.
+    // The UI is ready and the SDK is loaded. Data will populate as it arrives.
+    markBootComplete();
+
+    // 6) Load data in the background (non-blocking).
+    refreshAll().then(() => {
+        // 7) Realtime + polling only after initial data fetch is done.
+        try { subscribeRealtime(); } catch (e) { logError('subscribeRealtime', e); }
+        try { startPolling(); } catch (e) { logError('startPolling', e); }
+    }).catch(e => logError('refreshAll', e));
+}
+
+function boot() {
+    initDashboard().catch(e => {
+        logError('boot', e);
+        setConnection('offline');
+        const wrap = $('listTx');
+        if (wrap) {
+            wrap.innerHTML = `<div class="empty-state"><div class="em-icon">⚠️</div>
+                Startup error: ${escapeHTML(e.message || 'unknown')}<br><br>
+                <button class="btn-mini blue" onclick="location.reload()">🔄 Reload page</button></div>`;
+        }
+        markBootComplete();
+    });
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', boot);
+} else {
+    boot();
+}
+</script>
+</body>
+</html>
