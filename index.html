@@ -6,9 +6,6 @@
 <title>AfriPay | Admin Dashboard — Real-Time</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='44' fill='%230a2b3c'/><text x='50' y='62' text-anchor='middle' font-family='Arial Black' font-size='40' font-weight='900' fill='%23FFD966'>AP</text></svg>">
 
-<!-- The Supabase SDK is now loaded dynamically by the boot sequence (with CDN fallbacks),
-     so a slow/blocked CDN can never freeze the page. -->
-
 <style>
     * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
     body { background: linear-gradient(145deg, #eef2f7 0%, #d9e2ec 100%); min-height: 100vh; padding: 0.8rem; color: #1e3b4a; }
@@ -20,10 +17,47 @@
         display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
         gap: 0.6rem; box-shadow: 0 10px 30px -8px rgba(0,0,0,0.3); margin-bottom: 1rem;
     }
+
+    /* ---------- LEFT SIDE OF THE HEADER (brand + Approve button) ---------- */
+    .topbar-left { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; min-width: 0; }
+
     .brand { display: flex; align-items: center; gap: 0.7rem; }
     .brand-logo { width: 42px; height: 42px; border-radius: 50%; background: #fff; padding: 2px; box-shadow: 0 2px 8px rgba(0,0,0,0.3), 0 0 0 2px rgba(255,215,0,0.45); }
     .brand-text { font-size: 1.4rem; font-weight: 800; letter-spacing: -0.5px; background: linear-gradient(135deg, #FFF, #FFD966, #6bc6ff); -webkit-background-clip: text; background-clip: text; color: transparent; }
     .brand-sub { font-size: 0.7rem; opacity: 0.75; font-weight: 500; }
+
+    /* ---------- HEADER APPROVE BUTTON ---------- */
+    .approve-btn {
+        display: inline-flex; align-items: center; gap: 8px;
+        background: linear-gradient(135deg, #2c7da0 0%, #1c6e8f 100%);
+        color: #fff; border: none; border-radius: 30px;
+        padding: 0.5rem 1.05rem; font-size: 0.8rem; font-weight: 800;
+        letter-spacing: 0.2px; cursor: pointer; white-space: nowrap;
+        box-shadow: 0 4px 14px -4px rgba(44,125,160,0.85), 0 0 0 0 rgba(44,125,160,0);
+        transition: background .35s ease, box-shadow .35s ease, transform .15s ease;
+    }
+    .approve-btn:hover { transform: translateY(-1px); }
+    .approve-btn:active { transform: translateY(0) scale(0.98); }
+
+    /* RED state — an activity has taken place */
+    .approve-btn.has-activity {
+        background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+        box-shadow: 0 4px 14px -4px rgba(231,76,60,0.9), 0 0 0 0 rgba(231,76,60,0.55);
+        animation: approvePulse 1.6s infinite;
+    }
+    @keyframes approvePulse {
+        0%   { box-shadow: 0 4px 14px -4px rgba(231,76,60,0.9), 0 0 0 0 rgba(231,76,60,0.55); }
+        70%  { box-shadow: 0 4px 14px -4px rgba(231,76,60,0.9), 0 0 0 12px rgba(231,76,60,0); }
+        100% { box-shadow: 0 4px 14px -4px rgba(231,76,60,0.9), 0 0 0 0 rgba(231,76,60,0); }
+    }
+
+    .approve-count {
+        background: rgba(255,255,255,0.28);
+        border-radius: 30px; padding: 1px 8px;
+        font-size: 0.7rem; font-weight: 800; min-width: 22px; text-align: center;
+    }
+    .approve-btn.has-activity .approve-count { background: rgba(255,255,255,0.35); }
+
     .connection-status { display: inline-flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.12); padding: 4px 12px; border-radius: 30px; font-size: 0.72rem; font-weight: 600; }
     .conn-dot { width: 8px; height: 8px; border-radius: 50%; background: #f39c12; animation: pulse 1.5s infinite; }
     .conn-dot.online { background: #2ecc71; }
@@ -197,6 +231,8 @@
         .list-row { padding: 0.6rem 0.6rem; }
         .row-actions { width: 100%; }
         .search-input, .filter-select { min-width: 120px; }
+        .approve-btn { padding: 0.45rem 0.85rem; font-size: 0.72rem; }
+        .topbar-left { gap: 0.5rem; }
     }
 
     ::-webkit-scrollbar { width: 8px; height: 8px; }
@@ -210,13 +246,23 @@
 <div class="dashboard">
 
     <div class="topbar">
-        <div class="brand">
-            <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='44' fill='%230a2b3c'/><text x='50' y='62' text-anchor='middle' font-family='Arial Black' font-size='40' font-weight='900' fill='%23FFD966'>AP</text></svg>" class="brand-logo" alt="AP" />
-            <div>
-                <div class="brand-text">AfriPay</div>
-                <div class="brand-sub">Admin Dashboard · Real-Time</div>
+        <!-- ===== TOP-LEFT OF THE HEADER: brand + Approve button ===== -->
+        <div class="topbar-left">
+            <div class="brand">
+                <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='44' fill='%230a2b3c'/><text x='50' y='62' text-anchor='middle' font-family='Arial Black' font-size='40' font-weight='900' fill='%23FFD966'>AP</text></svg>" class="brand-logo" alt="AP" />
+                <div>
+                    <div class="brand-text">AfriPay</div>
+                    <div class="brand-sub">Admin Dashboard · Real-Time</div>
+                </div>
             </div>
+
+            <!-- Blue = idle · Red = activity pending · Click → opens the AfriPay Admin page -->
+            <button class="approve-btn" id="approveHeaderBtn" title="No pending activity">
+                <span>✅ Approve</span>
+                <span class="approve-count" id="approveCount">0</span>
+            </button>
         </div>
+
         <div style="display:flex; gap:0.5rem; align-items:center; flex-wrap:wrap;">
             <button class="btn-mini green" id="globalRefreshBtn" style="height:32px;">🔄 Refresh All</button>
             <button class="btn-mini dark" id="diagnoseUsers" style="height:32px;">🩺 Diagnose Users</button>
@@ -447,7 +493,7 @@
 
         <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem; margin-bottom:0.6rem;">
             <span class="pending-info" id="pendingCountInfo">—</span>
-            <span class="pending-info" style="background:#eef7ff;">💡 Approving copies the item into the live tables</span>
+            <span class="pending-info" style="background:#eef7ff;">💡 Approving copies the item into the live tables (agents dropdown · business quick‑pick strip)</span>
         </div>
 
         <div class="list-wrap" id="listPending">
@@ -946,8 +992,8 @@ function renderAccountList(type) {
 }
 function accountTitle(rec, type) {
     if (!rec) return '—';
-    if (type === 'agents') return rec.business_name || rec.owner_name || 'Agent';
-    if (type === 'businesses') return rec.name || 'Business';
+    if (type === 'agents') return rec.business_name || rec.businessName || rec.owner_name || 'Agent';
+    if (type === 'businesses') return rec.name || rec.business_name || 'Business';
     if (type === 'clients') return rec.name || 'Client';
     if (type === 'users') return rec.full_name || rec.name || rec.username || rec.email || rec.phone || 'User';
     return '—';
@@ -1114,6 +1160,557 @@ async function deleteAccount(type, id) {
 }
 
 // ============================================================
+// ███  SCHEMA-RESILIENT WRITE ENGINE  ███
+// ------------------------------------------------------------
+// The live tables (agents / businesses / products / clients) may
+// differ slightly from the shapes assumed by the pending-item
+// payloads.  These helpers:
+//   1. Learn the real column list of a table (cached).
+//   2. Filter payloads to only the columns that actually exist.
+//   3. Fall back to a "drop the unknown column and retry" loop when
+//      the column list could not be learned (empty table).
+//   4. Translate duplicate-key errors into updates.
+// ============================================================
+
+const TableColumnsCache = Object.create(null);
+
+async function getTableColumns(table) {
+    if (table in TableColumnsCache) return TableColumnsCache[table];
+    try {
+        const { data, error } = await withTimeout(
+            sb.from(table).select('*').limit(1), 6000, 'cols:' + table
+        );
+        if (!error && Array.isArray(data)) {
+            const cols = data.length ? Object.keys(data[0]) : [];
+            TableColumnsCache[table] = cols;
+            return cols;
+        }
+    } catch (e) { /* unknown */ }
+    return null;
+}
+
+function filterToColumns(payload, cols) {
+    if (!Array.isArray(cols) || !cols.length) return Object.assign({}, payload);
+    const out = {};
+    Object.keys(payload).forEach(k => { if (cols.indexOf(k) !== -1) out[k] = payload[k]; });
+    return Object.keys(out).length ? out : Object.assign({}, payload);
+}
+
+/* Reads the offending column name out of a PostgREST / Postgres error. */
+function extractUnknownColumn(err) {
+    if (!err) return null;
+    const msg = String(err.message || '') + ' ' + String(err.details || '') + ' ' + String(err.hint || '');
+    const patterns = [
+        /column "([^"]+)" of relation/i,
+        /column [A-Za-z0-9_."]+?\.([A-Za-z0-9_]+) does not exist/i,
+        /Could not find the '([^']+)' column/i,
+        /'([^']+)' column of '[^']+' in the schema cache/i
+    ];
+    for (const re of patterns) {
+        const m = msg.match(re);
+        if (m && m[1]) return m[1];
+    }
+    return null;
+}
+
+/**
+ * Insert a row, pruning columns the table does not have.
+ * Returns { data, error, duplicate }.
+ */
+async function insertResilient(table, payload, maxTries = 20) {
+    let p = Object.assign({}, payload);
+
+    const cols = await getTableColumns(table);
+    if (Array.isArray(cols) && cols.length) p = filterToColumns(p, cols);
+
+    let lastErr = null;
+    for (let i = 0; i < maxTries; i++) {
+        let res;
+        try {
+            res = await withTimeout(sb.from(table).insert(p).select(), 9000, 'insert:' + table);
+        } catch (e) {
+            lastErr = e; break;
+        }
+        const { data, error } = res;
+        if (!error) return { data: data || [], error: null, duplicate: false };
+        lastErr = error;
+
+        if (String(error.code) === '23505') {
+            return { data: null, error, duplicate: true };
+        }
+        const col = extractUnknownColumn(error);
+        if (!col || !(col in p)) break;
+        console.warn(`⚠️ ${table}: dropping unknown column "${col}" and retrying…`);
+        delete p[col];
+    }
+    return { data: null, error: lastErr, duplicate: false };
+}
+
+/**
+ * Update a row, pruning columns the table does not have.
+ * Returns { data, error }.
+ */
+async function updateResilient(table, matchCol, matchVal, payload, maxTries = 20) {
+    let p = Object.assign({}, payload);
+
+    const cols = await getTableColumns(table);
+    if (Array.isArray(cols) && cols.length) p = filterToColumns(p, cols);
+
+    let lastErr = null;
+    for (let i = 0; i < maxTries; i++) {
+        let res;
+        try {
+            res = await withTimeout(
+                sb.from(table).update(p).eq(matchCol, matchVal).select(), 9000, 'update:' + table
+            );
+        } catch (e) { lastErr = e; break; }
+
+        const { data, error } = res;
+        if (!error) return { data: data || [], error: null };
+        lastErr = error;
+
+        const col = extractUnknownColumn(error);
+        if (!col || !(col in p)) break;
+        console.warn(`⚠️ ${table}: dropping unknown column "${col}" and retrying…`);
+        delete p[col];
+    }
+    return { data: null, error: lastErr };
+}
+
+/**
+ * Find one existing row using an ordered list of criteria.
+ * criteria: [{ col, val, mode: 'eq' | 'ilike' }]
+ */
+async function findExistingRow(table, criteria) {
+    for (const c of criteria) {
+        if (c.val === undefined || c.val === null || c.val === '') continue;
+        try {
+            let q = sb.from(table).select('*');
+            q = (c.mode === 'ilike') ? q.ilike(c.col, c.val) : q.eq(c.col, c.val);
+            const { data, error } = await withTimeout(q.limit(1), 7000, 'find:' + table);
+            if (error) continue;
+            if (data && data.length) return data[0];
+        } catch (e) { /* try the next criterion */ }
+    }
+    return null;
+}
+
+/* Last-resort: force an approval flag on a row, trying each known column name. */
+async function forceApproveFlag(table, id) {
+    const candidates = [
+        { approved: true }, { is_approved: true }, { verified: true },
+        { status: 'active' }, { active: true }, { is_active: true },
+        { suspended: false }, { is_suspended: false }, { visible: true }, { published: true }
+    ];
+    let any = false;
+    for (const c of candidates) {
+        try {
+            const { error } = await sb.from(table).update(c).eq('id', id);
+            if (!error) any = true;
+        } catch (e) { /* ignore */ }
+    }
+    return any;
+}
+
+/* Read the first non-empty value from a list of possible key names. */
+function pick(obj, keys, fallback = '') {
+    if (!obj || typeof obj !== 'object') return fallback;
+    for (let i = 0; i < keys.length; i++) {
+        const v = obj[keys[i]];
+        if (v !== undefined && v !== null && v !== '') return v;
+    }
+    return fallback;
+}
+
+/* Normalise a pending-item type to one of: agent | business | product | service */
+function normalizeType(t) {
+    const s = String(t || '').toLowerCase().trim();
+    const map = {
+        agent: 'agent', agents: 'agent', 'agent-application': 'agent',
+        business: 'business', businesses: 'business', shop: 'business', store: 'business',
+        product: 'product', products: 'product', item: 'product', goods: 'product',
+        service: 'service', services: 'service',
+        client: 'client', clients: 'client', customer: 'client'
+    };
+    return map[s] || s;
+}
+
+// ============================================================
+// ███  PAYLOAD BUILDERS (multi-schema tolerant)  ███
+// ============================================================
+function buildAgentPayload(d) {
+    const businessName = pick(d, ['businessName', 'business_name', 'name', 'business', 'shopName']);
+    const collateral = parseFloat(pick(d, ['collateralLimit', 'collateral_limit', 'collateralAmount', 'collateral_amount', 'collateral'], 0)) || 0;
+
+    return {
+        business_name: businessName,
+        businessName: businessName,
+        owner_name: pick(d, ['ownerName', 'owner_name', 'owner', 'fullName', 'full_name']),
+        ownerName: pick(d, ['ownerName', 'owner_name', 'owner', 'fullName']),
+        business_address: pick(d, ['businessAddress', 'business_address', 'address', 'location']),
+        address: pick(d, ['address', 'businessAddress', 'business_address']),
+        city: pick(d, ['city', 'town']),
+        country_code: pick(d, ['countryCode', 'country_code', 'country']),
+        country: pick(d, ['country', 'countryCode', 'country_code']),
+        reg_number: pick(d, ['regNumber', 'reg_number', 'registrationNumber', 'regNo']),
+        business_type: pick(d, ['businessType', 'business_type', 'type', 'category'], 'Service'),
+        type: pick(d, ['type', 'businessType', 'business_type'], 'Service'),
+        id_type: pick(d, ['idType', 'id_type'], 'National ID'),
+        id_number: pick(d, ['idNumber', 'id_number', 'nin', 'idNo']),
+        nin: pick(d, ['nin', 'idNumber', 'id_number']),
+        mobile_money: pick(d, ['mobileMoney', 'mobile_money', 'mobileMoneyNumber', 'phone', 'mobile']),
+        phone: pick(d, ['phone', 'mobileMoney', 'mobile_money', 'mobile']),
+        password: pick(d, ['password']),
+        pin: pick(d, ['pin']),
+        currency: pick(d, ['currency'], 'GNF'),
+        collateral_amount: collateral,
+        collateral_limit: collateral,
+        icon: pick(d, ['icon', 'emoji'], '🏢'),
+        emoji: pick(d, ['emoji', 'icon'], '🏢'),
+
+        /* ---- Approval / dropdown-visibility flags ---- */
+        approved: true,
+        is_approved: true,
+        verified: true,
+        status: 'active',
+        active: true,
+        is_active: true,
+        visible: true,
+        published: true,
+        suspended: false,
+        is_suspended: false
+    };
+}
+
+function buildBusinessPayload(d) {
+    const name = pick(d, ['name', 'businessName', 'business_name', 'title', 'shopName']);
+    return {
+        name: name,
+        business_name: name,
+        businessName: name,
+        local_id: pick(d, ['local_id', 'localId'], 'biz_' + Date.now()),
+        contact: pick(d, ['contact', 'phone', 'mobile', 'contactPhone', 'mobileMoney']),
+        phone: pick(d, ['phone', 'contact', 'mobile']),
+        mobile_money: pick(d, ['mobileMoney', 'mobile_money', 'contact']),
+        type: pick(d, ['type', 'businessType', 'business_type', 'category'], 'Other'),
+        business_type: pick(d, ['businessType', 'business_type', 'type'], 'Other'),
+        icon: pick(d, ['icon', 'emoji'], '🏪'),
+        emoji: pick(d, ['emoji', 'icon'], '🏪'),
+        website: pick(d, ['website', 'url']),
+        address: pick(d, ['address', 'location', 'businessAddress']),
+        city: pick(d, ['city', 'town']),
+        country: pick(d, ['country', 'countryCode', 'country_code']),
+        country_code: pick(d, ['countryCode', 'country_code', 'country']),
+        password: pick(d, ['password']),
+        pin: pick(d, ['pin']),
+        currency: pick(d, ['currency'], 'GNF'),
+
+        /* ---- Approval / quick-pick-strip visibility flags ---- */
+        approved: true,
+        is_approved: true,
+        verified: true,
+        status: 'active',
+        active: true,
+        is_active: true,
+        visible: true,
+        published: true,
+        suspended: false,
+        is_suspended: false
+    };
+}
+
+function buildProductPayload(type, d, businessId) {
+    const name = pick(d, ['name', 'title', 'productName', 'serviceName', 'itemName']);
+    return {
+        business_id: businessId,
+        businessId: businessId,
+        name: name,
+        title: name,
+        product_name: name,
+        price: parseFloat(pick(d, ['price', 'amount', 'cost', 'unitPrice'], 0)) || 0,
+        quantity: parseInt(pick(d, ['quantity', 'qty', 'stock', 'available'], 1), 10) || 1,
+        quality: pick(d, ['quality', 'condition'], 'Brand new'),
+        description: pick(d, ['description', 'details', 'desc', 'about']),
+        details: pick(d, ['details', 'description', 'desc']),
+        icon: pick(d, ['icon', 'emoji']),
+        emoji: pick(d, ['emoji', 'icon']),
+        currency: pick(d, ['currency'], 'GNF'),
+        type: type,          // 'product' | 'service'
+        kind: type,
+        category: pick(d, ['category'], type),
+        service_type: type === 'service' ? pick(d, ['serviceType', 'service_type'], 'General') : undefined,
+
+        /* ---- Approval / quick-pick-strip visibility flags ---- */
+        approved: true,
+        is_approved: true,
+        verified: true,
+        status: 'active',
+        active: true,
+        is_active: true,
+        available: true,
+        visible: true,
+        published: true,
+        enabled: true,
+        suspended: false,
+        is_suspended: false
+    };
+}
+
+// ============================================================
+// ███  APPROVAL ENGINE  ███
+// ============================================================
+
+/** Resolve a business row id from a business name (case-insensitive). */
+async function resolveBusinessId(name) {
+    if (!name) return null;
+    const attempts = [
+        { table: 'businesses', col: 'name' },
+        { table: 'businesses', col: 'business_name' },
+        { table: 'businesses', col: 'businessName' }
+    ];
+    for (const a of attempts) {
+        try {
+            const { data, error } = await withTimeout(
+                sb.from(a.table).select('id').ilike(a.col, name).limit(1), 7000, 'resolveBiz'
+            );
+            if (!error && data && data.length) return data[0].id;
+        } catch (e) { /* next */ }
+    }
+    for (const a of attempts) {
+        try {
+            const { data, error } = await withTimeout(
+                sb.from(a.table).select('id').eq(a.col, name).limit(1), 7000, 'resolveBizEq'
+            );
+            if (!error && data && data.length) return data[0].id;
+        } catch (e) { /* next */ }
+    }
+    return null;
+}
+
+/** Mark the pending_items row (or a fallback table) as reviewed. */
+async function markPendingReviewed(id, status) {
+    const payload = {
+        status: status,
+        reviewed_at: new Date().toISOString(),
+        reviewed_by: 'admin',
+        approved_at: status === 'approved' ? new Date().toISOString() : null
+    };
+    const tables = ['pending_items', 'pending_approvals', 'approvals', 'pending'];
+    for (const t of tables) {
+        const r = await updateResilient(t, 'id', id, payload);
+        if (!r.error) return true;
+    }
+    console.warn('⚠️ Could not mark pending item as reviewed in any known table.');
+    return false;
+}
+
+/* ---------------- AGENT ---------------- */
+async function approveAgentRecord(d) {
+    const payload = buildAgentPayload(d);
+    const businessName = payload.business_name;
+    if (!businessName) throw new Error('This pending agent has no business name.');
+
+    // 1) Already exists? → update it in place
+    const existing = await findExistingRow('agents', [
+        { col: 'business_name', val: businessName, mode: 'ilike' },
+        { col: 'businessName',  val: businessName, mode: 'ilike' },
+        { col: 'name',          val: businessName, mode: 'ilike' },
+        { col: 'owner_name',    val: payload.owner_name, mode: 'ilike' },
+        { col: 'mobile_money',  val: payload.mobile_money }
+    ]);
+
+    if (existing) {
+        const u = await updateResilient('agents', 'id', existing.id, payload);
+        if (u.error) {
+            console.warn('⚠️ Agent update failed, forcing approval flag:', u.error.message);
+            await forceApproveFlag('agents', existing.id);
+        }
+        return { action: 'updated', id: existing.id };
+    }
+
+    // 2) Otherwise insert
+    const r = await insertResilient('agents', payload);
+    if (!r.error && r.data && r.data.length) {
+        return { action: 'inserted', id: r.data[0].id };
+    }
+    if (r.error && (r.duplicate || String(r.error.code) === '23505')) {
+        const dup = await findExistingRow('agents', [
+            { col: 'business_name', val: businessName, mode: 'ilike' },
+            { col: 'mobile_money',  val: payload.mobile_money },
+            { col: 'owner_name',    val: payload.owner_name, mode: 'ilike' }
+        ]);
+        if (dup) {
+            await updateResilient('agents', 'id', dup.id, payload);
+            return { action: 'updated', id: dup.id };
+        }
+    }
+    throw r.error || new Error('Could not insert the agent record.');
+}
+
+/* ---------------- BUSINESS ---------------- */
+async function approveBusinessRecord(d) {
+    const payload = buildBusinessPayload(d);
+    const name = payload.name;
+    if (!name) throw new Error('This pending business has no name.');
+
+    const existing = await findExistingRow('businesses', [
+        { col: 'name',          val: name, mode: 'ilike' },
+        { col: 'business_name', val: name, mode: 'ilike' },
+        { col: 'businessName',  val: name, mode: 'ilike' },
+        { col: 'contact',       val: payload.contact }
+    ]);
+
+    if (existing) {
+        const u = await updateResilient('businesses', 'id', existing.id, payload);
+        if (u.error) {
+            console.warn('⚠️ Business update failed, forcing approval flag:', u.error.message);
+            await forceApproveFlag('businesses', existing.id);
+        }
+        return { action: 'updated', id: existing.id };
+    }
+
+    const r = await insertResilient('businesses', payload);
+    if (!r.error && r.data && r.data.length) {
+        return { action: 'inserted', id: r.data[0].id };
+    }
+    if (r.error && (r.duplicate || String(r.error.code) === '23505')) {
+        const dup = await findExistingRow('businesses', [
+            { col: 'name', val: name, mode: 'ilike' },
+            { col: 'contact', val: payload.contact }
+        ]);
+        if (dup) {
+            await updateResilient('businesses', 'id', dup.id, payload);
+            return { action: 'updated', id: dup.id };
+        }
+    }
+    throw r.error || new Error('Could not insert the business record.');
+}
+
+/* ---------------- PRODUCT / SERVICE ---------------- */
+async function approveProductOrService(type, d) {
+    const businessName = pick(d, ['businessName', 'business_name', 'business', 'shopName', 'storeName', 'agentBusinessName']);
+    const businessIdRaw = pick(d, ['business_id', 'businessId', 'shopId', 'storeId', 'bizId']);
+
+    let businessId = businessIdRaw || null;
+
+    // 1) Resolve the parent business
+    if (!businessId && businessName) {
+        businessId = await resolveBusinessId(businessName);
+    }
+
+    // 2) If still unresolved, try to seed it from an agent record with the same name
+    if (!businessId && businessName) {
+        const agentRow = await findExistingRow('agents', [
+            { col: 'business_name', val: businessName, mode: 'ilike' },
+            { col: 'businessName',  val: businessName, mode: 'ilike' }
+        ]);
+        const seed = agentRow ? {
+            name: agentRow.business_name || agentRow.businessName || businessName,
+            contact: agentRow.mobile_money || agentRow.phone || '',
+            mobile_money: agentRow.mobile_money || '',
+            city: agentRow.city || '',
+            country: agentRow.country_code || agentRow.country || '',
+            type: agentRow.business_type || 'Service',
+            icon: '🏢'
+        } : { name: businessName };
+
+        const b = await insertResilient('businesses', buildBusinessPayload(seed));
+        if (!b.error && b.data && b.data.length) {
+            businessId = b.data[0].id;
+        } else {
+            // maybe it already exists but ilike failed (RLS / case) — try resolve again
+            businessId = await resolveBusinessId(businessName);
+            if (!businessId && b.error) {
+                throw new Error(`Could not find or create business "${businessName}": ${b.error.message}`);
+            }
+        }
+    }
+
+    // 3) Last resort — try a plain business insert
+    if (!businessId && businessName) {
+        const b2 = await insertResilient('businesses', buildBusinessPayload({ name: businessName }));
+        if (!b2.error && b2.data && b2.data.length) businessId = b2.data[0].id;
+    }
+
+    if (!businessId) {
+        throw new Error('Could not resolve (or create) the business this item belongs to. ' +
+                        'Make sure the business was approved first, or that the pending item carries a business name.');
+    }
+
+    const payload = buildProductPayload(type, d, businessId);
+    if (!payload.name) throw new Error('This pending ' + type + ' has no name.');
+
+    // 4) Update if the same item already exists for this business
+    const existing = await findExistingRow('products', [
+        { col: 'name', val: payload.name, mode: 'ilike' }
+    ]);
+    if (existing && String(existing.business_id) === String(businessId)) {
+        const u = await updateResilient('products', 'id', existing.id, payload);
+        if (!u.error) return { action: 'updated', id: existing.id, business_id: businessId };
+    }
+
+    // 5) Insert
+    const r = await insertResilient('products', payload);
+    if (!r.error && r.data && r.data.length) {
+        return { action: 'inserted', id: r.data[0].id, business_id: businessId };
+    }
+    if (r.error && (r.duplicate || String(r.error.code) === '23505')) {
+        const dup = await findExistingRow('products', [
+            { col: 'name', val: payload.name, mode: 'ilike' }
+        ]);
+        if (dup) {
+            await updateResilient('products', 'id', dup.id, payload);
+            return { action: 'updated', id: dup.id, business_id: businessId };
+        }
+    }
+    throw r.error || new Error('Could not insert the ' + type + ' record.');
+}
+
+/* ---------------- CLIENT (from a pending item, if any) ---------------- */
+async function approveClientRecord(d) {
+    const name = pick(d, ['name', 'fullName', 'full_name', 'clientName']);
+    const phone = pick(d, ['phone', 'mobile', 'contact']);
+    if (!name && !phone) throw new Error('This pending client has no name or phone.');
+
+    const payload = {
+        name: name,
+        full_name: name,
+        phone: phone,
+        email: pick(d, ['email']),
+        address: pick(d, ['address', 'location']),
+        city: pick(d, ['city', 'town']),
+        country: pick(d, ['country']),
+        agent_id: pick(d, ['agent_id', 'agentId']) || null,
+        status: 'active',
+        approved: true, is_approved: true, verified: true,
+        active: true, is_active: true, visible: true,
+        suspended: false, is_suspended: false
+    };
+
+    const existing = await findExistingRow('clients', [
+        { col: 'phone', val: phone },
+        { col: 'name',  val: name, mode: 'ilike' }
+    ]);
+    if (existing) {
+        const u = await updateResilient('clients', 'id', existing.id, payload);
+        if (!u.error) return { action: 'updated', id: existing.id };
+    }
+    const r = await insertResilient('clients', payload);
+    if (!r.error && r.data && r.data.length) return { action: 'inserted', id: r.data[0].id };
+    if (r.error && (r.duplicate || String(r.error.code) === '23505')) return { action: 'exists', id: null };
+    throw r.error || new Error('Could not insert the client record.');
+}
+
+/* ---------------- Router ---------------- */
+async function copyPendingToLive(type, d) {
+    if (type === 'agent')    return await approveAgentRecord(d);
+    if (type === 'business') return await approveBusinessRecord(d);
+    if (type === 'product' || type === 'service') return await approveProductOrService(type, d);
+    if (type === 'client')   return await approveClientRecord(d);
+    throw new Error('Unknown pending type: ' + type);
+}
+
+// ============================================================
 // SUPABASE FETCHERS (with timeout + column projection)
 // ============================================================
 async function fetchTransactions() {
@@ -1229,7 +1826,16 @@ async function fetchPendingItems() {
         );
         if (error) throw error;
         return data || [];
-    } catch (e) { logError('fetchPendingItems', e); return []; }
+    } catch (e) {
+        logError('fetchPendingItems', e);
+        try {
+            const { data, error } = await withTimeout(
+                sb.from('pending_items').select('*').limit(500), 6000, 'pending_items-fb'
+            );
+            if (error) throw error;
+            return data || [];
+        } catch (e2) { return []; }
+    }
 }
 async function fetchAgentClients() {
     if (!sb) return [];
@@ -1240,7 +1846,16 @@ async function fetchAgentClients() {
         );
         if (error) throw error;
         return data || [];
-    } catch (e) { logError('fetchAgentClients', e); return []; }
+    } catch (e) {
+        logError('fetchAgentClients', e);
+        try {
+            const { data, error } = await withTimeout(
+                sb.from('agent_clients').select('*').limit(500), 6000, 'agent_clients-fb'
+            );
+            if (error) throw error;
+            return data || [];
+        } catch (e2) { return []; }
+    }
 }
 
 async function safeFetch(table, orderCol = 'created_at', limit = 500) {
@@ -1444,7 +2059,7 @@ function renderAgents(filter = '') {
     if (statusF === 'active') items = items.filter(a => !isSuspended(a));
     else if (statusF === 'suspended') items = items.filter(a => isSuspended(a));
     if (q) items = items.filter(a =>
-        (a.business_name || '').toLowerCase().includes(q) ||
+        (a.business_name || a.businessName || '').toLowerCase().includes(q) ||
         (a.owner_name || '').toLowerCase().includes(q) ||
         (a.city || '').toLowerCase().includes(q) ||
         (a.country_code || '').toLowerCase().includes(q) ||
@@ -1453,17 +2068,18 @@ function renderAgents(filter = '') {
     if (!items.length) { wrap.innerHTML = `<div class="empty-state"><div class="em-icon">🏢</div>No agents found.</div>`; return; }
     wrap.innerHTML = items.map(a => {
         const suspended = isSuspended(a);
-        const initials = String(a.business_name || 'AG').substring(0,2).toUpperCase();
+        const name = a.business_name || a.businessName || 'Agent';
+        const initials = String(name).substring(0,2).toUpperCase();
         return `
             <div class="list-row ${suspended ? 'suspended' : ''}">
                 <div class="row-avatar ${suspended ? 'susp' : ''}">${escapeHTML(initials)}</div>
                 <div class="row-main">
-                    <div class="row-title">${escapeHTML(a.business_name || '—')}</div>
+                    <div class="row-title">${escapeHTML(name)}</div>
                     <div class="row-sub">👤 ${escapeHTML(a.owner_name || '—')} · 📍 ${escapeHTML(a.city || '—')} · ${escapeHTML(a.country_code || '—')}</div>
                     <div class="row-sub" style="margin-top:3px;">
                         ${suspendedBadge(a)}
                         <span class="badge ${a.approved ? 'green' : 'orange'}">${a.approved ? '✓ Approved' : '⏳ Pending'}</span>
-                        <span class="badge blue">💳 ${fmtMoney(a.collateral_limit)}</span>
+                        <span class="badge blue">💳 ${fmtMoney(a.collateral_limit || a.collateral_amount)}</span>
                     </div>
                 </div>
                 <div class="row-actions">${accountActionButtons('agents', a)}</div>
@@ -1480,7 +2096,7 @@ function renderBusinesses(filter = '') {
     if (statusF === 'active') items = items.filter(b => !isSuspended(b));
     else if (statusF === 'suspended') items = items.filter(b => isSuspended(b));
     if (q) items = items.filter(b =>
-        (b.name || '').toLowerCase().includes(q) ||
+        (b.name || b.business_name || '').toLowerCase().includes(q) ||
         (b.contact || '').toLowerCase().includes(q) ||
         (b.city || '').toLowerCase().includes(q) ||
         (b.type || '').toLowerCase().includes(q)
@@ -1490,13 +2106,13 @@ function renderBusinesses(filter = '') {
         const suspended = isSuspended(b);
         return `
             <div class="list-row ${suspended ? 'suspended' : ''}">
-                <div class="row-avatar ${suspended ? 'susp' : ''}" style="${suspended ? '' : 'background:#fef4e6;color:#c97e2a;'}">${escapeHTML(b.icon || '🏪')}</div>
+                <div class="row-avatar ${suspended ? 'susp' : ''}" style="${suspended ? '' : 'background:#fef4e6;color:#c97e2a;'}">${escapeHTML(b.icon || b.emoji || '🏪')}</div>
                 <div class="row-main">
-                    <div class="row-title">${escapeHTML(b.name || '—')}</div>
+                    <div class="row-title">${escapeHTML(b.name || b.business_name || '—')}</div>
                     <div class="row-sub">📞 ${escapeHTML(b.contact || '—')} · 💳 ${escapeHTML(b.mobile_money || '—')}</div>
                     <div class="row-sub" style="margin-top:3px;">
                         ${suspendedBadge(b)}
-                        <span class="badge blue">🏷️ ${escapeHTML(b.type || 'Other')}</span>
+                        <span class="badge blue">🏷️ ${escapeHTML(b.type || b.business_type || 'Other')}</span>
                         <span class="badge gray">📍 ${escapeHTML(b.city || '—')}, ${escapeHTML(b.country || '—')}</span>
                     </div>
                 </div>
@@ -1643,12 +2259,12 @@ function renderPending(filter = '') {
     const typeFilter = val('pendingTypeFilter') || 'all';
     let items = State.pendingItems.slice();
     if (!State.showReviewed) items = items.filter(p => (p.status || 'pending') === 'pending');
-    if (typeFilter !== 'all') items = items.filter(p => p.type === typeFilter);
+    if (typeFilter !== 'all') items = items.filter(p => normalizeType(p.type) === typeFilter);
     if (q) items = items.filter(p => {
         const d = asObj(p.data);
         return JSON.stringify(d).toLowerCase().includes(q) ||
-               (p.submitted_by || '').toLowerCase().includes(q) ||
-               (p.country || '').toLowerCase().includes(q);
+               String(p.submitted_by || '').toLowerCase().includes(q) ||
+               String(p.country || '').toLowerCase().includes(q);
     });
     const pendingCount = State.pendingItems.filter(p => (p.status || 'pending') === 'pending').length;
     const info = $('pendingCountInfo');
@@ -1658,18 +2274,19 @@ function renderPending(filter = '') {
         const d = asObj(p.data);
         const status = (p.status || 'pending').toLowerCase();
         const statusClass = status === 'approved' ? 'green' : (status === 'rejected' ? 'red' : 'orange');
-        const typeIcon = { agent:'🧑‍💼', business:'🏪', product:'📦', service:'🛠️' }[p.type] || '📄';
-        const title = d.businessName || d.name || '(untitled)';
+        const type = normalizeType(p.type);
+        const typeIcon = { agent:'🧑‍💼', business:'🏪', product:'📦', service:'🛠️', client:'👥' }[type] || '📄';
+        const title = pick(d, ['businessName','business_name','name','title'], '(untitled)');
         const pid = safeId(p.id);
         return `
             <div class="list-row">
                 <div class="row-avatar">${typeIcon}</div>
                 <div class="row-main">
                     <div class="row-title">${escapeHTML(title)}</div>
-                    <div class="row-sub">Type: ${escapeHTML(p.type || '—')} · 👤 ${escapeHTML(p.submitted_by || '—')}</div>
+                    <div class="row-sub">Type: ${escapeHTML(type || '—')} · 👤 ${escapeHTML(p.submitted_by || '—')}</div>
                     <div class="row-sub" style="margin-top:3px;">
                         <span class="badge ${statusClass}">${status.toUpperCase()}</span>
-                        <span class="badge gray">${shortDate(p.submitted_at)}</span>
+                        <span class="badge gray">${shortDate(p.submitted_at || p.created_at)}</span>
                     </div>
                 </div>
                 <div class="row-actions">
@@ -1913,11 +2530,11 @@ function showPendingDetail(id) {
     if (!p) return;
     const d = asObj(p.data);
     let html = '';
-    html += di('Type', (p.type || '').toUpperCase());
+    html += di('Type', (normalizeType(p.type) || '').toUpperCase());
     html += di('Status', (p.status || 'pending').toUpperCase());
     html += di('Submitted By', p.submitted_by || '—');
     html += di('Country', p.country || '—');
-    html += di('Submitted At', fmtDate(p.submitted_at), true);
+    html += di('Submitted At', fmtDate(p.submitted_at || p.created_at), true);
     Object.keys(d).forEach(k => {
         let v = d[k];
         if (v && typeof v === 'object') v = JSON.stringify(v);
@@ -1989,60 +2606,73 @@ async function changeComplaintStatus(id, status) {
 }
 
 // ============================================================
-// APPROVE / REJECT
+// ███  APPROVE / REJECT (pending items)  ███
 // ============================================================
 async function approvePendingItem(id) {
     if (!sb) { showToast('❌ Supabase not configured', 'error'); return; }
+
     const p = State.pendingItems.find(x => String(x.id) === String(id));
-    if (!p) return;
+    if (!p) { showToast('❌ Pending item not found', 'error'); return; }
+
     const d = asObj(p.data);
-    if (!confirm(`Approve this ${p.type}?\n\n${d.businessName || d.name || ''}`)) return;
+    const type = normalizeType(p.type);
+    const title = pick(d, ['businessName','business_name','name','title'], '(untitled)');
+
+    let confirmMsg = `✅ APPROVE this ${type}?\n\n"${title}"\n\n`;
+    if (type === 'agent') {
+        confirmMsg += '• The agent will be marked ACTIVE and appear in the approved-agent dropdown.\n';
+    } else if (type === 'business') {
+        confirmMsg += '• The business will be activated and become available for products & services.\n';
+    } else if (type === 'product' || type === 'service') {
+        confirmMsg += '• The item will be activated and appear in the business quick-pick strip.\n';
+    }
+    confirmMsg += '\nContinue?';
+
+    if (!confirm(confirmMsg)) return;
+
+    // Disable the button while working (visual feedback)
+    const btn = document.querySelector(`button[onclick*="approvePendingItem('${safeId(id)}')"]`);
+    if (btn) btn.classList.add('busy');
+
     try {
-        if (p.type === 'agent') {
-            const rec = {
-                business_name: d.businessName, business_address: d.businessAddress || '',
-                city: d.city || '', reg_number: d.regNumber || '', business_type: d.businessType || 'Service',
-                owner_name: d.ownerName || '', id_type: d.idType || 'National ID', id_number: d.idNumber || '',
-                mobile_money: d.mobileMoney || '', country_code: d.countryCode || '',
-                password: d.password || '', pin: d.pin || '',
-                collateral_amount: d.collateralLimit || d.collateralAmount || 0,
-                collateral_limit: d.collateralLimit || d.collateralAmount || 0,
-                currency: d.currency || 'GNF', approved: true, nin: d.nin || ''
-            };
-            const { error } = await sb.from('agents').upsert(rec, { onConflict: 'business_name' });
-            if (error) throw error;
-        } else if (p.type === 'business') {
-            const rec = {
-                local_id: 'biz_' + Date.now(), name: d.name, contact: d.contact || null,
-                mobile_money: d.mobileMoney || null, type: d.type || 'Other', icon: d.icon || '🏪',
-                website: d.website || null, address: d.address || null, city: d.city || null,
-                country: d.country || null, password: d.password || null, pin: d.pin || null
-            };
-            const { error } = await sb.from('businesses').upsert(rec, { onConflict: 'name' });
-            if (error) throw error;
-        } else if (p.type === 'product' || p.type === 'service') {
-            const { data: biz, error: bErr } = await sb.from('businesses').select('id').eq('name', d.businessName).limit(1);
-            if (bErr) throw bErr;
-            if (!biz || !biz.length) throw new Error(`Business "${d.businessName}" not found.`);
-            const { error } = await sb.from('products').insert({
-                business_id: biz[0].id, name: d.name, price: parseFloat(d.price) || 0,
-                quantity: parseInt(d.quantity) || 1, quality: d.quality || 'Brand new', icon: d.icon || null
-            });
-            if (error) throw error;
-        } else throw new Error('Unknown pending type: ' + p.type);
+        // ---- 1) Copy the payload into the live table ----
+        const result = await copyPendingToLive(type, d);
 
-        const { error: uErr } = await sb.from('pending_items').update({
-            status: 'approved', reviewed_at: new Date().toISOString(), reviewed_by: 'admin'
-        }).eq('id', p.id);
-        if (uErr) throw uErr;
+        // ---- 2) Mark the pending row as reviewed ----
+        await markPendingReviewed(p.id, 'approved');
 
+        // ---- 3) Update local state so the UI reflects it immediately ----
         const local = State.pendingItems.find(x => String(x.id) === String(id));
-        if (local) { local.status = 'approved'; local.reviewed_at = new Date().toISOString(); local.reviewed_by = 'admin'; }
+        if (local) {
+            local.status = 'approved';
+            local.reviewed_at = new Date().toISOString();
+            local.reviewed_by = 'admin';
+        }
         renderPending(val('searchPending'));
         updateKPIs();
-        showToast('✅ Approved: ' + (d.businessName || d.name || p.type), 'success', 3200);
+
+        // ---- 4) Success message tailored to the type ----
+        let okMsg = '✅ Approved: ' + title;
+        if (type === 'agent')    okMsg = `✅ Agent activated & listed in dropdown: ${title}`;
+        if (type === 'business') okMsg = `✅ Business activated: ${title}`;
+        if (type === 'product')  okMsg = `✅ Product added to quick-pick strip: ${title}`;
+        if (type === 'service')  okMsg = `✅ Service added to quick-pick strip: ${title}`;
+        if (result && result.action === 'updated') okMsg = '♻️ ' + okMsg.replace('✅ ', '');
+
+        showToast(okMsg, 'success', 4200);
+
+        // ---- 5) Pull fresh data so the tables/dropdowns reflect the change ----
         await refreshAll();
-    } catch (e) { logError('approvePendingItem', e); showToast('❌ Failed: ' + (e.message || 'unknown'), 'error', 4500); }
+
+        // Small extra refresh pass — catches eventual-consistency lag on the live tables
+        setTimeout(() => { refreshAll().catch(() => {}); }, 900);
+
+    } catch (e) {
+        logError('approvePendingItem', e);
+        showToast('❌ Approval failed: ' + (e.message || 'unknown error'), 'error', 6000);
+        if (btn) btn.classList.remove('busy');
+        console.error('Full approval error →', e);
+    }
 }
 
 async function rejectPendingItem(id) {
@@ -2050,61 +2680,132 @@ async function rejectPendingItem(id) {
     const p = State.pendingItems.find(x => String(x.id) === String(id));
     if (!p) return;
     const d = asObj(p.data);
-    if (!confirm(`Reject this ${p.type}?\n\n${d.businessName || d.name || ''}`)) return;
+    const title = pick(d, ['businessName','business_name','name','title'], '(untitled)');
+    if (!confirm(`❌ REJECT this ${normalizeType(p.type)}?\n\n"${title}"\n\nThe record is NOT copied into the live tables.`)) return;
+
     try {
-        const { error } = await sb.from('pending_items').update({
-            status: 'rejected', reviewed_at: new Date().toISOString(), reviewed_by: 'admin'
-        }).eq('id', p.id);
-        if (error) throw error;
+        const ok = await markPendingReviewed(p.id, 'rejected');
+        if (!ok) throw new Error('Could not update the pending item status.');
+
         const local = State.pendingItems.find(x => String(x.id) === String(id));
         if (local) { local.status = 'rejected'; local.reviewed_at = new Date().toISOString(); local.reviewed_by = 'admin'; }
         renderPending(val('searchPending'));
         updateKPIs();
-        showToast('❌ Rejected: ' + (d.businessName || d.name || p.type), 'info', 2800);
-    } catch (e) { logError('rejectPendingItem', e); showToast('❌ Failed', 'error', 3500); }
+        showToast('❌ Rejected: ' + title, 'info', 3000);
+    } catch (e) {
+        logError('rejectPendingItem', e);
+        showToast('❌ Rejection failed: ' + (e.message || 'unknown error'), 'error', 4500);
+    }
 }
 
+// ============================================================
+// ███  AGENT-ADDED CLIENTS  ███
+// ============================================================
 async function approveClient(id) {
     if (!sb) { showToast('❌ Supabase not configured', 'error'); return; }
     const c = State.agentClients.find(x => String(x.id) === String(id));
-    if (!c) return;
-    if (!confirm(`Approve client "${c.name}"?`)) return;
-    let ok = false, lastErr = null;
+    if (!c) { showToast('❌ Client not found', 'error'); return; }
+
+    if (!confirm(`✅ APPROVE client?\n\n"${c.name || '(no name)'}" · ${c.phone || 'no phone'}\n\nThey will become a live client and be linked to their agent.`)) return;
+
+    const btn = document.querySelector(`button[onclick*="approveClient('${safeId(id)}')"]`);
+    if (btn) btn.classList.add('busy');
+
+    const clientPayload = {
+        name: c.name || '',
+        full_name: c.name || '',
+        phone: c.phone || '',
+        email: c.email || null,
+        address: c.address || null,
+        city: c.city || null,
+        country: c.country || null,
+        agent_id: c.agent_id || null,
+        agent_name: c.agent_name || null,
+        status: 'active',
+        approved: true, is_approved: true, verified: true,
+        active: true, is_active: true, visible: true,
+        suspended: false, is_suspended: false
+    };
+
+    let ok = false;
+    let lastErr = null;
+
+    // A) Flip the queue row to approved
     try {
-        const { error } = await sb.from('agent_clients').update({ status: 'approved', reviewed_at: new Date().toISOString() }).eq('id', id);
-        if (!error) ok = true; else lastErr = error;
+        const r = await updateResilient('agent_clients', 'id', id, {
+            status: 'approved',
+            approved: true,
+            is_approved: true,
+            reviewed_at: new Date().toISOString(),
+            reviewed_by: 'admin'
+        });
+        if (!r.error) ok = true; else lastErr = r.error;
     } catch (e) { lastErr = e; }
+
+    // B) Mirror it into the live `clients` table so it shows in Clients
+    try {
+        const existing = await findExistingRow('clients', [
+            { col: 'phone', val: c.phone },
+            { col: 'name',  val: c.name, mode: 'ilike' }
+        ]);
+        if (existing) {
+            const u = await updateResilient('clients', 'id', existing.id, clientPayload);
+            if (!u.error) ok = true; else lastErr = u.error;
+        } else {
+            const ins = await insertResilient('clients', clientPayload);
+            if (!ins.error) ok = true;
+            else if (ins.duplicate || String(ins.error.code) === '23505') ok = true;
+            else lastErr = ins.error;
+        }
+    } catch (e) { lastErr = e; }
+
     if (!ok) {
-        try {
-            const { error } = await sb.from('clients').insert({
-                name: c.name, phone: c.phone, address: c.address || null, city: c.city || null,
-                country: c.country || null, agent_id: c.agent_id || null
-            });
-            if (!error) ok = true; else lastErr = error;
-        } catch (e) { lastErr = e; }
+        logError('approveClient', lastErr);
+        showToast('❌ Could not approve client: ' + (lastErr?.message || 'unknown error'), 'error', 5200);
+        if (btn) btn.classList.remove('busy');
+        return;
     }
-    if (!ok) { logError('approveClient', lastErr); showToast('❌ Failed to approve client', 'error', 4200); return; }
+
     const local = State.agentClients.find(x => String(x.id) === String(id));
-    if (local) local.status = 'approved';
+    if (local) { local.status = 'approved'; local.approved = true; }
     renderAgentClients(val('searchAgentClients'));
     updateKPIs();
-    showToast('✅ Client approved: ' + (c.name || ''), 'success', 3000);
+    showToast('✅ Client approved & activated: ' + (c.name || ''), 'success', 3400);
+
     await refreshAll();
+    setTimeout(() => { refreshAll().catch(() => {}); }, 800);
 }
 
 async function rejectClient(id) {
     if (!sb) { showToast('❌ Supabase not configured', 'error'); return; }
     const c = State.agentClients.find(x => String(x.id) === String(id));
     if (!c) return;
-    if (!confirm(`Reject and remove client "${c.name}"?`)) return;
+    if (!confirm(`❌ REJECT and remove this client?\n\n"${c.name || '(no name)'}"`)) return;
+
     try {
-        const { error } = await sb.from('agent_clients').delete().eq('id', id);
-        if (error) throw error;
-        State.agentClients = State.agentClients.filter(x => String(x.id) !== String(id));
+        // Prefer a soft-reject (keeps the audit trail); fall back to delete.
+        let done = false;
+        const r = await updateResilient('agent_clients', 'id', id, {
+            status: 'rejected', reviewed_at: new Date().toISOString(), reviewed_by: 'admin'
+        });
+        if (!r.error) done = true;
+
+        if (!done) {
+            const { error } = await sb.from('agent_clients').delete().eq('id', id);
+            if (error) throw error;
+            State.agentClients = State.agentClients.filter(x => String(x.id) !== String(id));
+        } else {
+            const local = State.agentClients.find(x => String(x.id) === String(id));
+            if (local) local.status = 'rejected';
+        }
+
         renderAgentClients(val('searchAgentClients'));
         updateKPIs();
-        showToast('❌ Client rejected & removed', 'info', 2800);
-    } catch (e) { logError('rejectClient', e); showToast('❌ Failed', 'error', 3500); }
+        showToast('❌ Client rejected', 'info', 2800);
+    } catch (e) {
+        logError('rejectClient', e);
+        showToast('❌ Failed: ' + (e.message || 'unknown error'), 'error', 4200);
+    }
 }
 
 // ============================================================
@@ -2183,6 +2884,42 @@ function exportCSV(rows, filename) {
 }
 
 // ============================================================
+// HEADER APPROVE BUTTON  (blue = idle · red = activity)
+// ============================================================
+function getPendingActivity() {
+    const items      = State.pendingItems.filter(p => (p.status || 'pending') === 'pending').length;
+    const clients    = State.agentClients.filter(c => (c.status || 'pending') === 'pending').length;
+    const complaints = State.complaints.filter(c => (c.status || 'pending') === 'pending').length;
+    return { items, clients, complaints, total: items + clients + complaints };
+}
+
+let _lastApproveCount = null;
+
+function updateApproveButton() {
+    const btn = $('approveHeaderBtn');
+    if (!btn) return;
+    const a = getPendingActivity();
+    const countEl = $('approveCount');
+
+    if (a.total > 0) {
+        // ---- ACTIVITY PRESENT → RED ----
+        btn.classList.add('has-activity');
+        btn.title = `${a.total} item(s) awaiting approval — click to open the AfriPay Admin page`;
+    } else {
+        // ---- NO ACTIVITY → BLUE ----
+        btn.classList.remove('has-activity');
+        btn.title = 'No pending activity — click to open the AfriPay Admin page';
+    }
+    if (countEl) countEl.textContent = a.total;
+
+    // Notify only when the count grows (not on first render, not on decrease)
+    if (_lastApproveCount !== null && a.total > _lastApproveCount) {
+        showToast(`🔔 ${a.total - _lastApproveCount} new item(s) awaiting approval`, 'warn', 3400);
+    }
+    _lastApproveCount = a.total;
+}
+
+// ============================================================
 // KPI UPDATER
 // ============================================================
 function updateKPIs() {
@@ -2249,6 +2986,9 @@ function updateKPIs() {
     setBadge('badgeBusinesses', sBiz);
     setBadge('badgeClients', sClients);
     setBadge('badgeUsers', sUsers);
+
+    // ---- keep the header Approve button in sync (blue ⇄ red) ----
+    updateApproveButton();
 
     touchLastUpdated();
 }
@@ -2576,6 +3316,20 @@ function setupEvents() {
 
     on('showViolationLog', 'click', showViolationLog);
 
+    // ---------- HEADER APPROVE BUTTON → opens the AfriPay Admin page ----------
+    on('approveHeaderBtn', 'click', () => {
+        const a = getPendingActivity();
+        if (a.total > 0) {
+            showToast(`⏳ Opening AfriPay Admin · ${a.total} item(s) pending…`, 'warn', 1800);
+        } else {
+            showToast('✅ Opening AfriPay Admin…', 'info', 1400);
+        }
+        // Small delay lets the toast render before navigation
+        setTimeout(() => {
+            window.open('https://aminejalloh-io.github.io/fouzan-business/', '_blank', 'noopener,noreferrer');
+        }, 220);
+    });
+
     on('showUserSource', 'click', () => {
         openModal('🔎 User Data Source', `
             <div class="detail-item full info">
@@ -2604,6 +3358,8 @@ function setupEvents() {
     on('globalRefreshBtn', 'click', async () => {
         showToast('🔄 Refreshing all…', 'info', 1500);
         USER_RESOLVED_SOURCE = null;
+        // Clear the column cache so schema changes are picked up
+        Object.keys(TableColumnsCache).forEach(k => delete TableColumnsCache[k]);
         await refreshAll();
         showToast('✅ All refreshed', 'success', 1800);
     });
@@ -2645,6 +3401,7 @@ function setupEvents() {
     window.deleteAccount = deleteAccount;
     window.closeModal = closeModal;
     window.closeReasonModal = closeReasonModal;
+    window.updateApproveButton = updateApproveButton;
 }
 
 // ============================================================
@@ -2654,6 +3411,7 @@ async function initDashboard() {
     // 1) Never leave the header stuck on "Connecting…" — set a state right away.
     setConnection('connecting');
     setTxLoadStatus('Connecting…', false);
+    updateApproveButton();   // paint the Approve button blue immediately
 
     // 2) Make sure the Supabase SDK actually loaded (with CDN fallbacks).
     const sdkOk = await ensureSupabaseSDK();
