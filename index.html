@@ -3,8 +3,21 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>AfriPay | Admin Dashboard — Real-Time</title>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+<meta http-equiv="Pragma" content="no-cache" />
+<meta http-equiv="Expires" content="0" />
+<title>AfriPay | Admin Dashboard — Real-Time v2.4</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='44' fill='%230a2b3c'/><text x='50' y='62' text-anchor='middle' font-family='Arial Black' font-size='40' font-weight='900' fill='%23FFD966'>AP</text></svg>">
+
+<script>
+// ============================================================
+// VERSION STAMP — confirm which file your browser loaded
+// Type `window.__AFRIPAY_VERSION` in the console to verify.
+// ============================================================
+window.__AFRIPAY_VERSION = '2.4';
+console.log('%c🏷️ Admin Dashboard v2.4 — schema check uses 15s+12s (NOT 4s)',
+    'background:#0f2b3d;color:#FFD966;padding:4px 10px;border-radius:4px;font-weight:bold;font-size:13px');
+</script>
 
 <style>
     * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
@@ -19,11 +32,11 @@
     }
 
     .topbar-left { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; min-width: 0; }
-
     .brand { display: flex; align-items: center; gap: 0.7rem; }
     .brand-logo { width: 42px; height: 42px; border-radius: 50%; background: #fff; padding: 2px; box-shadow: 0 2px 8px rgba(0,0,0,0.3), 0 0 0 2px rgba(255,215,0,0.45); }
     .brand-text { font-size: 1.4rem; font-weight: 800; letter-spacing: -0.5px; background: linear-gradient(135deg, #FFF, #FFD966, #6bc6ff); -webkit-background-clip: text; background-clip: text; color: transparent; }
     .brand-sub { font-size: 0.7rem; opacity: 0.75; font-weight: 500; }
+    .brand-version { font-size: 0.6rem; background: rgba(255,215,0,0.25); color: #FFD966; padding: 1px 8px; border-radius: 20px; font-weight: 800; margin-left: 6px; }
 
     .approve-btn {
         display: inline-flex; align-items: center; gap: 8px;
@@ -31,15 +44,12 @@
         color: #fff; border: none; border-radius: 30px;
         padding: 0.5rem 1.05rem; font-size: 0.8rem; font-weight: 800;
         letter-spacing: 0.2px; cursor: pointer; white-space: nowrap;
-        box-shadow: 0 4px 14px -4px rgba(44,125,160,0.85), 0 0 0 0 rgba(44,125,160,0);
+        box-shadow: 0 4px 14px -4px rgba(44,125,160,0.85);
         transition: background .35s ease, box-shadow .35s ease, transform .15s ease;
     }
     .approve-btn:hover { transform: translateY(-1px); }
-    .approve-btn:active { transform: translateY(0) scale(0.98); }
-
     .approve-btn.has-activity {
         background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
-        box-shadow: 0 4px 14px -4px rgba(231,76,60,0.9), 0 0 0 0 rgba(231,76,60,0.55);
         animation: approvePulse 1.6s infinite;
     }
     @keyframes approvePulse {
@@ -47,13 +57,11 @@
         70%  { box-shadow: 0 4px 14px -4px rgba(231,76,60,0.9), 0 0 0 12px rgba(231,76,60,0); }
         100% { box-shadow: 0 4px 14px -4px rgba(231,76,60,0.9), 0 0 0 0 rgba(231,76,60,0); }
     }
-
     .approve-count {
         background: rgba(255,255,255,0.28);
         border-radius: 30px; padding: 1px 8px;
         font-size: 0.7rem; font-weight: 800; min-width: 22px; text-align: center;
     }
-    .approve-btn.has-activity .approve-count { background: rgba(255,255,255,0.35); }
 
     .connection-status { display: inline-flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.12); padding: 4px 12px; border-radius: 30px; font-size: 0.72rem; font-weight: 600; }
     .conn-dot { width: 8px; height: 8px; border-radius: 50%; background: #f39c12; animation: pulse 1.5s infinite; }
@@ -198,11 +206,6 @@
 
     .row-actions button.busy { opacity: 0.55; pointer-events: none; }
 
-    .act-row { display: flex; justify-content: space-between; padding: 0.35rem 0; border-bottom: 1px dashed #eef2f7; font-size: 0.78rem; }
-    .act-row:last-child { border-bottom: none; }
-    .act-row .ak { color: #7f8c8d; font-weight: 600; }
-    .act-row .av { color: #0f2b3d; font-weight: 800; }
-
     .susp-history-item { background: #fff8f8; border-left: 3px solid #e74c3c; padding: 0.5rem 0.7rem; border-radius: 0.4rem; margin-bottom: 0.4rem; font-size: 0.75rem; }
     .susp-history-item .sh-meta { font-size: 0.65rem; color: #95a5a6; margin-top: 2px; }
 
@@ -231,44 +234,31 @@
         .detail-item.full { grid-column: span 1; }
         .list-row { padding: 0.6rem 0.6rem; }
         .row-actions { width: 100%; }
-        .search-input, .filter-select { min-width: 120px; }
-        .approve-btn { padding: 0.45rem 0.85rem; font-size: 0.72rem; }
-        .topbar-left { gap: 0.5rem; }
     }
 
     ::-webkit-scrollbar { width: 8px; height: 8px; }
     ::-webkit-scrollbar-track { background: #f0f4f8; border-radius: 10px; }
     ::-webkit-scrollbar-thumb { background: #c0d0dc; border-radius: 10px; }
-    ::-webkit-scrollbar-thumb:hover { background: #a0b8c8; }
 </style>
 </head>
 <body>
 
 <div class="dashboard">
-
     <div class="topbar">
         <div class="topbar-left">
             <div class="brand">
                 <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='44' fill='%230a2b3c'/><text x='50' y='62' text-anchor='middle' font-family='Arial Black' font-size='40' font-weight='900' fill='%23FFD966'>AP</text></svg>" class="brand-logo" alt="AP" />
                 <div>
-                    <div class="brand-text">AfriPay</div>
+                    <div class="brand-text">AfriPay <span class="brand-version">v2.4</span></div>
                     <div class="brand-sub">Admin Dashboard · Real-Time</div>
                 </div>
             </div>
-
-            <button class="approve-btn" id="approveHeaderBtn" title="No pending activity">
-                <span>✅ Approve</span>
-                <span class="approve-count" id="approveCount">0</span>
-            </button>
+            <button class="approve-btn" id="approveHeaderBtn"><span>✅ Approve</span><span class="approve-count" id="approveCount">0</span></button>
         </div>
-
         <div style="display:flex; gap:0.5rem; align-items:center; flex-wrap:wrap;">
             <button class="btn-mini green" id="globalRefreshBtn" style="height:32px;">🔄 Refresh All</button>
             <button class="btn-mini dark" id="diagnoseUsers" style="height:32px;">🩺 Diagnose Users</button>
-            <div class="connection-status">
-                <span class="conn-dot" id="connDot"></span>
-                <span id="connText">Connecting…</span>
-            </div>
+            <div class="connection-status"><span class="conn-dot" id="connDot"></span><span id="connText">Connecting…</span></div>
             <div class="clock" id="clock">--:--:--</div>
             <div class="last-updated" id="lastUpdated"></div>
         </div>
@@ -277,51 +267,15 @@
     <div class="boot-error" id="bootError"></div>
 
     <div class="kpi-grid">
-        <div class="kpi-card">
-            <div class="kpi-label">💳 Transactions</div>
-            <div class="kpi-value" id="kpiTx">0</div>
-            <div class="kpi-sub" id="kpiTxSub">0 confirmed</div>
-        </div>
-        <div class="kpi-card green">
-            <div class="kpi-label">💵 Total Volume</div>
-            <div class="kpi-value" id="kpiVolume">0</div>
-            <div class="kpi-sub" id="kpiVolumeSub">Across all currencies</div>
-        </div>
-        <div class="kpi-card orange">
-            <div class="kpi-label">🏢 Agents</div>
-            <div class="kpi-value" id="kpiAgents">0</div>
-            <div class="kpi-sub" id="kpiAgentsSub">0 approved</div>
-        </div>
-        <div class="kpi-card purple">
-            <div class="kpi-label">🚨 Complaints</div>
-            <div class="kpi-value" id="kpiComplaints">0</div>
-            <div class="kpi-sub" id="kpiComplaintsSub">0 pending</div>
-        </div>
-        <div class="kpi-card red">
-            <div class="kpi-label">💰 PayBacks</div>
-            <div class="kpi-value" id="kpiPaybacks">0</div>
-            <div class="kpi-sub" id="kpiPaybacksSub">0.00 total</div>
-        </div>
-        <div class="kpi-card teal">
-            <div class="kpi-label">✅ Approvals</div>
-            <div class="kpi-value" id="kpiApprovals">0</div>
-            <div class="kpi-sub" id="kpiApprovalsSub">0 pending items</div>
-        </div>
-        <div class="kpi-card dark">
-            <div class="kpi-label">⏸️ Suspended</div>
-            <div class="kpi-value" id="kpiSuspended">0</div>
-            <div class="kpi-sub" id="kpiSuspendedSub">0 accounts total</div>
-        </div>
-        <div class="kpi-card">
-            <div class="kpi-label">🧑 Users</div>
-            <div class="kpi-value" id="kpiUsers">0</div>
-            <div class="kpi-sub" id="kpiUsersSub">0 registered</div>
-        </div>
-        <div class="kpi-card">
-            <div class="kpi-label">📧 Subscribers</div>
-            <div class="kpi-value" id="kpiSubs">0</div>
-            <div class="kpi-sub">Newsletter list</div>
-        </div>
+        <div class="kpi-card"><div class="kpi-label">💳 Transactions</div><div class="kpi-value" id="kpiTx">0</div><div class="kpi-sub" id="kpiTxSub">0 confirmed</div></div>
+        <div class="kpi-card green"><div class="kpi-label">💵 Total Volume</div><div class="kpi-value" id="kpiVolume">0</div><div class="kpi-sub" id="kpiVolumeSub">Across all currencies</div></div>
+        <div class="kpi-card orange"><div class="kpi-label">🏢 Agents</div><div class="kpi-value" id="kpiAgents">0</div><div class="kpi-sub" id="kpiAgentsSub">0 approved</div></div>
+        <div class="kpi-card purple"><div class="kpi-label">🚨 Complaints</div><div class="kpi-value" id="kpiComplaints">0</div><div class="kpi-sub" id="kpiComplaintsSub">0 pending</div></div>
+        <div class="kpi-card red"><div class="kpi-label">💰 PayBacks</div><div class="kpi-value" id="kpiPaybacks">0</div><div class="kpi-sub" id="kpiPaybacksSub">0.00 total</div></div>
+        <div class="kpi-card teal"><div class="kpi-label">✅ Approvals</div><div class="kpi-value" id="kpiApprovals">0</div><div class="kpi-sub" id="kpiApprovalsSub">0 pending items</div></div>
+        <div class="kpi-card dark"><div class="kpi-label">⏸️ Suspended</div><div class="kpi-value" id="kpiSuspended">0</div><div class="kpi-sub" id="kpiSuspendedSub">0 accounts total</div></div>
+        <div class="kpi-card"><div class="kpi-label">🧑 Users</div><div class="kpi-value" id="kpiUsers">0</div><div class="kpi-sub" id="kpiUsersSub">0 registered</div></div>
+        <div class="kpi-card"><div class="kpi-label">📧 Subscribers</div><div class="kpi-value" id="kpiSubs">0</div><div class="kpi-sub">Newsletter list</div></div>
     </div>
 
     <div class="tabs">
@@ -337,7 +291,6 @@
         <button class="tab-btn" data-tab="chat">💬 Live Chat</button>
     </div>
 
-    <!-- TRANSACTIONS -->
     <div class="panel active" id="panel-transactions">
         <div class="panel-header">
             <div class="panel-title">💳 Transactions</div>
@@ -351,97 +304,58 @@
         <div class="list-wrap" id="listTx">
             <div class="skeleton-row"><div class="skeleton w40"></div><div class="skeleton w60"></div><div class="skeleton w25"></div></div>
             <div class="skeleton-row"><div class="skeleton w40"></div><div class="skeleton w60"></div><div class="skeleton w25"></div></div>
-            <div class="skeleton-row"><div class="skeleton w40"></div><div class="skeleton w60"></div><div class="skeleton w25"></div></div>
         </div>
     </div>
 
-    <!-- AGENTS -->
     <div class="panel" id="panel-agents">
         <div class="panel-header">
             <div class="panel-title">🏢 Registered Agents</div>
             <div class="panel-actions">
                 <input type="text" class="search-input" id="searchAgents" placeholder="Search business, owner, country…" />
-                <select class="filter-select" id="agentStatusFilter">
-                    <option value="all">All Statuses</option>
-                    <option value="active">✅ Active</option>
-                    <option value="suspended">⏸ Suspended</option>
-                </select>
+                <select class="filter-select" id="agentStatusFilter"><option value="all">All Statuses</option><option value="active">✅ Active</option><option value="suspended">⏸ Suspended</option></select>
                 <button class="btn-mini blue" id="refreshAgents">🔄 Refresh</button>
                 <button class="btn-mini green" id="exportAgents">⬇️ CSV</button>
             </div>
         </div>
-        <div style="margin-bottom:0.6rem;">
-            <span class="pending-info">⏸️ Suspend halts activity · ▶️ Restore reactivates · 🗑️ Delete removes the agent + their clients & businesses</span>
-        </div>
-        <div class="list-wrap" id="listAgents">
-            <div class="empty-state"><div class="em-icon">⏳</div>Loading agents…</div>
-        </div>
+        <div style="margin-bottom:0.6rem;"><span class="pending-info">⏸️ Suspend halts activity · ▶️ Restore reactivates · 🗑️ Delete removes the agent + their clients & businesses</span></div>
+        <div class="list-wrap" id="listAgents"><div class="empty-state"><div class="em-icon">⏳</div>Loading agents…</div></div>
     </div>
 
-    <!-- BUSINESSES -->
     <div class="panel" id="panel-businesses">
         <div class="panel-header">
             <div class="panel-title">🏪 Registered Businesses</div>
             <div class="panel-actions">
                 <input type="text" class="search-input" id="searchBusinesses" placeholder="Search business, contact, city…" />
-                <select class="filter-select" id="businessStatusFilter">
-                    <option value="all">All Statuses</option>
-                    <option value="active">✅ Active</option>
-                    <option value="suspended">⏸ Suspended</option>
-                </select>
+                <select class="filter-select" id="businessStatusFilter"><option value="all">All Statuses</option><option value="active">✅ Active</option><option value="suspended">⏸ Suspended</option></select>
                 <button class="btn-mini blue" id="refreshBusinesses">🔄 Refresh</button>
                 <button class="btn-mini green" id="exportBusinesses">⬇️ CSV</button>
             </div>
         </div>
-        <div style="margin-bottom:0.6rem;">
-            <span class="pending-info">⏸️ Suspend halts activity · ▶️ Restore reactivates · 🗑️ Delete removes the business + its products</span>
-        </div>
-        <div class="list-wrap" id="listBusinesses">
-            <div class="empty-state"><div class="em-icon">⏳</div>Loading businesses…</div>
-        </div>
+        <div style="margin-bottom:0.6rem;"><span class="pending-info">⏸️ Suspend halts activity · ▶️ Restore reactivates · 🗑️ Delete removes the business + its products</span></div>
+        <div class="list-wrap" id="listBusinesses"><div class="empty-state"><div class="em-icon">⏳</div>Loading businesses…</div></div>
     </div>
 
-    <!-- CLIENTS -->
     <div class="panel" id="panel-clients">
         <div class="panel-header">
             <div class="panel-title">👥 Registered Clients</div>
             <div class="panel-actions">
                 <input type="text" class="search-input" id="searchClients" placeholder="Search client name, phone, city…" />
-                <select class="filter-select" id="clientStatusFilter">
-                    <option value="all">All Statuses</option>
-                    <option value="active">✅ Active</option>
-                    <option value="suspended">⏸ Suspended</option>
-                </select>
+                <select class="filter-select" id="clientStatusFilter"><option value="all">All Statuses</option><option value="active">✅ Active</option><option value="suspended">⏸ Suspended</option></select>
                 <button class="btn-mini blue" id="refreshClients">🔄 Refresh</button>
                 <button class="btn-mini green" id="exportClients">⬇️ CSV</button>
             </div>
         </div>
-        <div style="margin-bottom:0.6rem;">
-            <span class="pending-info">⏸️ Suspend halts activity · ▶️ Restore reactivates · 🗑️ Delete removes the client from live table AND any agent-queue row</span>
-        </div>
-        <div class="list-wrap" id="listClients">
-            <div class="empty-state"><div class="em-icon">⏳</div>Loading clients…</div>
-        </div>
+        <div style="margin-bottom:0.6rem;"><span class="pending-info">⏸️ Suspend halts activity · ▶️ Restore reactivates · 🗑️ Delete removes the client from live table AND any agent-queue row</span></div>
+        <div class="list-wrap" id="listClients"><div class="empty-state"><div class="em-icon">⏳</div>Loading clients…</div></div>
     </div>
 
-    <!-- USERS -->
     <div class="panel" id="panel-users">
         <div class="panel-header">
             <div class="panel-title">🧑 Registered Users — Account Control</div>
             <div class="panel-actions">
                 <input type="text" class="search-input" id="searchUsers" placeholder="Search name, email, phone, role…" />
-                <select class="filter-select" id="userStatusFilter">
-                    <option value="all">All Statuses</option>
-                    <option value="active">✅ Active</option>
-                    <option value="suspended">⏸ Suspended</option>
-                </select>
-                <select class="filter-select" id="userRoleFilter">
-                    <option value="all">All Roles</option>
-                    <option value="user">User</option>
-                    <option value="customer">Customer</option>
-                    <option value="merchant">Merchant</option>
-                    <option value="admin">Admin</option>
-                </select>
+                <select class="filter-select" id="userStatusFilter"><option value="all">All Statuses</option><option value="active">✅ Active</option><option value="suspended">⏸ Suspended</option></select>
+                <select class="filter-select" id="userRoleFilter"><option value="all">All Roles</option><option value="user">User</option><option value="customer">Customer</option><option value="merchant">Merchant</option><option value="admin">Admin</option></select>
                 <button class="btn-mini blue" id="refreshUsers">🔄 Refresh</button>
                 <button class="btn-mini green" id="exportUsers">⬇️ CSV</button>
                 <button class="btn-mini dark" id="showViolationLog">📋 Violation Log</button>
@@ -453,12 +367,9 @@
             <span class="pending-info" id="userCounts" style="background:#eef7ff;">—</span>
             <span class="pending-info" id="userSourceInfo" style="background:#f3eaf8; color:#8e44ad; display:none;">—</span>
         </div>
-        <div class="list-wrap" id="listUsers">
-            <div class="empty-state"><div class="em-icon">⏳</div>Loading users…</div>
-        </div>
+        <div class="list-wrap" id="listUsers"><div class="empty-state"><div class="em-icon">⏳</div>Loading users…</div></div>
     </div>
 
-    <!-- COMPLAINTS -->
     <div class="panel" id="panel-complaints">
         <div class="panel-header">
             <div class="panel-title">🚨 User Complaints</div>
@@ -467,38 +378,24 @@
                 <button class="btn-mini blue" id="refreshComplaints">🔄 Refresh</button>
             </div>
         </div>
-        <div class="list-wrap" id="listComplaints">
-            <div class="empty-state"><div class="em-icon">⏳</div>Loading complaints…</div>
-        </div>
+        <div class="list-wrap" id="listComplaints"><div class="empty-state"><div class="em-icon">⏳</div>Loading complaints…</div></div>
     </div>
 
-    <!-- APPROVALS -->
     <div class="panel" id="panel-approvals">
         <div class="panel-header">
             <div class="panel-title">✅ Approvals Center</div>
             <div class="panel-actions">
                 <input type="text" class="search-input" id="searchPending" placeholder="Search name, business, phone, country…" />
-                <select class="filter-select" id="pendingTypeFilter">
-                    <option value="all">All Types</option>
-                    <option value="agent">🧑‍💼 Agents</option>
-                    <option value="business">🏪 Businesses</option>
-                    <option value="product">📦 Products</option>
-                    <option value="service">🛠️ Services</option>
-                </select>
+                <select class="filter-select" id="pendingTypeFilter"><option value="all">All Types</option><option value="agent">🧑‍💼 Agents</option><option value="business">🏪 Businesses</option><option value="product">📦 Products</option><option value="service">🛠️ Services</option></select>
                 <button class="btn-mini blue" id="refreshPending">🔄 Refresh</button>
                 <button class="btn-mini orange" id="toggleReviewed">👁️ Show Reviewed</button>
             </div>
         </div>
-
         <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem; margin-bottom:0.6rem;">
             <span class="pending-info" id="pendingCountInfo">—</span>
-            <span class="pending-info" style="background:#eef7ff;">💡 Approving copies the item into the live tables (agents dropdown · business quick‑pick strip)</span>
+            <span class="pending-info" style="background:#eef7ff;">💡 Approving copies the item into the live tables</span>
         </div>
-
-        <div class="list-wrap" id="listPending">
-            <div class="empty-state"><div class="em-icon">⏳</div>Loading approvals…</div>
-        </div>
-
+        <div class="list-wrap" id="listPending"><div class="empty-state"><div class="em-icon">⏳</div>Loading approvals…</div></div>
         <div class="sub-panel-head">
             <div class="panel-title" style="font-size:0.95rem;">👥 Agent-Added Clients (queue)</div>
             <div class="panel-actions">
@@ -506,12 +403,9 @@
                 <button class="btn-mini blue" id="refreshAgentClients">🔄 Refresh</button>
             </div>
         </div>
-        <div class="list-wrap" id="listAgentClients" style="max-height:48vh;">
-            <div class="empty-state"><div class="em-icon">⏳</div>Loading clients…</div>
-        </div>
+        <div class="list-wrap" id="listAgentClients" style="max-height:48vh;"><div class="empty-state"><div class="em-icon">⏳</div>Loading clients…</div></div>
     </div>
 
-    <!-- PAYBACKS -->
     <div class="panel" id="panel-paybacks">
         <div class="panel-header">
             <div class="panel-title">💰 Agent PayBacks</div>
@@ -521,12 +415,9 @@
                 <button class="btn-mini green" id="exportPaybacks">⬇️ CSV</button>
             </div>
         </div>
-        <div class="list-wrap" id="listPaybacks">
-            <div class="empty-state"><div class="em-icon">⏳</div>Loading paybacks…</div>
-        </div>
+        <div class="list-wrap" id="listPaybacks"><div class="empty-state"><div class="em-icon">⏳</div>Loading paybacks…</div></div>
     </div>
 
-    <!-- SUBSCRIBERS -->
     <div class="panel" id="panel-subscribers">
         <div class="panel-header">
             <div class="panel-title">📧 Newsletter Subscribers</div>
@@ -536,12 +427,9 @@
                 <button class="btn-mini green" id="exportSubs">⬇️ CSV</button>
             </div>
         </div>
-        <div class="list-wrap" id="listSubs">
-            <div class="empty-state"><div class="em-icon">⏳</div>Loading subscribers…</div>
-        </div>
+        <div class="list-wrap" id="listSubs"><div class="empty-state"><div class="em-icon">⏳</div>Loading subscribers…</div></div>
     </div>
 
-    <!-- CHAT -->
     <div class="panel" id="panel-chat">
         <div class="panel-header">
             <div class="panel-title">💬 Live Chat Messages</div>
@@ -550,14 +438,10 @@
                 <button class="btn-mini red" id="clearChatView">🗑️ Clear view</button>
             </div>
         </div>
-        <div class="chat-live" id="chatLive">
-            <div class="empty-state"><div class="em-icon">💬</div>Waiting for messages…</div>
-        </div>
+        <div class="chat-live" id="chatLive"><div class="empty-state"><div class="em-icon">💬</div>Waiting for messages…</div></div>
     </div>
-
 </div>
 
-<!-- Detail Modal -->
 <div class="modal" id="detailModal">
     <div class="modal-card">
         <button class="modal-close" id="closeModal">✕</button>
@@ -567,17 +451,14 @@
     </div>
 </div>
 
-<!-- Suspend Reason Modal -->
 <div class="modal" id="reasonModal">
     <div class="modal-card" style="max-width:520px;">
         <button class="modal-close" id="closeReasonModal">✕</button>
         <h3 id="reasonTitle">⏸️ Suspend Account</h3>
-        <p style="font-size:0.8rem; color:#7f8c8d; margin-bottom:0.7rem;" id="reasonSubtitle">
-            Select the violation reason for suspending this account.
-        </p>
+        <p style="font-size:0.8rem; color:#7f8c8d; margin-bottom:0.7rem;" id="reasonSubtitle">Select the violation reason for suspending this account.</p>
         <div class="reason-grid" id="reasonGrid"></div>
         <label style="font-size:0.72rem; font-weight:700; color:#7f8c8d; text-transform:uppercase; letter-spacing:0.3px;">Additional Notes (optional)</label>
-        <textarea class="reason-note" id="reasonNote" placeholder="Add context, e.g. incident report reference, observed behavior, affected parties…"></textarea>
+        <textarea class="reason-note" id="reasonNote" placeholder="Add context…"></textarea>
         <div style="display:flex; justify-content:flex-end; gap:0.5rem; margin-top:1rem;">
             <button class="btn-mini" id="cancelReason">Cancel</button>
             <button class="btn-mini red" id="confirmReason" disabled>⏸️ Suspend Account</button>
@@ -588,71 +469,66 @@
 
 <div class="toast" id="toast"></div>
 
-<!-- WATCHDOG -->
 <script>
+// ============================================================
+// IMMEDIATE BANNER CLEAR — runs before ANY async code
+// Guarantees no stale "Schema issue" banner survives from a
+// previous load or from the previous (broken) build.
+// ============================================================
+(function clearStaleBanner() {
+    const box = document.getElementById('bootError');
+    if (box) {
+        box.style.display = 'none';
+        box.innerHTML = '';
+        box.removeAttribute('data-count');
+    }
+})();
+
+// WATCHDOG — 30s
 (function () {
     window.__afripayBoot = { started: Date.now(), ok: false, errors: [] };
 
     function flagBoot(title, detail) {
         try {
-            if (window.__afripayBoot.errors.length < 6) {
-                window.__afripayBoot.errors.push(title);
-            }
+            if (window.__afripayBoot.errors.length < 6) window.__afripayBoot.errors.push(title);
             var txt = document.getElementById('connText');
             var dot = document.getElementById('connDot');
             if (txt) txt.textContent = 'Error';
             if (dot) dot.className = 'conn-dot offline';
-
             var box = document.getElementById('bootError');
             if (box) {
-                var existing = box.getAttribute('data-count');
-                var n = existing ? parseInt(existing, 10) + 1 : 1;
+                var n = (parseInt(box.getAttribute('data-count') || '0', 10) || 0) + 1;
                 box.setAttribute('data-count', String(n));
-                var extra = n > 1 ? ' <span class="be-detail">(+' + (n - 1) + ' more — see console)</span>' : '';
                 box.style.display = 'block';
+                box.style.background = '';
+                box.style.color = '';
+                box.style.borderColor = '';
                 box.innerHTML = '<div class="be-title">⚠️ ' + title + '</div>' +
-                    (detail ? '<div class="be-detail">' + detail + '</div>' : '') + extra;
+                    (detail ? '<div class="be-detail">' + detail + '</div>' : '') +
+                    (n > 1 ? ' <span class="be-detail">(+' + (n - 1) + ' more)</span>' : '');
             }
         } catch (_) { }
     }
     window.__afripayFlagBoot = flagBoot;
 
     window.addEventListener('error', function (e) {
-        var msg;
-        if (e && e.target && e.target.tagName === 'SCRIPT') {
-            msg = 'Failed to load script: ' + (e.target.src || '(inline)');
-        } else if (e && e.message) {
-            msg = e.message + (e.lineno ? '  (line ' + e.lineno + ')' : '');
-        } else {
-            msg = 'Unknown script error';
-        }
+        var msg = (e && e.message) ? (e.message + (e.lineno ? '  (line ' + e.lineno + ')' : '')) : 'Unknown script error';
         flagBoot('Script error', msg);
     }, true);
-
     window.addEventListener('unhandledrejection', function (e) {
         var r = e && e.reason;
-        var msg = (r && r.message) ? r.message : String(r || 'unknown');
-        flagBoot('Unhandled promise rejection', msg);
+        flagBoot('Unhandled promise rejection', (r && r.message) ? r.message : String(r || 'unknown'));
     });
 
     window.setTimeout(function () {
         if (window.__afripayBoot.ok) return;
-        flagBoot(
-            'The dashboard is taking longer than expected to load data.',
-            'This is usually due to a slow internet connection, an adblocker blocking the CDN, or a cold-starting database. ' +
-            'Please wait a moment or press F12 → Console for details.'
-        );
-        var wrap = document.getElementById('listTx');
-        if (wrap && wrap.querySelector('.skeleton-row')) {
-            wrap.innerHTML = '<div class="empty-state"><div class="em-icon">⏱️</div>' +
-                'Transactions are taking too long to load.<br><br>' +
-                '<button class="btn-mini blue" onclick="location.reload()">🔄 Reload page</button></div>';
-        }
-        var st = document.getElementById('txLoadStatus');
-        if (st) { st.innerHTML = '<span class="mini-dot"></span>Timed out'; st.classList.add('failed'); }
+        flagBoot('The dashboard is taking longer than expected to load data.',
+            'Press F12 → Console for details.');
     }, 30000);
 })();
 </script>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2?v=2.4"></script>
 
 <script>
 // ============================================================
@@ -664,22 +540,14 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 let sb = null;
 let TX_LAST_ERROR = null;
 
-// ============================================================
-// SDK LOADER
-// ============================================================
 function loadScriptTag(src, ms) {
     return new Promise(function (resolve, reject) {
         var s = document.createElement('script');
         var done = false;
-        var timer = setTimeout(function () {
-            if (done) return;
-            done = true;
-            reject(new Error('Timed out loading ' + src));
-        }, ms);
-        s.src = src;
-        s.async = true;
-        s.onload = function () { if (done) return; done = true; clearTimeout(timer); resolve(); };
-        s.onerror = function () { if (done) return; done = true; clearTimeout(timer); reject(new Error('Failed to load ' + src)); };
+        var timer = setTimeout(function () { if (!done) { done = true; reject(new Error('Timed out ' + src)); } }, ms);
+        s.src = src; s.async = true;
+        s.onload = function () { if (!done) { done = true; clearTimeout(timer); resolve(); } };
+        s.onerror = function () { if (!done) { done = true; clearTimeout(timer); reject(new Error('Failed ' + src)); } };
         document.head.appendChild(s);
     });
 }
@@ -687,7 +555,7 @@ function loadScriptTag(src, ms) {
 async function ensureSupabaseSDK() {
     if (window.supabase && typeof window.supabase.createClient === 'function') return true;
     const sources = [
-        'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2',
+        'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2?v=2.4',
         'https://unpkg.com/@supabase/supabase-js@2',
         'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js'
     ];
@@ -703,9 +571,6 @@ async function ensureSupabaseSDK() {
     return false;
 }
 
-// ============================================================
-// UTILITIES
-// ============================================================
 function withTimeout(promise, ms, label) {
     let timer = null;
     const timeout = new Promise(function (_, reject) {
@@ -720,9 +585,6 @@ function markBootComplete() {
     if (window.__afripayBoot) window.__afripayBoot.ok = true;
 }
 
-// ============================================================
-// VIOLATION REASONS
-// ============================================================
 const VIOLATION_REASONS = [
     { key: 'principles_violation', label: 'Principles Violation', icon: '📜', desc: 'Breached app principles, terms, or community guidelines' },
     { key: 'mismanagement',        label: 'Mismanagement',        icon: '⚙️', desc: 'Poor handling of funds, accounts, or responsibilities' },
@@ -737,16 +599,12 @@ function getReason(key) {
     return VIOLATION_REASONS.find(r => r.key === key) || { key, label: key, icon: '❓', desc: '' };
 }
 
-// ============================================================
-// STATE
-// ============================================================
 const State = {
     transactions: [], agents: [], businesses: [], clients: [], users: [],
     complaints: [], paybacks: [], subscribers: [], chat: [],
     pendingItems: [], agentClients: [],
     activeTab: 'transactions', channels: [], realtimeConnected: false,
-    lastUpdated: null, showReviewed: false,
-    stage2Loaded: false, realtimeSubscribed: false
+    lastUpdated: null, showReviewed: false
 };
 
 const ACCOUNT_TABLES = {
@@ -756,9 +614,6 @@ const ACCOUNT_TABLES = {
     users:      { label: 'User',     emoji: '🧑', table: 'users' }
 };
 
-// ============================================================
-// HELPERS
-// ============================================================
 const $ = id => document.getElementById(id);
 const val = id => { const el = $(id); return el ? el.value : ''; };
 function on(id, evt, fn) { const el = $(id); if (!el) return null; el.addEventListener(evt, fn); return el; }
@@ -768,38 +623,28 @@ const escapeHTML = str => {
     const map = { '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#x27;','/':'&#x2F;' };
     return String(str).replace(/[&<>"'\/]/g, s => map[s]);
 };
-
 const safeId = v => String(v == null ? '' : v).replace(/[^a-zA-Z0-9_\-]/g, '');
-
 const asObj = v => {
     if (!v) return {};
     if (typeof v === 'string') { try { const p = JSON.parse(v); return (p && typeof p === 'object') ? p : {}; } catch (e) { return {}; } }
     return typeof v === 'object' ? v : {};
 };
-
 const fmtMoney = n => {
     const v = parseFloat(n) || 0;
     return v.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 };
-const fmtDate = iso => {
-    if (!iso) return '—';
-    try { return new Date(iso).toLocaleString(); } catch { return iso; }
-};
+const fmtDate = iso => { if (!iso) return '—'; try { return new Date(iso).toLocaleString(); } catch { return iso; } };
 const shortDate = iso => {
     if (!iso) return '—';
     try {
-        const d = new Date(iso);
-        const now = new Date();
-        const diff = (now - d) / 1000;
+        const d = new Date(iso), now = new Date(), diff = (now - d) / 1000;
         if (diff < 60) return `${Math.floor(diff)}s ago`;
         if (diff < 3600) return `${Math.floor(diff/60)}m ago`;
         if (diff < 86400) return `${Math.floor(diff/3600)}h ago`;
         return d.toLocaleDateString();
     } catch { return iso; }
 };
-const logError = (where, e) => {
-    console.error(`❌ ${where}:`, { message: e?.message, details: e?.details, hint: e?.hint, code: e?.code });
-};
+const logError = (where, e) => console.error(`❌ ${where}:`, { message: e?.message, details: e?.details, hint: e?.hint, code: e?.code });
 
 function showToast(msg, type = 'info', dur = 2800) {
     const el = $('toast');
@@ -810,12 +655,8 @@ function showToast(msg, type = 'info', dur = 2800) {
     el._hide = setTimeout(() => { el.className = 'toast ' + type; }, dur);
 }
 
-function updateClock() {
-    const el = $('clock');
-    if (el) el.textContent = new Date().toLocaleTimeString();
-}
-setInterval(updateClock, 1000);
-updateClock();
+function updateClock() { const el = $('clock'); if (el) el.textContent = new Date().toLocaleTimeString(); }
+setInterval(updateClock, 1000); updateClock();
 
 function touchLastUpdated() {
     State.lastUpdated = new Date();
@@ -828,23 +669,18 @@ function setConnection(status) {
     if (txt) txt.textContent = status === 'online' ? 'Live' : status === 'offline' ? 'Offline' : 'Connecting…';
 }
 function setBadge(id, n) {
-    const el = $(id);
-    if (!el) return;
-    if (n > 0) { el.style.display = 'inline-block'; el.textContent = n; }
-    else { el.style.display = 'none'; }
+    const el = $(id); if (!el) return;
+    if (n > 0) { el.style.display = 'inline-block'; el.textContent = n; } else el.style.display = 'none';
 }
 function setTxLoadStatus(text, done) {
-    const el = $('txLoadStatus');
-    if (!el) return;
+    const el = $('txLoadStatus'); if (!el) return;
     el.classList.remove('failed');
     el.innerHTML = '<span class="mini-dot"></span>' + escapeHTML(text);
     el.classList.toggle('done', !!done);
 }
 function setTxLoadFailed(text) {
-    const el = $('txLoadStatus');
-    if (!el) return;
-    el.classList.remove('done');
-    el.classList.add('failed');
+    const el = $('txLoadStatus'); if (!el) return;
+    el.classList.remove('done'); el.classList.add('failed');
     el.innerHTML = '<span class="mini-dot"></span>' + escapeHTML(text);
 }
 
@@ -853,9 +689,6 @@ function listSignature(arr, keys) {
     return arr.length + '#' + arr.map(r => keys.map(k => String(r[k] == null ? '' : r[k])).join('~')).join('|');
 }
 
-// ============================================================
-// SUSPENSION HELPERS
-// ============================================================
 function isSuspended(rec) {
     if (!rec) return false;
     if (rec.suspended === true) return true;
@@ -868,11 +701,9 @@ function isSuspended(rec) {
 
 async function writeSuspendedFlag(table, id, suspend) {
     const attempts = [
-        { col: 'suspended',    val: !!suspend },
-        { col: 'is_suspended', val: !!suspend },
-        { col: 'is_active',    val: !suspend },
-        { col: 'active',       val: !suspend },
-        { col: 'status',       val: suspend ? 'suspended' : 'active' }
+        { col: 'suspended', val: !!suspend }, { col: 'is_suspended', val: !!suspend },
+        { col: 'is_active', val: !suspend }, { col: 'active', val: !suspend },
+        { col: 'status', val: suspend ? 'suspended' : 'active' }
     ];
     let lastErr = null;
     for (const a of attempts) {
@@ -882,16 +713,13 @@ async function writeSuspendedFlag(table, id, suspend) {
             lastErr = error;
         } catch (e) { lastErr = e; }
     }
-    throw lastErr || new Error('No supported suspend column found on "' + table + '"');
+    throw lastErr || new Error('No supported suspend column on ' + table);
 }
 
 async function writeSuspensionMeta(table, id, reasonKey, reasonLabel, notes) {
     const payload = {
-        suspension_reason: reasonKey,
-        suspension_label: reasonLabel,
-        suspension_notes: notes || null,
-        suspended_at: new Date().toISOString(),
-        suspended_by: 'admin'
+        suspension_reason: reasonKey, suspension_label: reasonLabel,
+        suspension_notes: notes || null, suspended_at: new Date().toISOString(), suspended_by: 'admin'
     };
     try {
         const { error } = await sb.from(table).update(payload).eq('id', id);
@@ -904,11 +732,8 @@ async function writeSuspensionMeta(table, id, reasonKey, reasonLabel, notes) {
 async function clearSuspensionMeta(table, id) {
     try {
         const { error } = await sb.from(table).update({
-            suspension_reason: null,
-            suspension_label: null,
-            suspension_notes: null,
-            suspended_at: null,
-            suspended_by: null
+            suspension_reason: null, suspension_label: null, suspension_notes: null,
+            suspended_at: null, suspended_by: null
         }).eq('id', id);
         if (!error) return true;
     } catch (e) { }
@@ -934,11 +759,8 @@ function applySuspendedLocally(rec, suspend, meta = {}) {
     } else {
         if (rec._prevStatus) { rec.status = rec._prevStatus; delete rec._prevStatus; }
         else if (rec.status === 'suspended') rec.status = 'active';
-        delete rec.suspension_reason;
-        delete rec.suspension_label;
-        delete rec.suspension_notes;
-        delete rec.suspended_at;
-        delete rec.suspended_by;
+        delete rec.suspension_reason; delete rec.suspension_label; delete rec.suspension_notes;
+        delete rec.suspended_at; delete rec.suspended_by;
     }
 }
 
@@ -966,9 +788,6 @@ function accountTitle(rec, type) {
     return '—';
 }
 
-// ============================================================
-// SUSPEND REASON MODAL
-// ============================================================
 const SuspendReasonCtx = { type: null, id: null, selectedKey: null };
 
 function openSuspendReasonModal(type, id) {
@@ -976,15 +795,10 @@ function openSuspendReasonModal(type, id) {
     const rec = getAccountList(type).find(r => String(r.id) === String(id));
     if (!rec) { showToast('❌ Account not found', 'error'); return; }
     const title = accountTitle(rec, type);
-
-    SuspendReasonCtx.type = type;
-    SuspendReasonCtx.id = id;
-    SuspendReasonCtx.selectedKey = null;
-
+    SuspendReasonCtx.type = type; SuspendReasonCtx.id = id; SuspendReasonCtx.selectedKey = null;
     $('reasonTitle').innerHTML = `⏸️ Suspend ${meta.emoji} ${escapeHTML(meta.label)}`;
     $('reasonSubtitle').innerHTML = `You are about to suspend <strong>${escapeHTML(title)}</strong>.<br>Select the violation reason and add any notes.`;
     $('reasonNote').value = '';
-
     $('reasonGrid').innerHTML = VIOLATION_REASONS.map(r => `
         <label class="reason-option" data-key="${r.key}">
             <input type="radio" name="suspReason" value="${r.key}" />
@@ -995,7 +809,6 @@ function openSuspendReasonModal(type, id) {
             </div>
         </label>
     `).join('');
-
     $('reasonGrid').querySelectorAll('.reason-option').forEach(opt => {
         opt.addEventListener('click', () => {
             $('reasonGrid').querySelectorAll('.reason-option').forEach(o => o.classList.remove('selected'));
@@ -1004,15 +817,12 @@ function openSuspendReasonModal(type, id) {
             $('confirmReason').disabled = false;
         });
     });
-
     $('confirmReason').disabled = true;
     $('reasonModal').classList.add('open');
 }
 function closeReasonModal() {
     $('reasonModal').classList.remove('open');
-    SuspendReasonCtx.type = null;
-    SuspendReasonCtx.id = null;
-    SuspendReasonCtx.selectedKey = null;
+    SuspendReasonCtx.type = null; SuspendReasonCtx.id = null; SuspendReasonCtx.selectedKey = null;
 }
 
 async function confirmSuspendFromModal() {
@@ -1023,17 +833,12 @@ async function confirmSuspendFromModal() {
     const meta = ACCOUNT_TABLES[type];
     const rec = getAccountList(type).find(r => String(r.id) === String(id));
     const title = accountTitle(rec, type);
-
     closeReasonModal();
-
     if (!rec) { showToast('❌ Account no longer available', 'error'); return; }
     if (!sb) { showToast('❌ Supabase not configured', 'error'); return; }
-
     const snapshot = Object.assign({}, rec);
     applySuspendedLocally(rec, true, { reasonKey: selectedKey, reasonLabel: reason.label, notes });
-    renderAccountList(type);
-    updateKPIs();
-
+    renderAccountList(type); updateKPIs();
     try {
         await writeSuspendedFlag(meta.table, id, true);
         await writeSuspensionMeta(meta.table, id, selectedKey, reason.label, notes);
@@ -1043,31 +848,22 @@ async function confirmSuspendFromModal() {
         logError('confirmSuspend', e);
         Object.keys(rec).forEach(k => { if (!(k in snapshot)) delete rec[k]; });
         Object.assign(rec, snapshot);
-        renderAccountList(type);
-        updateKPIs();
+        renderAccountList(type); updateKPIs();
         showToast('❌ Could not suspend: ' + (e.message || 'unknown error'), 'error', 4600);
     }
 }
 
-// ============================================================
-// SUSPEND / RESTORE
-// ============================================================
 async function toggleSuspend(type, id, suspend) {
     if (!sb) { showToast('❌ Supabase not configured', 'error'); return; }
     const rec = getAccountList(type).find(r => String(r.id) === String(id));
     if (!rec) { showToast('❌ Account not found', 'error'); return; }
     const meta = ACCOUNT_TABLES[type];
     const title = accountTitle(rec, type);
-
     if (suspend) { openSuspendReasonModal(type, id); return; }
-
     if (!confirm(`▶️ RESTORE ${meta.label.toUpperCase()}?\n\n"${title}"\n\nThis account will become active again.`)) return;
-
     const snapshot = Object.assign({}, rec);
     applySuspendedLocally(rec, false);
-    renderAccountList(type);
-    updateKPIs();
-
+    renderAccountList(type); updateKPIs();
     try {
         await writeSuspendedFlag(meta.table, id, false);
         await clearSuspensionMeta(meta.table, id);
@@ -1077,25 +873,19 @@ async function toggleSuspend(type, id, suspend) {
         logError('toggleSuspend-restore', e);
         Object.keys(rec).forEach(k => { if (!(k in snapshot)) delete rec[k]; });
         Object.assign(rec, snapshot);
-        renderAccountList(type);
-        updateKPIs();
+        renderAccountList(type); updateKPIs();
         showToast('❌ Could not restore: ' + (e.message || 'unknown error'), 'error', 4600);
     }
 }
 
-// ============================================================
-// DELETE ACCOUNT — universal, cascading, with rollback
-// ============================================================
 async function deleteAccount(type, id) {
     if (!sb) { showToast('❌ Supabase not configured', 'error'); return; }
     const rec = getAccountList(type).find(r => String(r.id) === String(id));
     if (!rec) { showToast('❌ Account not found', 'error'); return; }
     const meta = ACCOUNT_TABLES[type];
     const title = accountTitle(rec, type);
-
     const cascadeSteps = [];
     const cascadeMsgParts = [];
-
     if (type === 'agents') {
         cascadeSteps.push({ table: 'agent_clients', column: 'agent_id', value: id });
         cascadeSteps.push({ table: 'clients',       column: 'agent_id', value: id });
@@ -1105,38 +895,26 @@ async function deleteAccount(type, id) {
         cascadeSteps.push({ table: 'products', column: 'business_id', value: id });
         cascadeMsgParts.push('their products / services');
     } else if (type === 'clients') {
-        const phone = rec.phone;
-        const name  = rec.name || rec.full_name;
-        if (phone) cascadeSteps.push({ table: 'agent_clients', column: 'phone', value: phone });
-        else if (name) cascadeSteps.push({ table: 'agent_clients', column: 'name', value: name, mode: 'ilike' });
-        cascadeMsgParts.push('any matching agent-queue row (by phone or name)');
+        if (rec.phone) cascadeSteps.push({ table: 'agent_clients', column: 'phone', value: rec.phone });
+        else if (rec.name || rec.full_name) cascadeSteps.push({ table: 'agent_clients', column: 'name', value: rec.name || rec.full_name, mode: 'ilike' });
+        cascadeMsgParts.push('any matching agent-queue row');
     } else if (type === 'users') {
         if (rec.phone) cascadeSteps.push({ table: 'clients', column: 'phone', value: rec.phone });
         if (rec.email) cascadeSteps.push({ table: 'clients', column: 'email', value: rec.email });
-        cascadeMsgParts.push('any matching client rows (by phone or email)');
+        cascadeMsgParts.push('any matching client rows');
     }
-
     let msg = `🗑️ DELETE ${meta.label.toUpperCase()} PERMANENTLY?\n\n"${title}"\n\n`;
     if (cascadeMsgParts.length) msg += `This will also remove:\n• ${cascadeMsgParts.join('\n• ')}\n\n`;
-    msg += `The account will be removed from the ENTIRE application.\nThis action CANNOT be undone.`;
+    msg += `Cannot be undone.`;
     if (!confirm(msg)) return;
-
     if (!confirm(`Are you absolutely sure?\n\nFinal confirmation for: ${title}`)) return;
 
-    const container = type === 'agents'      ? $('listAgents')
-                    : type === 'businesses'  ? $('listBusinesses')
-                    : type === 'clients'     ? $('listClients')
-                    : $('listUsers');
+    const container = type === 'agents' ? $('listAgents') : type === 'businesses' ? $('listBusinesses') : type === 'clients' ? $('listClients') : $('listUsers');
     let rowEl = null;
-    if (container) {
-        rowEl = container.querySelector(`[data-row-id="${safeId(id)}"]`);
-        if (rowEl) rowEl.classList.add('deleting');
-    }
-
+    if (container) { rowEl = container.querySelector(`[data-row-id="${safeId(id)}"]`); if (rowEl) rowEl.classList.add('deleting'); }
     const listBefore = getAccountList(type).slice();
     setAccountList(type, listBefore.filter(r => String(r.id) !== String(id)));
-    renderAccountList(type);
-    updateKPIs();
+    renderAccountList(type); updateKPIs();
 
     try {
         for (const step of cascadeSteps) {
@@ -1148,92 +926,56 @@ async function deleteAccount(type, id) {
                 if (error) console.warn(`⚠️ cascade ${step.table}.${step.column} failed:`, error.message);
             } catch (e) { console.warn(`⚠️ cascade ${step.table} threw:`, e); }
         }
-
         const { error } = await sb.from(meta.table).delete().eq('id', id);
         if (error) throw error;
-
         showToast(`🗑️ ${meta.label} deleted: ${title}`, 'success', 3600);
         touchLastUpdated();
-
         setTimeout(() => {
             fetchAgents().then(v => { State.agents = v; renderAgents(val('searchAgents')); updateKPIs(); }).catch(() => {});
             fetchBusinesses().then(v => { State.businesses = v; renderBusinesses(val('searchBusinesses')); updateKPIs(); }).catch(() => {});
             fetchClients().then(v => { State.clients = v; renderClients(val('searchClients')); updateKPIs(); }).catch(() => {});
             fetchAgentClients().then(v => { State.agentClients = v; renderAgentClients(val('searchAgentClients')); updateKPIs(); }).catch(() => {});
         }, 600);
-
     } catch (e) {
         logError('deleteAccount', e);
-        setAccountList(type, listBefore);
-        renderAccountList(type);
-        updateKPIs();
+        setAccountList(type, listBefore); renderAccountList(type); updateKPIs();
         if (rowEl) rowEl.classList.remove('deleting');
         showToast('❌ Delete failed: ' + (e.message || 'unknown error'), 'error', 5000);
     }
 }
 
-// ============================================================
-// DELETE RECORD (generic)
-// ============================================================
 async function deleteRecord(table, id, label) {
     if (!sb) { showToast('❌ Supabase not configured', 'error'); return; }
-    if (!confirm(`🗑️ DELETE ${label} PERMANENTLY?\n\nThis removes the record from the entire system and cannot be undone.`)) return;
-
+    if (!confirm(`🗑️ DELETE ${label} PERMANENTLY?\n\nCannot be undone.`)) return;
     try {
         const { error } = await sb.from(table).delete().eq('id', id);
         if (error) throw error;
-
-        if (table === 'complaints') {
-            State.complaints = State.complaints.filter(c => String(c.id) !== String(id));
-            renderComplaints(val('searchComplaints'));
-        } else if (table === 'chat_messages') {
-            State.chat = State.chat.filter(c => String(c.id) !== String(id));
-            renderChat();
-        } else if (table === 'transactions') {
-            State.transactions = State.transactions.filter(t => String(t.id) !== String(id));
-            renderTransactions(val('searchTx'));
-        } else if (table === 'paybacks') {
-            State.paybacks = State.paybacks.filter(p => String(p.id) !== String(id));
-            renderPaybacks(val('searchPaybacks'));
-        }
+        if (table === 'complaints') { State.complaints = State.complaints.filter(c => String(c.id) !== String(id)); renderComplaints(val('searchComplaints')); }
+        else if (table === 'chat_messages') { State.chat = State.chat.filter(c => String(c.id) !== String(id)); renderChat(); }
+        else if (table === 'transactions') { State.transactions = State.transactions.filter(t => String(t.id) !== String(id)); renderTransactions(val('searchTx')); }
+        else if (table === 'paybacks') { State.paybacks = State.paybacks.filter(p => String(p.id) !== String(id)); renderPaybacks(val('searchPaybacks')); }
         updateKPIs();
         showToast(`🗑️ ${label} deleted`, 'success', 3000);
         touchLastUpdated();
-    } catch (e) {
-        logError('deleteRecord:' + table, e);
-        showToast('❌ Delete failed: ' + (e.message || 'unknown error'), 'error', 4800);
-    }
+    } catch (e) { logError('deleteRecord:' + table, e); showToast('❌ Delete failed: ' + (e.message || 'unknown error'), 'error', 4800); }
 }
 
-// ============================================================
-// DELETE AGENT-ADDED CLIENT (queue row)
-// ============================================================
 async function deleteAgentClient(id) {
     if (!sb) { showToast('❌ Supabase not configured', 'error'); return; }
     const c = State.agentClients.find(x => String(x.id) === String(id));
     if (!c) { showToast('❌ Client not found', 'error'); return; }
     const name = c.name || '(no name)';
-
-    if (!confirm(`🗑️ DELETE CLIENT PERMANENTLY?\n\n"${name}" · ${c.phone || 'no phone'}\n\nThis removes the queue row AND any matching live client record. Cannot be undone.`)) return;
-
+    if (!confirm(`🗑️ DELETE CLIENT PERMANENTLY?\n\n"${name}" · ${c.phone || 'no phone'}\n\nCannot be undone.`)) return;
     const btn = document.querySelector(`button[onclick*="deleteAgentClient('${safeId(id)}')"]`);
     if (btn) btn.classList.add('busy');
-
     try {
         const { error: e1 } = await sb.from('agent_clients').delete().eq('id', id);
         if (e1) console.warn('⚠️ queue delete failed:', e1.message);
-
-        if (c.phone) {
-            try { await sb.from('clients').delete().eq('phone', c.phone); } catch (e) { }
-        }
-        if (c.name) {
-            try { await sb.from('clients').delete().ilike('name', c.name); } catch (e) { }
-        }
-
+        if (c.phone) { try { await sb.from('clients').delete().eq('phone', c.phone); } catch (e) { } }
+        if (c.name) { try { await sb.from('clients').delete().ilike('name', c.name); } catch (e) { } }
         State.agentClients = State.agentClients.filter(x => String(x.id) !== String(id));
         renderAgentClients(val('searchAgentClients'));
-        State.clients = await fetchClients();
-        renderClients(val('searchClients'));
+        State.clients = await fetchClients(); renderClients(val('searchClients'));
         updateKPIs();
         showToast(`🗑️ Client removed: ${name}`, 'success', 3400);
         touchLastUpdated();
@@ -1244,154 +986,6 @@ async function deleteAgentClient(id) {
     }
 }
 
-// ============================================================
-// SCHEMA-RESILIENT WRITE ENGINE
-// ============================================================
-const TableColumnsCache = Object.create(null);
-
-async function getTableColumns(table) {
-    if (table in TableColumnsCache) return TableColumnsCache[table];
-    try {
-        const { data, error } = await withTimeout(
-            sb.from(table).select('*').limit(1), 6000, 'cols:' + table
-        );
-        if (!error && Array.isArray(data)) {
-            const cols = data.length ? Object.keys(data[0]) : [];
-            TableColumnsCache[table] = cols;
-            return cols;
-        }
-    } catch (e) { }
-    return null;
-}
-
-function filterToColumns(payload, cols) {
-    if (!Array.isArray(cols) || !cols.length) return Object.assign({}, payload);
-    const out = {};
-    Object.keys(payload).forEach(k => { if (cols.indexOf(k) !== -1) out[k] = payload[k]; });
-    return Object.keys(out).length ? out : Object.assign({}, payload);
-}
-
-function extractUnknownColumn(err) {
-    if (!err) return null;
-    const msg = String(err.message || '') + ' ' + String(err.details || '') + ' ' + String(err.hint || '');
-    const patterns = [
-        /column "([^"]+)" of relation/i,
-        /column [A-Za-z0-9_."]+?\.([A-Za-z0-9_]+) does not exist/i,
-        /Could not find the '([^']+)' column/i,
-        /'([^']+)' column of '[^']+' in the schema cache/i
-    ];
-    for (const re of patterns) {
-        const m = msg.match(re);
-        if (m && m[1]) return m[1];
-    }
-    return null;
-}
-
-async function insertResilient(table, payload, maxTries = 20) {
-    let p = Object.assign({}, payload);
-    const cols = await getTableColumns(table);
-    if (Array.isArray(cols) && cols.length) p = filterToColumns(p, cols);
-
-    let lastErr = null;
-    for (let i = 0; i < maxTries; i++) {
-        let res;
-        try {
-            res = await withTimeout(sb.from(table).insert(p).select(), 9000, 'insert:' + table);
-        } catch (e) { lastErr = e; break; }
-        const { data, error } = res;
-        if (!error) return { data: data || [], error: null, duplicate: false };
-        lastErr = error;
-
-        if (String(error.code) === '23505') return { data: null, error, duplicate: true };
-
-        const col = extractUnknownColumn(error);
-        if (col && (col in p)) {
-            console.warn(`⚠️ ${table}: dropping unknown column "${col}" and retrying…`);
-            delete p[col];
-            continue;
-        }
-
-        const intMatch = String(error.message || '').match(/invalid input syntax for type integer:\s*"([^"]*)"/);
-        if (intMatch) {
-            const badValue = intMatch[1];
-            const badKey = Object.keys(p).find(k => String(p[k]) === badValue);
-            if (badKey) {
-                const coerced = normalizeIntegerId(badValue);
-                if (coerced !== null) { p[badKey] = coerced; }
-                else { delete p[badKey]; }
-                continue;
-            }
-        }
-        break;
-    }
-    return { data: null, error: lastErr, duplicate: false };
-}
-
-async function updateResilient(table, matchCol, matchVal, payload, maxTries = 20) {
-    let p = Object.assign({}, payload);
-    const cols = await getTableColumns(table);
-    if (Array.isArray(cols) && cols.length) p = filterToColumns(p, cols);
-
-    let lastErr = null;
-    for (let i = 0; i < maxTries; i++) {
-        let res;
-        try {
-            res = await withTimeout(sb.from(table).update(p).eq(matchCol, matchVal).select(), 9000, 'update:' + table);
-        } catch (e) { lastErr = e; break; }
-
-        const { data, error } = res;
-        if (!error) return { data: data || [], error: null };
-        lastErr = error;
-
-        const col = extractUnknownColumn(error);
-        if (col && (col in p)) { delete p[col]; continue; }
-
-        const intMatch = String(error.message || '').match(/invalid input syntax for type integer:\s*"([^"]*)"/);
-        if (intMatch) {
-            const badValue = intMatch[1];
-            const badKey = Object.keys(p).find(k => String(p[k]) === badValue);
-            if (badKey) {
-                const coerced = normalizeIntegerId(badValue);
-                if (coerced !== null) p[badKey] = coerced;
-                else delete p[badKey];
-                continue;
-            }
-        }
-        break;
-    }
-    return { data: null, error: lastErr };
-}
-
-async function findExistingRow(table, criteria) {
-    for (const c of criteria) {
-        if (c.val === undefined || c.val === null || c.val === '') continue;
-        try {
-            let q = sb.from(table).select('*');
-            q = (c.mode === 'ilike') ? q.ilike(c.col, c.val) : q.eq(c.col, c.val);
-            const { data, error } = await withTimeout(q.limit(1), 7000, 'find:' + table);
-            if (error) continue;
-            if (data && data.length) return data[0];
-        } catch (e) { }
-    }
-    return null;
-}
-
-async function forceApproveFlag(table, id) {
-    const candidates = [
-        { approved: true }, { is_approved: true }, { verified: true },
-        { status: 'active' }, { active: true }, { is_active: true },
-        { suspended: false }, { is_suspended: false }, { visible: true }, { published: true }
-    ];
-    let any = false;
-    for (const c of candidates) {
-        try {
-            const { error } = await sb.from(table).update(c).eq('id', id);
-            if (!error) any = true;
-        } catch (e) { }
-    }
-    return any;
-}
-
 function pick(obj, keys, fallback = '') {
     if (!obj || typeof obj !== 'object') return fallback;
     for (let i = 0; i < keys.length; i++) {
@@ -1400,7 +994,6 @@ function pick(obj, keys, fallback = '') {
     }
     return fallback;
 }
-
 function normalizeType(t) {
     const s = String(t || '').toLowerCase().trim();
     const map = {
@@ -1412,10 +1005,6 @@ function normalizeType(t) {
     };
     return map[s] || s;
 }
-
-// ============================================================
-// ID NORMALISATION
-// ============================================================
 function normalizeIntegerId(value) {
     if (value === null || value === undefined || value === '') return null;
     if (typeof value === 'number') return Number.isInteger(value) ? value : null;
@@ -1429,310 +1018,7 @@ function normalizeIntegerId(value) {
     return null;
 }
 
-function extractBusinessRef(d) {
-    const idFields = ['business_id', 'businessId', 'shopId', 'storeId', 'bizId'];
-    for (const f of idFields) {
-        if (d && d[f] !== undefined && d[f] !== null && d[f] !== '') {
-            const n = normalizeIntegerId(d[f]);
-            if (n !== null) return { id: n, name: null };
-            return { id: null, name: String(d[f]) };
-        }
-    }
-    const nameFields = ['business_name', 'businessName', 'business', 'shopName', 'storeName', 'agentBusinessName'];
-    for (const f of nameFields) {
-        if (d && d[f]) return { id: null, name: String(d[f]) };
-    }
-    return { id: null, name: null };
-}
-
-// ============================================================
-// PAYLOAD BUILDERS
-// ============================================================
-function buildAgentPayload(d) {
-    const businessName = pick(d, ['businessName', 'business_name', 'name', 'business', 'shopName']);
-    const collateral = parseFloat(pick(d, ['collateralLimit', 'collateral_limit', 'collateralAmount', 'collateral_amount', 'collateral'], 0)) || 0;
-    return {
-        business_name: businessName, businessName: businessName,
-        owner_name: pick(d, ['ownerName', 'owner_name', 'owner', 'fullName', 'full_name']),
-        ownerName: pick(d, ['ownerName', 'owner_name', 'owner', 'fullName']),
-        business_address: pick(d, ['businessAddress', 'business_address', 'address', 'location']),
-        address: pick(d, ['address', 'businessAddress', 'business_address']),
-        city: pick(d, ['city', 'town']),
-        country_code: pick(d, ['countryCode', 'country_code', 'country']),
-        country: pick(d, ['country', 'countryCode', 'country_code']),
-        reg_number: pick(d, ['regNumber', 'reg_number', 'registrationNumber', 'regNo']),
-        business_type: pick(d, ['businessType', 'business_type', 'type', 'category'], 'Service'),
-        type: pick(d, ['type', 'businessType', 'business_type'], 'Service'),
-        id_type: pick(d, ['idType', 'id_type'], 'National ID'),
-        id_number: pick(d, ['idNumber', 'id_number', 'nin', 'idNo']),
-        nin: pick(d, ['nin', 'idNumber', 'id_number']),
-        mobile_money: pick(d, ['mobileMoney', 'mobile_money', 'mobileMoneyNumber', 'phone', 'mobile']),
-        phone: pick(d, ['phone', 'mobileMoney', 'mobile_money', 'mobile']),
-        password: pick(d, ['password']),
-        pin: pick(d, ['pin']),
-        currency: pick(d, ['currency'], 'GNF'),
-        collateral_amount: collateral, collateral_limit: collateral,
-        icon: pick(d, ['icon', 'emoji'], '🏢'), emoji: pick(d, ['emoji', 'icon'], '🏢'),
-        approved: true, is_approved: true, verified: true, status: 'active',
-        active: true, is_active: true, visible: true, published: true,
-        suspended: false, is_suspended: false
-    };
-}
-
-function buildBusinessPayload(d) {
-    const name = pick(d, ['name', 'businessName', 'business_name', 'title', 'shopName']);
-    let localId = pick(d, ['local_id', 'localId']);
-    if (!localId) localId = String(Date.now());
-    return {
-        name: name, business_name: name, businessName: name, local_id: localId,
-        contact: pick(d, ['contact', 'phone', 'mobile', 'contactPhone', 'mobileMoney']),
-        phone: pick(d, ['phone', 'contact', 'mobile']),
-        mobile_money: pick(d, ['mobileMoney', 'mobile_money', 'contact']),
-        type: pick(d, ['type', 'businessType', 'business_type', 'category'], 'Other'),
-        business_type: pick(d, ['businessType', 'business_type', 'type'], 'Other'),
-        icon: pick(d, ['icon', 'emoji'], '🏪'), emoji: pick(d, ['emoji', 'icon'], '🏪'),
-        website: pick(d, ['website', 'url']),
-        address: pick(d, ['address', 'location', 'businessAddress']),
-        city: pick(d, ['city', 'town']),
-        country: pick(d, ['country', 'countryCode', 'country_code']),
-        country_code: pick(d, ['countryCode', 'country_code', 'country']),
-        password: pick(d, ['password']), pin: pick(d, ['pin']),
-        currency: pick(d, ['currency'], 'GNF'),
-        approved: true, is_approved: true, verified: true, status: 'active',
-        active: true, is_active: true, visible: true, published: true,
-        suspended: false, is_suspended: false
-    };
-}
-
-function buildProductPayload(type, d, businessId) {
-    const name = pick(d, ['name', 'title', 'productName', 'serviceName', 'itemName']);
-    let safeBusinessId = null;
-    if (businessId !== null && businessId !== undefined && businessId !== '') {
-        safeBusinessId = normalizeIntegerId(businessId);
-    }
-    return {
-        business_id: safeBusinessId, businessId: safeBusinessId,
-        name: name, title: name, product_name: name,
-        price: parseFloat(pick(d, ['price', 'amount', 'cost', 'unitPrice'], 0)) || 0,
-        quantity: parseInt(pick(d, ['quantity', 'qty', 'stock', 'available'], 1), 10) || 1,
-        quality: pick(d, ['quality', 'condition'], 'Brand new'),
-        description: pick(d, ['description', 'details', 'desc', 'about']),
-        details: pick(d, ['details', 'description', 'desc']),
-        icon: pick(d, ['icon', 'emoji']), emoji: pick(d, ['emoji', 'icon']),
-        currency: pick(d, ['currency'], 'GNF'),
-        type: type, kind: type,
-        category: pick(d, ['category'], type),
-        service_type: type === 'service' ? pick(d, ['serviceType', 'service_type'], 'General') : undefined,
-        approved: true, is_approved: true, verified: true, status: 'active',
-        active: true, is_active: true, available: true, visible: true,
-        published: true, enabled: true, suspended: false, is_suspended: false
-    };
-}
-
-// ============================================================
-// APPROVAL ENGINE
-// ============================================================
-async function resolveBusinessId(name) {
-    if (!name) return null;
-    const attempts = [
-        { table: 'businesses', col: 'name' },
-        { table: 'businesses', col: 'business_name' },
-        { table: 'businesses', col: 'businessName' }
-    ];
-    for (const a of attempts) {
-        try {
-            const { data, error } = await withTimeout(sb.from(a.table).select('id').ilike(a.col, name).limit(1), 7000, 'resolveBiz');
-            if (!error && data && data.length) {
-                const id = normalizeIntegerId(data[0].id);
-                if (id !== null) return id;
-            }
-        } catch (e) { }
-    }
-    for (const a of attempts) {
-        try {
-            const { data, error } = await withTimeout(sb.from(a.table).select('id').eq(a.col, name).limit(1), 7000, 'resolveBizEq');
-            if (!error && data && data.length) {
-                const id = normalizeIntegerId(data[0].id);
-                if (id !== null) return id;
-            }
-        } catch (e) { }
-    }
-    return null;
-}
-
-async function markPendingReviewed(id, status) {
-    const payload = {
-        status: status,
-        reviewed_at: new Date().toISOString(),
-        reviewed_by: 'admin',
-        approved_at: status === 'approved' ? new Date().toISOString() : null
-    };
-    const tables = ['pending_items', 'pending_approvals', 'approvals', 'pending'];
-    for (const t of tables) {
-        const r = await updateResilient(t, 'id', id, payload);
-        if (!r.error) return true;
-    }
-    return false;
-}
-
-async function approveAgentRecord(d) {
-    console.log('🧑‍💼 [approve:agent] payload =', d);
-    const payload = buildAgentPayload(d);
-    const businessName = payload.business_name;
-    if (!businessName) throw new Error('This pending agent has no business name.');
-
-    const existing = await findExistingRow('agents', [
-        { col: 'business_name', val: businessName, mode: 'ilike' },
-        { col: 'businessName',  val: businessName, mode: 'ilike' },
-        { col: 'name',          val: businessName, mode: 'ilike' },
-        { col: 'owner_name',    val: payload.owner_name, mode: 'ilike' },
-        { col: 'mobile_money',  val: payload.mobile_money }
-    ]);
-
-    if (existing) {
-        const u = await updateResilient('agents', 'id', existing.id, payload);
-        if (u.error) await forceApproveFlag('agents', existing.id);
-        return { action: 'updated', id: existing.id };
-    }
-
-    let r = await insertResilient('agents', payload);
-    if (!r.error && r.data && r.data.length) return { action: 'inserted', id: r.data[0].id };
-    if (r.error && (r.duplicate || String(r.error.code) === '23505')) {
-        const dup = await findExistingRow('agents', [
-            { col: 'business_name', val: businessName, mode: 'ilike' },
-            { col: 'mobile_money',  val: payload.mobile_money },
-            { col: 'owner_name',    val: payload.owner_name, mode: 'ilike' }
-        ]);
-        if (dup) {
-            await updateResilient('agents', 'id', dup.id, payload);
-            return { action: 'updated', id: dup.id };
-        }
-    }
-    throw new Error('Agent approval failed: ' + (r.error?.message || 'unknown insert error'));
-}
-
-async function approveBusinessRecord(d) {
-    console.log('🏪 [approve:business] payload =', d);
-    const payload = buildBusinessPayload(d);
-    const name = payload.name;
-    if (!name) throw new Error('This pending business has no name.');
-
-    const existing = await findExistingRow('businesses', [
-        { col: 'name',          val: name, mode: 'ilike' },
-        { col: 'business_name', val: name, mode: 'ilike' },
-        { col: 'businessName',  val: name, mode: 'ilike' },
-        { col: 'contact',       val: payload.contact }
-    ]);
-
-    if (existing) {
-        const u = await updateResilient('businesses', 'id', existing.id, payload);
-        if (u.error) await forceApproveFlag('businesses', existing.id);
-        return { action: 'updated', id: existing.id };
-    }
-
-    let r = await insertResilient('businesses', payload);
-    if (!r.error && r.data && r.data.length) return { action: 'inserted', id: r.data[0].id };
-
-    if (r.error && (r.duplicate || String(r.error.code) === '23505')) {
-        const dup = await findExistingRow('businesses', [
-            { col: 'name', val: name, mode: 'ilike' },
-            { col: 'contact', val: payload.contact }
-        ]);
-        if (dup) {
-            await updateResilient('businesses', 'id', dup.id, payload);
-            return { action: 'updated', id: dup.id };
-        }
-    }
-    throw new Error('Business approval failed: ' + (r.error?.message || 'unknown insert error'));
-}
-
-async function approveProductOrService(type, d) {
-    console.log(`📦 [approve:${type}] payload =`, d);
-    let businessId = null;
-    const ref = extractBusinessRef(d);
-    if (ref.id !== null) businessId = ref.id;
-    const businessName = ref.name;
-    if (businessId === null && businessName) businessId = await resolveBusinessId(businessName);
-
-    if (businessId === null && businessName) {
-        const agentRow = await findExistingRow('agents', [
-            { col: 'business_name', val: businessName, mode: 'ilike' },
-            { col: 'businessName',  val: businessName, mode: 'ilike' }
-        ]);
-        const seed = agentRow ? {
-            name: agentRow.business_name || agentRow.businessName || businessName,
-            contact: agentRow.mobile_money || agentRow.phone || '',
-            mobile_money: agentRow.mobile_money || '',
-            city: agentRow.city || '',
-            country: agentRow.country_code || agentRow.country || '',
-            type: agentRow.business_type || 'Service', icon: '🏢'
-        } : { name: businessName };
-
-        const b = await insertResilient('businesses', buildBusinessPayload(seed));
-        if (!b.error && b.data && b.data.length) businessId = normalizeIntegerId(b.data[0].id);
-        else businessId = await resolveBusinessId(businessName);
-    }
-    if (businessId === null) throw new Error(`Cannot approve this ${type}: no valid integer business id.`);
-
-    const payload = buildProductPayload(type, d, businessId);
-    if (!payload.name) throw new Error(`This pending ${type} has no name.`);
-
-    const existing = await findExistingRow('products', [{ col: 'name', val: payload.name, mode: 'ilike' }]);
-    if (existing && String(existing.business_id) === String(businessId)) {
-        const u = await updateResilient('products', 'id', existing.id, payload);
-        if (!u.error) return { action: 'updated', id: existing.id, business_id: businessId };
-    }
-
-    const r = await insertResilient('products', payload);
-    if (!r.error && r.data && r.data.length) return { action: 'inserted', id: r.data[0].id, business_id: businessId };
-    throw new Error(`${type} approval failed: ` + (r.error?.message || 'unknown insert error'));
-}
-
-async function approveClientRecord(d) {
-    console.log('👥 [approve:client] payload =', d);
-    const name = pick(d, ['name', 'fullName', 'full_name', 'clientName']);
-    const phone = pick(d, ['phone', 'mobile', 'contact']);
-    if (!name && !phone) throw new Error('This pending client has no name or phone.');
-
-    const rawAgentId = pick(d, ['agent_id', 'agentId']);
-    const agentId = rawAgentId !== '' ? normalizeIntegerId(rawAgentId) : null;
-
-    const payload = {
-        name: name, full_name: name, phone: phone,
-        email: pick(d, ['email']),
-        address: pick(d, ['address', 'location']),
-        city: pick(d, ['city', 'town']),
-        country: pick(d, ['country']),
-        agent_id: agentId, status: 'active',
-        approved: true, is_approved: true, verified: true,
-        active: true, is_active: true, visible: true,
-        suspended: false, is_suspended: false
-    };
-
-    const existing = await findExistingRow('clients', [
-        { col: 'phone', val: phone }, { col: 'name', val: name, mode: 'ilike' }
-    ]);
-    if (existing) {
-        const u = await updateResilient('clients', 'id', existing.id, payload);
-        if (!u.error) return { action: 'updated', id: existing.id };
-    }
-    const r = await insertResilient('clients', payload);
-    if (!r.error && r.data && r.data.length) return { action: 'inserted', id: r.data[0].id };
-    if (r.error && (r.duplicate || String(r.error.code) === '23505')) return { action: 'exists', id: null };
-    throw new Error('Client approval failed: ' + (r.error?.message || 'unknown insert error'));
-}
-
-async function copyPendingToLive(type, d) {
-    if (type === 'agent')    return await approveAgentRecord(d);
-    if (type === 'business') return await approveBusinessRecord(d);
-    if (type === 'product' || type === 'service') return await approveProductOrService(type, d);
-    if (type === 'client')   return await approveClientRecord(d);
-    throw new Error('Unknown pending type: ' + type);
-}
-
-// ============================================================
-// SUPABASE FETCHERS
-// ============================================================
+// ============ FETCHERS ============
 async function fetchTransactions() {
     TX_LAST_ERROR = null;
     if (!sb) { TX_LAST_ERROR = 'Supabase not configured'; return []; }
@@ -1743,7 +1029,7 @@ async function fetchTransactions() {
         return data || [];
     } catch (e) { logError('fetchTransactions(projected)', e); }
     try {
-        const { data, error } = await withTimeout(sb.from('transactions').select('*').limit(100), 4500, 'transactions-fallback');
+        const { data, error } = await withTimeout(sb.from('transactions').select('*').limit(100), 4500, 'tx-fallback');
         if (error) throw error;
         return (data || []).slice().sort((a, b) => String(b.created_at || '').localeCompare(String(a.created_at || '')));
     } catch (e) {
@@ -1752,75 +1038,42 @@ async function fetchTransactions() {
         return [];
     }
 }
-
 async function fetchAgents() {
     if (!sb) return [];
     try {
-        const { data, error } = await withTimeout(
-            sb.from('agents').select('*').order('created_at', { ascending: false }).limit(500),
-            6000, 'agents'
-        );
+        const { data, error } = await withTimeout(sb.from('agents').select('*').order('created_at', { ascending: false }).limit(500), 6000, 'agents');
         if (!error && Array.isArray(data) && data.length > 0) return data;
     } catch (e) { }
     try {
         const { data, error } = await withTimeout(sb.from('agents').select('*').limit(500), 6000, 'agents-fallback');
         if (error) throw error;
         return data || [];
-    } catch (e2) {
-        console.warn('fetchAgents failed:', e2?.message);
-        return [];
-    }
+    } catch (e2) { console.warn('fetchAgents failed:', e2?.message); return []; }
 }
-
 async function fetchComplaints() {
     if (!sb) return [];
-    try {
-        const { data, error } = await withTimeout(sb.from('complaints').select('*').order('created_at', { ascending: false }).limit(500), 6000, 'complaints');
-        if (error) throw error;
-        return data || [];
-    } catch (e) { return []; }
+    try { const { data, error } = await withTimeout(sb.from('complaints').select('*').order('created_at', { ascending: false }).limit(500), 6000, 'complaints'); if (error) throw error; return data || []; } catch (e) { return []; }
 }
 async function fetchPaybacks() {
     if (!sb) return [];
-    try {
-        const { data, error } = await withTimeout(sb.from('paybacks').select('*').order('created_at', { ascending: false }).limit(500), 6000, 'paybacks');
-        if (error) throw error;
-        return data || [];
-    } catch (e) { return []; }
+    try { const { data, error } = await withTimeout(sb.from('paybacks').select('*').order('created_at', { ascending: false }).limit(500), 6000, 'paybacks'); if (error) throw error; return data || []; } catch (e) { return []; }
 }
 async function fetchSubscribers() {
     if (!sb) return [];
-    try {
-        const { data, error } = await withTimeout(sb.from('subscribers').select('*').order('subscribed_at', { ascending: false }).limit(500), 6000, 'subscribers');
-        if (error) throw error;
-        return data || [];
-    } catch (e) { return []; }
+    try { const { data, error } = await withTimeout(sb.from('subscribers').select('*').order('subscribed_at', { ascending: false }).limit(500), 6000, 'subs'); if (error) throw error; return data || []; } catch (e) { return []; }
 }
 async function fetchChat() {
     if (!sb) return [];
-    try {
-        const { data, error } = await withTimeout(sb.from('chat_messages').select('*').order('created_at', { ascending: true }).limit(200), 6000, 'chat');
-        if (error) throw error;
-        return data || [];
-    } catch (e) { return []; }
+    try { const { data, error } = await withTimeout(sb.from('chat_messages').select('*').order('created_at', { ascending: true }).limit(200), 6000, 'chat'); if (error) throw error; return data || []; } catch (e) { return []; }
 }
 async function fetchPendingItems() {
     if (!sb) return [];
-    try {
-        const { data, error } = await withTimeout(sb.from('pending_items').select('*').order('submitted_at', { ascending: false }).limit(500), 6000, 'pending_items');
-        if (error) throw error;
-        return data || [];
-    } catch (e) { return []; }
+    try { const { data, error } = await withTimeout(sb.from('pending_items').select('*').order('submitted_at', { ascending: false }).limit(500), 6000, 'pending'); if (error) throw error; return data || []; } catch (e) { return []; }
 }
 async function fetchAgentClients() {
     if (!sb) return [];
-    try {
-        const { data, error } = await withTimeout(sb.from('agent_clients').select('*').order('created_at', { ascending: false }).limit(500), 6000, 'agent_clients');
-        if (error) throw error;
-        return data || [];
-    } catch (e) { return []; }
+    try { const { data, error } = await withTimeout(sb.from('agent_clients').select('*').order('created_at', { ascending: false }).limit(500), 6000, 'agent_clients'); if (error) throw error; return data || []; } catch (e) { return []; }
 }
-
 async function safeFetch(table, orderCol = 'created_at', limit = 500) {
     if (!sb) return [];
     try {
@@ -1841,61 +1094,35 @@ async function safeFetch(table, orderCol = 'created_at', limit = 500) {
 const fetchBusinesses = () => safeFetch('businesses');
 const fetchClients    = () => safeFetch('clients');
 
-// ============================================================
-// ROBUST USER FETCHER (PATCHED — keeps slow sources alive)
-// ============================================================
 const USER_SOURCES = ['users', 'profiles', 'app_users', 'registrations', 'customers', 'accounts', 'user_profiles', 'members'];
 let USER_RESOLVED_SOURCE = null;
 
 async function fetchUsers() {
     if (!sb) return [];
-
     async function attempt(table, ms) {
         try {
-            const { data, error } = await withTimeout(
-                sb.from(table).select('*').limit(2000),
-                ms, table + '-fetch'
-            );
-            if (error) return { table, ok: false, error, data: null };
-            if (!Array.isArray(data)) return { table, ok: false, error: new Error('not an array'), data: null };
-            return { table, ok: true, error: null, data };
-        } catch (e) {
-            return { table, ok: false, error: e, data: null };
-        }
+            const { data, error } = await withTimeout(sb.from(table).select('*').limit(2000), ms, table + '-fetch');
+            if (error) return { ok: false, error, data: null };
+            if (!Array.isArray(data)) return { ok: false, error: new Error('not an array'), data: null };
+            return { ok: true, error: null, data };
+        } catch (e) { return { ok: false, error: e, data: null }; }
     }
-
     if (USER_RESOLVED_SOURCE) {
         const r = await attempt(USER_RESOLVED_SOURCE, 10000);
-        if (r.ok) {
-            setUserSourceInfo(USER_RESOLVED_SOURCE, r.data.length);
-            return r.data;
-        }
+        if (r.ok) { setUserSourceInfo(USER_RESOLVED_SOURCE, r.data.length); return r.data; }
         if (r.error && /timed out/i.test(String(r.error.message || ''))) {
-            console.warn(`⏳ ${USER_RESOLVED_SOURCE} fetch timed out (keeping source, will retry)`);
+            console.warn(`⏳ ${USER_RESOLVED_SOURCE} slow (kept as source)`);
             setUserSourceInfo(USER_RESOLVED_SOURCE + ' (slow)', '—');
             return [];
         }
         USER_RESOLVED_SOURCE = null;
     }
-
     let emptyCandidate = null;
-    let lastError = null;
-    const orderedSources = ['users'].concat(USER_SOURCES.filter(t => t !== 'users'));
-
-    for (const table of orderedSources) {
+    for (const table of ['users'].concat(USER_SOURCES.filter(t => t !== 'users'))) {
         const isUsers = table === 'users';
         const r = await attempt(table, isUsers ? 12000 : 6000);
-
-        if (r.ok && r.data.length > 0) {
-            USER_RESOLVED_SOURCE = table;
-            setUserSourceInfo(table, r.data.length);
-            return r.data;
-        }
-        if (r.ok && r.data.length === 0) {
-            if (!emptyCandidate) emptyCandidate = table;
-            continue;
-        }
-        lastError = r.error;
+        if (r.ok && r.data.length > 0) { USER_RESOLVED_SOURCE = table; setUserSourceInfo(table, r.data.length); return r.data; }
+        if (r.ok && r.data.length === 0) { if (!emptyCandidate) emptyCandidate = table; continue; }
         const msg = String(r.error?.message || '');
         if (/does not exist/i.test(msg)) continue;
         if (/timed out/i.test(msg) && isUsers) {
@@ -1904,37 +1131,17 @@ async function fetchUsers() {
             return [];
         }
     }
-
-    if (emptyCandidate) {
-        USER_RESOLVED_SOURCE = emptyCandidate;
-        setUserSourceInfo(emptyCandidate, 0);
-        return [];
-    }
-
-    {
-        const r = await attempt('all_registered_users', 8000);
-        if (r.ok) {
-            USER_RESOLVED_SOURCE = 'all_registered_users';
-            setUserSourceInfo('all_registered_users', r.data.length);
-            return r.data;
-        }
-    }
-
+    if (emptyCandidate) { USER_RESOLVED_SOURCE = emptyCandidate; setUserSourceInfo(emptyCandidate, 0); return []; }
+    { const r = await attempt('all_registered_users', 8000); if (r.ok) { USER_RESOLVED_SOURCE = 'all_registered_users'; setUserSourceInfo('all_registered_users', r.data.length); return r.data; } }
     try {
         const { data, error } = await withTimeout(sb.rpc('list_registered_users'), 8000, 'rpc');
-        if (!error && Array.isArray(data)) {
-            setUserSourceInfo('RPC:list_registered_users', data.length);
-            return data;
-        }
+        if (!error && Array.isArray(data)) { setUserSourceInfo('RPC:list_registered_users', data.length); return data; }
     } catch (e) { }
-
     setUserSourceInfo('unresolved', 0);
-    if (lastError) console.warn('fetchUsers last error:', lastError.message);
     return [];
 }
 function setUserSourceInfo(source, count) {
-    const el = $('userSourceInfo');
-    if (!el) return;
+    const el = $('userSourceInfo'); if (!el) return;
     el.style.display = 'inline-flex';
     el.textContent = `🔎 Source: ${source} · ${count} row(s)`;
 }
@@ -1945,9 +1152,6 @@ async function updateComplaintStatus(id, status) {
     catch (e) { return null; }
 }
 
-// ============================================================
-// ROW-ACTION BUILDERS
-// ============================================================
 function accountActionButtons(type, rec) {
     const id = safeId(rec.id);
     const suspended = isSuspended(rec);
@@ -1968,62 +1172,52 @@ function suspendedBadge(rec) {
     return `<span class="badge red">⏸ Suspended</span>`;
 }
 
-// ============================================================
-// RENDERERS
-// ============================================================
 function renderTransactions(filter = '') {
-    const wrap = $('listTx');
-    if (!wrap) return;
+    const wrap = $('listTx'); if (!wrap) return;
     const q = filter.toLowerCase();
     let items = State.transactions;
     if (q) items = items.filter(t =>
-        (t.tx_id || '').toLowerCase().includes(q) ||
-        (t.sender_name || '').toLowerCase().includes(q) ||
-        (t.sender_phone || '').toLowerCase().includes(q) ||
-        (t.agent_name || '').toLowerCase().includes(q) ||
+        (t.tx_id || '').toLowerCase().includes(q) || (t.sender_name || '').toLowerCase().includes(q) ||
+        (t.sender_phone || '').toLowerCase().includes(q) || (t.agent_name || '').toLowerCase().includes(q) ||
         (t.provider_tx_id || '').toLowerCase().includes(q)
     );
-
     if (!items.length) {
         if (TX_LAST_ERROR) {
-            wrap.innerHTML = `<div class="empty-state"><div class="em-icon">⚠️</div>Could not load transactions.<br><span style="font-size:0.72rem;color:#bdc3c7;">${escapeHTML(TX_LAST_ERROR)}</span><br><br><button class="btn-mini blue" id="retryTxInline">🔄 Try again</button></div>`;
+            wrap.innerHTML = `<div class="empty-state"><div class="em-icon">⚠️</div>Could not load.<br><span style="font-size:0.72rem;color:#bdc3c7;">${escapeHTML(TX_LAST_ERROR)}</span><br><br><button class="btn-mini blue" id="retryTxInline">🔄 Try again</button></div>`;
             on('retryTxInline', 'click', () => { const b = $('refreshTx'); if (b) b.click(); });
             setTxLoadFailed('Failed');
         } else {
-            wrap.innerHTML = `<div class="empty-state"><div class="em-icon">💳</div>No transactions found${q ? ' for "'+escapeHTML(q)+'"' : ''}.</div>`;
+            wrap.innerHTML = `<div class="empty-state"><div class="em-icon">💳</div>No transactions${q ? ' for "'+escapeHTML(q)+'"' : ''}.</div>`;
             setTxLoadStatus('Empty', true);
         }
         return;
     }
-
     wrap.innerHTML = items.map(t => {
         const mode = String(t.mode || 'Local').toLowerCase().includes('int') ? 'blue' : 'green';
         const tid = safeId(t.id);
-        return `
-            <div class="list-row" data-row-id="${tid}">
-                <div class="row-avatar">${escapeHTML(String(t.currency || 'SLL').substring(0,3))}</div>
-                <div class="row-main">
-                    <div class="row-title">${escapeHTML(t.tx_id || 'TX')}</div>
-                    <div class="row-sub">👤 ${escapeHTML(t.sender_name || '—')} (${escapeHTML(t.sender_phone || '—')}) → 🏪 ${escapeHTML(t.agent_name || '—')}</div>
-                    <div class="row-sub" style="margin-top:3px;">
-                        <span class="badge ${mode}">${escapeHTML(t.mode || 'Local')}</span>
-                        <span class="badge blue">${escapeHTML(t.currency || '—')}</span>
-                        <span class="badge gray">${shortDate(t.created_at)}</span>
-                    </div>
+        return `<div class="list-row" data-row-id="${tid}">
+            <div class="row-avatar">${escapeHTML(String(t.currency || 'SLL').substring(0,3))}</div>
+            <div class="row-main">
+                <div class="row-title">${escapeHTML(t.tx_id || 'TX')}</div>
+                <div class="row-sub">👤 ${escapeHTML(t.sender_name || '—')} (${escapeHTML(t.sender_phone || '—')}) → 🏪 ${escapeHTML(t.agent_name || '—')}</div>
+                <div class="row-sub" style="margin-top:3px;">
+                    <span class="badge ${mode}">${escapeHTML(t.mode || 'Local')}</span>
+                    <span class="badge blue">${escapeHTML(t.currency || '—')}</span>
+                    <span class="badge gray">${shortDate(t.created_at)}</span>
                 </div>
-                <div class="row-amount">${escapeHTML(t.currency || '')} ${fmtMoney(t.total)}</div>
-                <div class="row-actions">
-                    <button class="btn-mini blue" onclick="showTxDetail('${tid}')">👁️ View</button>
-                    <button class="btn-mini red" onclick="deleteRecord('transactions','${tid}','Transaction ${escapeHTML(t.tx_id || '')}')">🗑️ Delete</button>
-                </div>
-            </div>`;
+            </div>
+            <div class="row-amount">${escapeHTML(t.currency || '')} ${fmtMoney(t.total)}</div>
+            <div class="row-actions">
+                <button class="btn-mini blue" onclick="showTxDetail('${tid}')">👁️ View</button>
+                <button class="btn-mini red" onclick="deleteRecord('transactions','${tid}','Transaction ${escapeHTML(t.tx_id || '')}')">🗑️ Delete</button>
+            </div>
+        </div>`;
     }).join('');
     setTxLoadStatus(`${items.length} loaded`, true);
 }
 
 function renderAgents(filter = '') {
-    const wrap = $('listAgents');
-    if (!wrap) return;
+    const wrap = $('listAgents'); if (!wrap) return;
     const q = filter.toLowerCase();
     const statusF = val('agentStatusFilter') || 'all';
     let items = State.agents;
@@ -2031,36 +1225,32 @@ function renderAgents(filter = '') {
     else if (statusF === 'suspended') items = items.filter(a => isSuspended(a));
     if (q) items = items.filter(a =>
         (a.business_name || a.businessName || '').toLowerCase().includes(q) ||
-        (a.owner_name || '').toLowerCase().includes(q) ||
-        (a.city || '').toLowerCase().includes(q) ||
-        (a.country_code || '').toLowerCase().includes(q) ||
-        (a.mobile_money || '').toLowerCase().includes(q)
+        (a.owner_name || '').toLowerCase().includes(q) || (a.city || '').toLowerCase().includes(q) ||
+        (a.country_code || '').toLowerCase().includes(q) || (a.mobile_money || '').toLowerCase().includes(q)
     );
-    if (!items.length) { wrap.innerHTML = `<div class="empty-state"><div class="em-icon">🏢</div>No agents found.</div>`; return; }
+    if (!items.length) { wrap.innerHTML = `<div class="empty-state"><div class="em-icon">🏢</div>No agents.</div>`; return; }
     wrap.innerHTML = items.map(a => {
         const suspended = isSuspended(a);
         const name = a.business_name || a.businessName || 'Agent';
         const initials = String(name).substring(0,2).toUpperCase();
-        return `
-            <div class="list-row ${suspended ? 'suspended' : ''}" data-row-id="${safeId(a.id)}">
-                <div class="row-avatar ${suspended ? 'susp' : ''}">${escapeHTML(initials)}</div>
-                <div class="row-main">
-                    <div class="row-title">${escapeHTML(name)}</div>
-                    <div class="row-sub">👤 ${escapeHTML(a.owner_name || '—')} · 📍 ${escapeHTML(a.city || '—')} · ${escapeHTML(a.country_code || '—')}</div>
-                    <div class="row-sub" style="margin-top:3px;">
-                        ${suspendedBadge(a)}
-                        <span class="badge ${a.approved ? 'green' : 'orange'}">${a.approved ? '✓ Approved' : '⏳ Pending'}</span>
-                        <span class="badge blue">💳 ${fmtMoney(a.collateral_limit || a.collateral_amount)}</span>
-                    </div>
+        return `<div class="list-row ${suspended ? 'suspended' : ''}" data-row-id="${safeId(a.id)}">
+            <div class="row-avatar ${suspended ? 'susp' : ''}">${escapeHTML(initials)}</div>
+            <div class="row-main">
+                <div class="row-title">${escapeHTML(name)}</div>
+                <div class="row-sub">👤 ${escapeHTML(a.owner_name || '—')} · 📍 ${escapeHTML(a.city || '—')} · ${escapeHTML(a.country_code || '—')}</div>
+                <div class="row-sub" style="margin-top:3px;">
+                    ${suspendedBadge(a)}
+                    <span class="badge ${a.approved ? 'green' : 'orange'}">${a.approved ? '✓ Approved' : '⏳ Pending'}</span>
+                    <span class="badge blue">💳 ${fmtMoney(a.collateral_limit || a.collateral_amount)}</span>
                 </div>
-                <div class="row-actions">${accountActionButtons('agents', a)}</div>
-            </div>`;
+            </div>
+            <div class="row-actions">${accountActionButtons('agents', a)}</div>
+        </div>`;
     }).join('');
 }
 
 function renderBusinesses(filter = '') {
-    const wrap = $('listBusinesses');
-    if (!wrap) return;
+    const wrap = $('listBusinesses'); if (!wrap) return;
     const q = filter.toLowerCase();
     const statusF = val('businessStatusFilter') || 'all';
     let items = State.businesses;
@@ -2069,32 +1259,29 @@ function renderBusinesses(filter = '') {
     if (q) items = items.filter(b =>
         (b.name || b.business_name || '').toLowerCase().includes(q) ||
         (b.contact || '').toLowerCase().includes(q) ||
-        (b.city || '').toLowerCase().includes(q) ||
-        (b.type || '').toLowerCase().includes(q)
+        (b.city || '').toLowerCase().includes(q) || (b.type || '').toLowerCase().includes(q)
     );
-    if (!items.length) { wrap.innerHTML = `<div class="empty-state"><div class="em-icon">🏪</div>No businesses found.</div>`; return; }
+    if (!items.length) { wrap.innerHTML = `<div class="empty-state"><div class="em-icon">🏪</div>No businesses.</div>`; return; }
     wrap.innerHTML = items.map(b => {
         const suspended = isSuspended(b);
-        return `
-            <div class="list-row ${suspended ? 'suspended' : ''}" data-row-id="${safeId(b.id)}">
-                <div class="row-avatar ${suspended ? 'susp' : ''}" style="${suspended ? '' : 'background:#fef4e6;color:#c97e2a;'}">${escapeHTML(b.icon || b.emoji || '🏪')}</div>
-                <div class="row-main">
-                    <div class="row-title">${escapeHTML(b.name || b.business_name || '—')}</div>
-                    <div class="row-sub">📞 ${escapeHTML(b.contact || '—')} · 💳 ${escapeHTML(b.mobile_money || '—')}</div>
-                    <div class="row-sub" style="margin-top:3px;">
-                        ${suspendedBadge(b)}
-                        <span class="badge blue">🏷️ ${escapeHTML(b.type || b.business_type || 'Other')}</span>
-                        <span class="badge gray">📍 ${escapeHTML(b.city || '—')}, ${escapeHTML(b.country || '—')}</span>
-                    </div>
+        return `<div class="list-row ${suspended ? 'suspended' : ''}" data-row-id="${safeId(b.id)}">
+            <div class="row-avatar ${suspended ? 'susp' : ''}" style="${suspended ? '' : 'background:#fef4e6;color:#c97e2a;'}">${escapeHTML(b.icon || b.emoji || '🏪')}</div>
+            <div class="row-main">
+                <div class="row-title">${escapeHTML(b.name || b.business_name || '—')}</div>
+                <div class="row-sub">📞 ${escapeHTML(b.contact || '—')} · 💳 ${escapeHTML(b.mobile_money || '—')}</div>
+                <div class="row-sub" style="margin-top:3px;">
+                    ${suspendedBadge(b)}
+                    <span class="badge blue">🏷️ ${escapeHTML(b.type || b.business_type || 'Other')}</span>
+                    <span class="badge gray">📍 ${escapeHTML(b.city || '—')}</span>
                 </div>
-                <div class="row-actions">${accountActionButtons('businesses', b)}</div>
-            </div>`;
+            </div>
+            <div class="row-actions">${accountActionButtons('businesses', b)}</div>
+        </div>`;
     }).join('');
 }
 
 function renderClients(filter = '') {
-    const wrap = $('listClients');
-    if (!wrap) return;
+    const wrap = $('listClients'); if (!wrap) return;
     const q = filter.toLowerCase();
     const statusF = val('clientStatusFilter') || 'all';
     let items = State.clients;
@@ -2102,33 +1289,30 @@ function renderClients(filter = '') {
     else if (statusF === 'suspended') items = items.filter(c => isSuspended(c));
     if (q) items = items.filter(c =>
         (c.name || c.full_name || '').toLowerCase().includes(q) ||
-        (c.phone || '').toLowerCase().includes(q) ||
-        (c.city || '').toLowerCase().includes(q)
+        (c.phone || '').toLowerCase().includes(q) || (c.city || '').toLowerCase().includes(q)
     );
-    if (!items.length) { wrap.innerHTML = `<div class="empty-state"><div class="em-icon">👥</div>No clients found.</div>`; return; }
+    if (!items.length) { wrap.innerHTML = `<div class="empty-state"><div class="em-icon">👥</div>No clients.</div>`; return; }
     wrap.innerHTML = items.map(c => {
         const suspended = isSuspended(c);
         const displayName = c.name || c.full_name || '—';
-        return `
-            <div class="list-row ${suspended ? 'suspended' : ''}" data-row-id="${safeId(c.id)}">
-                <div class="row-avatar ${suspended ? 'susp' : ''}">👤</div>
-                <div class="row-main">
-                    <div class="row-title">${escapeHTML(displayName)}</div>
-                    <div class="row-sub">📱 ${escapeHTML(c.phone || '—')} · 📍 ${escapeHTML(c.city || '—')}, ${escapeHTML(c.country || '—')}</div>
-                    <div class="row-sub" style="margin-top:3px;">
-                        ${suspendedBadge(c)}
-                        ${c.agent_id ? `<span class="badge blue">Agent: ${escapeHTML(String(c.agent_id).substring(0,12))}</span>` : `<span class="badge purple">Direct</span>`}
-                        <span class="badge gray">${shortDate(c.created_at)}</span>
-                    </div>
+        return `<div class="list-row ${suspended ? 'suspended' : ''}" data-row-id="${safeId(c.id)}">
+            <div class="row-avatar ${suspended ? 'susp' : ''}">👤</div>
+            <div class="row-main">
+                <div class="row-title">${escapeHTML(displayName)}</div>
+                <div class="row-sub">📱 ${escapeHTML(c.phone || '—')} · 📍 ${escapeHTML(c.city || '—')}</div>
+                <div class="row-sub" style="margin-top:3px;">
+                    ${suspendedBadge(c)}
+                    ${c.agent_id ? `<span class="badge blue">Agent: ${escapeHTML(String(c.agent_id).substring(0,12))}</span>` : `<span class="badge purple">Direct</span>`}
+                    <span class="badge gray">${shortDate(c.created_at)}</span>
                 </div>
-                <div class="row-actions">${accountActionButtons('clients', c)}</div>
-            </div>`;
+            </div>
+            <div class="row-actions">${accountActionButtons('clients', c)}</div>
+        </div>`;
     }).join('');
 }
 
 function renderUsers(filter = '') {
-    const wrap = $('listUsers');
-    if (!wrap) return;
+    const wrap = $('listUsers'); if (!wrap) return;
     const q = filter.toLowerCase();
     const statusF = val('userStatusFilter') || 'all';
     const roleF   = val('userRoleFilter') || 'all';
@@ -2138,92 +1322,80 @@ function renderUsers(filter = '') {
     if (roleF !== 'all') items = items.filter(u => String(u.role || 'user').toLowerCase() === roleF);
     if (q) items = items.filter(u => {
         const name = (u.full_name || u.name || u.username || '').toLowerCase();
-        return name.includes(q) ||
-            (u.email || '').toLowerCase().includes(q) ||
-            (u.phone || '').toLowerCase().includes(q) ||
-            (u.country || '').toLowerCase().includes(q) ||
+        return name.includes(q) || (u.email || '').toLowerCase().includes(q) ||
+            (u.phone || '').toLowerCase().includes(q) || (u.country || '').toLowerCase().includes(q) ||
             (u.role || '').toLowerCase().includes(q);
     });
-
     const info = $('userCounts');
     if (info) {
         const total = State.users.length;
         const suspended = State.users.filter(isSuspended).length;
-        const active = total - suspended;
-        info.innerHTML = `👥 <strong>${total}</strong> total · ✅ <strong>${active}</strong> active · ⏸️ <strong>${suspended}</strong> suspended`;
+        info.innerHTML = `👥 <strong>${total}</strong> total · ✅ <strong>${total - suspended}</strong> active · ⏸️ <strong>${suspended}</strong> suspended`;
     }
-
     if (!items.length) {
-        wrap.innerHTML = `<div class="empty-state"><div class="em-icon">🧑</div>No users found${q ? ' for "'+escapeHTML(q)+'"' : ''}.<br><span style="font-size:0.75rem; color:#bdc3c7;">If this is unexpected, click <strong>🩺 Diagnose Users</strong> in the top bar.</span></div>`;
+        wrap.innerHTML = `<div class="empty-state"><div class="em-icon">🧑</div>No users${q ? ' for "'+escapeHTML(q)+'"' : ''}.<br><span style="font-size:0.75rem; color:#bdc3c7;">Try 🩺 Diagnose Users in the top bar.</span></div>`;
         return;
     }
-
     wrap.innerHTML = items.map(u => {
         const suspended = isSuspended(u);
         const name = u.full_name || u.name || u.username || u.email || '—';
         const initials = String(name).substring(0,2).toUpperCase();
-        return `
-            <div class="list-row ${suspended ? 'suspended' : ''}" data-row-id="${safeId(u.id)}">
-                <div class="row-avatar ${suspended ? 'susp' : ''}">${escapeHTML(initials)}</div>
-                <div class="row-main">
-                    <div class="row-title">${escapeHTML(name)}</div>
-                    <div class="row-sub">${u.email ? `📧 ${escapeHTML(u.email)}` : ''}${u.phone ? ` · 📱 ${escapeHTML(u.phone)}` : ''}</div>
-                    <div class="row-sub" style="margin-top:3px;">
-                        ${suspendedBadge(u)}
-                        ${u.role ? `<span class="badge purple">${escapeHTML(u.role)}</span>` : `<span class="badge purple">user</span>`}
-                        ${u.country ? `<span class="badge gray">🌍 ${escapeHTML(u.country)}</span>` : ''}
-                        ${suspended && u.suspended_at ? `<span class="badge gray">Suspended ${shortDate(u.suspended_at)}</span>` : `<span class="badge gray">${shortDate(u.created_at)}</span>`}
-                    </div>
-                    ${suspended && u.suspension_notes ? `<div class="row-sub" style="margin-top:3px; color:#a93226; font-style:italic;">📝 ${escapeHTML(String(u.suspension_notes).substring(0,110))}${String(u.suspension_notes).length>110?'…':''}</div>` : ''}
+        return `<div class="list-row ${suspended ? 'suspended' : ''}" data-row-id="${safeId(u.id)}">
+            <div class="row-avatar ${suspended ? 'susp' : ''}">${escapeHTML(initials)}</div>
+            <div class="row-main">
+                <div class="row-title">${escapeHTML(name)}</div>
+                <div class="row-sub">${u.email ? `📧 ${escapeHTML(u.email)}` : ''}${u.phone ? ` · 📱 ${escapeHTML(u.phone)}` : ''}</div>
+                <div class="row-sub" style="margin-top:3px;">
+                    ${suspendedBadge(u)}
+                    ${u.role ? `<span class="badge purple">${escapeHTML(u.role)}</span>` : `<span class="badge purple">user</span>`}
+                    ${u.country ? `<span class="badge gray">🌍 ${escapeHTML(u.country)}</span>` : ''}
+                    <span class="badge gray">${shortDate(u.created_at)}</span>
                 </div>
-                <div class="row-actions">${accountActionButtons('users', u)}</div>
-            </div>`;
+            </div>
+            <div class="row-actions">${accountActionButtons('users', u)}</div>
+        </div>`;
     }).join('');
 }
 
 function renderComplaints(filter = '') {
-    const wrap = $('listComplaints');
-    if (!wrap) return;
+    const wrap = $('listComplaints'); if (!wrap) return;
     const q = filter.toLowerCase();
     let items = State.complaints;
     if (q) items = items.filter(c =>
-        (c.name || '').toLowerCase().includes(q) ||
-        (c.phone || '').toLowerCase().includes(q) ||
+        (c.name || '').toLowerCase().includes(q) || (c.phone || '').toLowerCase().includes(q) ||
         (c.category || '').toLowerCase().includes(q)
     );
-    if (!items.length) { wrap.innerHTML = `<div class="empty-state"><div class="em-icon">🚨</div>No complaints found.</div>`; return; }
+    if (!items.length) { wrap.innerHTML = `<div class="empty-state"><div class="em-icon">🚨</div>No complaints.</div>`; return; }
     wrap.innerHTML = items.map(c => {
         const status = (c.status || 'pending').toLowerCase();
         const statusClass = status === 'resolved' ? 'green' : (status === 'reviewing' ? 'orange' : 'red');
         const cid = safeId(c.id);
-        return `
-            <div class="list-row" data-row-id="${cid}">
-                <div class="row-avatar" style="background:#fdeaea; color:#c0392b;">🚨</div>
-                <div class="row-main">
-                    <div class="row-title">${escapeHTML(c.category || 'Complaint')}</div>
-                    <div class="row-sub">👤 ${escapeHTML(c.name || '—')} · 📱 ${escapeHTML(c.phone || '—')}</div>
-                    <div class="row-sub" style="margin-top:3px; color:#555;">${escapeHTML((c.details || '').substring(0, 120))}${(c.details||'').length > 120 ? '…' : ''}</div>
-                    <div class="row-sub" style="margin-top:3px;">
-                        <span class="badge ${statusClass}">${status.toUpperCase()}</span>
-                        <span class="badge gray">${shortDate(c.created_at)}</span>
-                    </div>
+        return `<div class="list-row" data-row-id="${cid}">
+            <div class="row-avatar" style="background:#fdeaea; color:#c0392b;">🚨</div>
+            <div class="row-main">
+                <div class="row-title">${escapeHTML(c.category || 'Complaint')}</div>
+                <div class="row-sub">👤 ${escapeHTML(c.name || '—')} · 📱 ${escapeHTML(c.phone || '—')}</div>
+                <div class="row-sub" style="margin-top:3px; color:#555;">${escapeHTML((c.details || '').substring(0, 120))}${(c.details||'').length > 120 ? '…' : ''}</div>
+                <div class="row-sub" style="margin-top:3px;">
+                    <span class="badge ${statusClass}">${status.toUpperCase()}</span>
+                    <span class="badge gray">${shortDate(c.created_at)}</span>
                 </div>
-                <div class="row-actions" style="flex-direction:column; gap:4px;">
-                    <select class="status-select ${status}" onchange="changeComplaintStatus('${cid}', this.value)">
-                        <option value="pending" ${status==='pending'?'selected':''}>Pending</option>
-                        <option value="reviewing" ${status==='reviewing'?'selected':''}>Reviewing</option>
-                        <option value="resolved" ${status==='resolved'?'selected':''}>Resolved</option>
-                    </select>
-                    <button class="btn-mini blue" onclick="showComplaintDetail('${cid}')">👁️ View</button>
-                    <button class="btn-mini red" onclick="deleteRecord('complaints','${cid}','Complaint: ${escapeHTML(c.category || '')}')">🗑️ Delete</button>
-                </div>
-            </div>`;
+            </div>
+            <div class="row-actions" style="flex-direction:column; gap:4px;">
+                <select class="status-select ${status}" onchange="changeComplaintStatus('${cid}', this.value)">
+                    <option value="pending" ${status==='pending'?'selected':''}>Pending</option>
+                    <option value="reviewing" ${status==='reviewing'?'selected':''}>Reviewing</option>
+                    <option value="resolved" ${status==='resolved'?'selected':''}>Resolved</option>
+                </select>
+                <button class="btn-mini blue" onclick="showComplaintDetail('${cid}')">👁️ View</button>
+                <button class="btn-mini red" onclick="deleteRecord('complaints','${cid}','Complaint')">🗑️ Delete</button>
+            </div>
+        </div>`;
     }).join('');
 }
 
 function renderPending(filter = '') {
-    const wrap = $('listPending');
-    if (!wrap) return;
+    const wrap = $('listPending'); if (!wrap) return;
     const q = (filter || '').toLowerCase();
     const typeFilter = val('pendingTypeFilter') || 'all';
     let items = State.pendingItems.slice();
@@ -2232,13 +1404,13 @@ function renderPending(filter = '') {
     if (q) items = items.filter(p => {
         const d = asObj(p.data);
         return JSON.stringify(d).toLowerCase().includes(q) ||
-               String(p.submitted_by || '').toLowerCase().includes(q) ||
-               String(p.country || '').toLowerCase().includes(q);
+            String(p.submitted_by || '').toLowerCase().includes(q) ||
+            String(p.country || '').toLowerCase().includes(q);
     });
     const pendingCount = State.pendingItems.filter(p => (p.status || 'pending') === 'pending').length;
     const info = $('pendingCountInfo');
     if (info) info.innerHTML = `⏳ <strong>${pendingCount}</strong> pending · 🗂️ <strong>${State.pendingItems.length - pendingCount}</strong> reviewed`;
-    if (!items.length) { wrap.innerHTML = `<div class="empty-state"><div class="em-icon">✅</div>No approvals to show.</div>`; return; }
+    if (!items.length) { wrap.innerHTML = `<div class="empty-state"><div class="em-icon">✅</div>No approvals.</div>`; return; }
     wrap.innerHTML = items.map(p => {
         const d = asObj(p.data);
         const status = (p.status || 'pending').toLowerCase();
@@ -2247,31 +1419,29 @@ function renderPending(filter = '') {
         const typeIcon = { agent:'🧑‍💼', business:'🏪', product:'📦', service:'🛠️', client:'👥' }[type] || '📄';
         const title = pick(d, ['businessName','business_name','name','title'], '(untitled)');
         const pid = safeId(p.id);
-        return `
-            <div class="list-row" data-row-id="${pid}">
-                <div class="row-avatar">${typeIcon}</div>
-                <div class="row-main">
-                    <div class="row-title">${escapeHTML(title)}</div>
-                    <div class="row-sub">Type: ${escapeHTML(type || '—')} · 👤 ${escapeHTML(p.submitted_by || '—')}</div>
-                    <div class="row-sub" style="margin-top:3px;">
-                        <span class="badge ${statusClass}">${status.toUpperCase()}</span>
-                        <span class="badge gray">${shortDate(p.submitted_at || p.created_at)}</span>
-                    </div>
+        return `<div class="list-row" data-row-id="${pid}">
+            <div class="row-avatar">${typeIcon}</div>
+            <div class="row-main">
+                <div class="row-title">${escapeHTML(title)}</div>
+                <div class="row-sub">Type: ${escapeHTML(type || '—')} · 👤 ${escapeHTML(p.submitted_by || '—')}</div>
+                <div class="row-sub" style="margin-top:3px;">
+                    <span class="badge ${statusClass}">${status.toUpperCase()}</span>
+                    <span class="badge gray">${shortDate(p.submitted_at || p.created_at)}</span>
                 </div>
-                <div class="row-actions">
-                    ${status === 'pending' ? `
-                        <button class="btn-mini green" onclick="approvePendingItem('${pid}')">✅ Approve</button>
-                        <button class="btn-mini red" onclick="rejectPendingItem('${pid}')">❌ Reject</button>
-                    ` : ''}
-                    <button class="btn-mini blue" onclick="showPendingDetail('${pid}')">👁️ View</button>
-                </div>
-            </div>`;
+            </div>
+            <div class="row-actions">
+                ${status === 'pending' ? `
+                    <button class="btn-mini green" onclick="approvePendingItem('${pid}')">✅ Approve</button>
+                    <button class="btn-mini red" onclick="rejectPendingItem('${pid}')">❌ Reject</button>
+                ` : ''}
+                <button class="btn-mini blue" onclick="showPendingDetail('${pid}')">👁️ View</button>
+            </div>
+        </div>`;
     }).join('');
 }
 
 function renderAgentClients(filter = '') {
-    const wrap = $('listAgentClients');
-    if (!wrap) return;
+    const wrap = $('listAgentClients'); if (!wrap) return;
     const q = (filter || '').toLowerCase();
     let items = State.agentClients;
     if (q) items = items.filter(c =>
@@ -2284,32 +1454,29 @@ function renderAgentClients(filter = '') {
         const status = (c.status || 'pending').toLowerCase();
         const statusClass = status === 'approved' ? 'green' : (status === 'rejected' ? 'red' : 'orange');
         const cid = safeId(c.id);
-        return `
-            <div class="list-row" data-row-id="${cid}">
-                <div class="row-avatar" style="background:#e8f0f8; color:#1c6e8f;">👤</div>
-                <div class="row-main">
-                    <div class="row-title">${escapeHTML(c.name || '—')}</div>
-                    <div class="row-sub">📱 ${escapeHTML(c.phone || '—')} · 📍 ${escapeHTML(c.city || '—')}, ${escapeHTML(c.country || '—')}</div>
-                    <div class="row-sub" style="margin-top:3px;">
-                        <span class="badge ${statusClass}">${status.toUpperCase()}</span>
-                        <span class="badge blue">Agent: ${escapeHTML(String(c.agent_id || '—').substring(0,14))}</span>
-                        <span class="badge gray">${shortDate(c.created_at)}</span>
-                    </div>
+        return `<div class="list-row" data-row-id="${cid}">
+            <div class="row-avatar" style="background:#e8f0f8; color:#1c6e8f;">👤</div>
+            <div class="row-main">
+                <div class="row-title">${escapeHTML(c.name || '—')}</div>
+                <div class="row-sub">📱 ${escapeHTML(c.phone || '—')} · 📍 ${escapeHTML(c.city || '—')}</div>
+                <div class="row-sub" style="margin-top:3px;">
+                    <span class="badge ${statusClass}">${status.toUpperCase()}</span>
+                    <span class="badge blue">Agent: ${escapeHTML(String(c.agent_id || '—').substring(0,14))}</span>
                 </div>
-                <div class="row-actions">
-                    ${status === 'pending' ? `
-                        <button class="btn-mini green" onclick="approveClient('${cid}')">✅ Approve</button>
-                        <button class="btn-mini red" onclick="rejectClient('${cid}')">❌ Reject</button>
-                    ` : ''}
-                    <button class="btn-mini red" onclick="deleteAgentClient('${cid}')">🗑️ Delete</button>
-                </div>
-            </div>`;
+            </div>
+            <div class="row-actions">
+                ${status === 'pending' ? `
+                    <button class="btn-mini green" onclick="approveClient('${cid}')">✅ Approve</button>
+                    <button class="btn-mini red" onclick="rejectClient('${cid}')">❌ Reject</button>
+                ` : ''}
+                <button class="btn-mini red" onclick="deleteAgentClient('${cid}')">🗑️ Delete</button>
+            </div>
+        </div>`;
     }).join('');
 }
 
 function renderPaybacks(filter = '') {
-    const wrap = $('listPaybacks');
-    if (!wrap) return;
+    const wrap = $('listPaybacks'); if (!wrap) return;
     const q = filter.toLowerCase();
     let items = State.paybacks;
     if (q) items = items.filter(p =>
@@ -2317,7 +1484,7 @@ function renderPaybacks(filter = '') {
         (p.agent_name || '').toLowerCase().includes(q) ||
         (p.provider_tx_id || '').toLowerCase().includes(q)
     );
-    if (!items.length) { wrap.innerHTML = `<div class="empty-state"><div class="em-icon">💰</div>No paybacks found.</div>`; return; }
+    if (!items.length) { wrap.innerHTML = `<div class="empty-state"><div class="em-icon">💰</div>No paybacks.</div>`; return; }
     wrap.innerHTML = items.map(p => `
         <div class="list-row" data-row-id="${safeId(p.id)}">
             <div class="row-avatar" style="background:#fef4e6; color:#c97e2a;">💰</div>
@@ -2327,25 +1494,23 @@ function renderPaybacks(filter = '') {
                 <div class="row-sub" style="margin-top:3px;">
                     <span class="badge orange">Cashed: ${fmtMoney(p.cashed_out_amount)}</span>
                     <span class="badge green">Agent: ${fmtMoney(p.agent_commission)}</span>
-                    <span class="badge blue">Platform: ${fmtMoney(p.platform_share)}</span>
                 </div>
             </div>
             <div class="row-amount" style="color:#e67e22;">+${fmtMoney(p.agent_commission)}</div>
             <div class="row-actions">
                 <button class="btn-mini blue" onclick="showPaybackDetail('${safeId(p.id)}')">👁️ View</button>
-                <button class="btn-mini red" onclick="deleteRecord('paybacks','${safeId(p.id)}','PayBack ${escapeHTML(p.provider_tx_id || '')}')">🗑️ Delete</button>
+                <button class="btn-mini red" onclick="deleteRecord('paybacks','${safeId(p.id)}','PayBack')">🗑️ Delete</button>
             </div>
         </div>
     `).join('');
 }
 
 function renderSubs(filter = '') {
-    const wrap = $('listSubs');
-    if (!wrap) return;
+    const wrap = $('listSubs'); if (!wrap) return;
     const q = filter.toLowerCase();
     let items = State.subscribers;
     if (q) items = items.filter(s => (s.email || '').toLowerCase().includes(q));
-    if (!items.length) { wrap.innerHTML = `<div class="empty-state"><div class="em-icon">📧</div>No subscribers found.</div>`; return; }
+    if (!items.length) { wrap.innerHTML = `<div class="empty-state"><div class="em-icon">📧</div>No subscribers.</div>`; return; }
     wrap.innerHTML = items.map(s => `
         <div class="list-row" data-row-id="${safeId(s.id)}">
             <div class="row-avatar" style="background:#f3eaf8; color:#8e44ad;">📧</div>
@@ -2358,12 +1523,11 @@ function renderSubs(filter = '') {
 }
 
 function renderChat() {
-    const wrap = $('chatLive');
-    if (!wrap) return;
-    if (!State.chat.length) { wrap.innerHTML = `<div class="empty-state"><div class="em-icon">💬</div>Waiting for messages…</div>`; return; }
+    const wrap = $('chatLive'); if (!wrap) return;
+    if (!State.chat.length) { wrap.innerHTML = `<div class="empty-state"><div class="em-icon">💬</div>Waiting…</div>`; return; }
     wrap.innerHTML = State.chat.slice(-100).map(m => `
         <div class="chat-bubble">
-            <button class="chat-del-btn" onclick="deleteRecord('chat_messages','${safeId(m.id)}','Chat message from ${escapeHTML(m.sender_name || 'Anonymous')}')" title="Delete message">✕</button>
+            <button class="chat-del-btn" onclick="deleteRecord('chat_messages','${safeId(m.id)}','Chat message')" title="Delete">✕</button>
             <span class="cb-name">${escapeHTML(m.sender_name || 'Anonymous')}</span>
             <span class="cb-time">${shortDate(m.created_at)}</span>
             <div class="cb-msg">${escapeHTML(m.message || '')}</div>
@@ -2372,9 +1536,6 @@ function renderChat() {
     wrap.scrollTop = wrap.scrollHeight;
 }
 
-// ============================================================
-// MODALS
-// ============================================================
 function openModal(title, bodyHTML, actionsHTML = '') {
     $('modalTitle').textContent = title;
     $('modalBody').innerHTML = bodyHTML;
@@ -2385,8 +1546,7 @@ function openModal(title, bodyHTML, actionsHTML = '') {
 }
 function closeModal() {
     $('detailModal').classList.remove('open');
-    $('modalActions').style.display = 'none';
-    $('modalActions').innerHTML = '';
+    $('modalActions').style.display = 'none'; $('modalActions').innerHTML = '';
 }
 function di(label, value, full = false, cls = '') {
     return `<div class="detail-item ${full ? 'full' : ''} ${cls}">
@@ -2400,37 +1560,28 @@ function showAccountDetail(type, id) {
     if (!rec) { showToast('❌ Account not found', 'error'); return; }
     const meta = ACCOUNT_TABLES[type] || { label: 'Account', emoji: '📋' };
     const suspended = isSuspended(rec);
-
     let html = `<div class="detail-item full ${suspended ? 'danger' : 'info'}">
-        <div class="di-label">${suspended ? 'Account Status — Suspended' : 'Account Status — Active'}</div>
-        <div class="di-value">${suspended ? '⏸ Activity halted · still in system (restorable)' : '✅ Full access · all features enabled'}</div>
+        <div class="di-label">${suspended ? 'Suspended' : 'Active'}</div>
+        <div class="di-value">${suspended ? '⏸ Activity halted' : '✅ Full access'}</div>
     </div>`;
-
     if (suspended) {
         const reason = rec.suspension_reason ? getReason(rec.suspension_reason) : null;
         html += di('Violation Reason', reason ? `${reason.icon} ${reason.label}` : (rec.suspension_label || 'Not recorded'), true);
         if (rec.suspension_notes) html += di('Notes', rec.suspension_notes, true);
-        if (rec.suspended_at) html += di('Suspended At', fmtDate(rec.suspended_at));
-        if (rec.suspended_by) html += di('Suspended By', rec.suspended_by);
     }
-
-    html += `<div class="detail-item full" style="background:#f8fafc; padding:0.4rem 0.8rem;">
-        <div class="di-label">Full Record</div></div>`;
     Object.keys(rec).forEach(k => {
         if (k.startsWith('_') || k === 'suspension_notes') return;
         let v = rec[k];
         if (v && typeof v === 'object') v = JSON.stringify(v);
         if (k === 'password' || k === 'pin') v = v ? '••••••' : '—';
-        const isLong = String(v ?? '').length > 45;
-        html += di(k, (v === null || v === undefined || v === '') ? '—' : v, isLong);
+        html += di(k, (v === null || v === undefined || v === '') ? '—' : v, String(v ?? '').length > 45);
     });
-
     const sid = safeId(id);
     const actions = `
         ${suspended
-            ? `<button class="btn-mini green" onclick="toggleSuspend('${type}','${sid}',false); closeModal();">▶️ Restore Account</button>`
-            : `<button class="btn-mini orange" onclick="closeModal(); setTimeout(()=>toggleSuspend('${type}','${sid}',true),120);">⏸️ Suspend Account</button>`}
-        <button class="btn-mini red" onclick="closeModal(); setTimeout(()=>deleteAccount('${type}','${sid}'),120);">🗑️ Delete Account</button>
+            ? `<button class="btn-mini green" onclick="toggleSuspend('${type}','${sid}',false); closeModal();">▶️ Restore</button>`
+            : `<button class="btn-mini orange" onclick="closeModal(); setTimeout(()=>toggleSuspend('${type}','${sid}',true),120);">⏸️ Suspend</button>`}
+        <button class="btn-mini red" onclick="closeModal(); setTimeout(()=>deleteAccount('${type}','${sid}'),120);">🗑️ Delete</button>
     `;
     openModal(`${meta.emoji} ${meta.label} Details`, html, actions);
 }
@@ -2444,33 +1595,31 @@ function showTxDetail(id) {
         ${di('Mode', t.mode)} ${di('Currency', t.currency)}
         ${di('Sender', `${t.sender_name || '—'} (${t.sender_phone || '—'})`, true)}
         ${di('Agent', t.agent_name)} ${di('Agent Phone', t.agent_phone)}
-        ${di('Base Amount', fmtMoney(t.amount))} ${di('Charge (4%)', fmtMoney(t.charge))}
+        ${di('Base Amount', fmtMoney(t.amount))} ${di('Charge', fmtMoney(t.charge))}
         ${di('GST', fmtMoney(t.gst))} ${di('Total', fmtMoney(t.total))}
         ${di('Created At', fmtDate(t.created_at), true)}
     `;
-    const actions = `<button class="btn-mini red" onclick="deleteRecord('transactions','${safeId(t.id)}','Transaction ${escapeHTML(t.tx_id || '')}'); closeModal();">🗑️ Delete Transaction</button>`;
-    openModal('💳 Transaction Details', html, actions);
+    openModal('💳 Transaction Details', html,
+        `<button class="btn-mini red" onclick="deleteRecord('transactions','${safeId(t.id)}','Transaction'); closeModal();">🗑️ Delete</button>`);
 }
 function showComplaintDetail(id) {
     const c = State.complaints.find(x => String(x.id) === String(id));
     if (!c) return;
-    const actions = `<button class="btn-mini red" onclick="deleteRecord('complaints','${safeId(c.id)}','Complaint: ${escapeHTML(c.category || '')}'); closeModal();">🗑️ Delete Complaint</button>`;
-    openModal('🚨 Complaint Details', `
+    openModal('🚨 Complaint', `
         ${di('Category', c.category, true)} ${di('Status', c.status || 'pending')}
         ${di('Name', c.name)} ${di('Phone', c.phone)}
         ${di('Submitted', fmtDate(c.created_at))} ${di('Details', c.details, true)}
-    `, actions);
+    `, `<button class="btn-mini red" onclick="deleteRecord('complaints','${safeId(c.id)}','Complaint'); closeModal();">🗑️ Delete</button>`);
 }
 function showPaybackDetail(id) {
     const p = State.paybacks.find(x => String(x.id) === String(id));
     if (!p) return;
-    const actions = `<button class="btn-mini red" onclick="deleteRecord('paybacks','${safeId(p.id)}','PayBack ${escapeHTML(p.provider_tx_id || '')}'); closeModal();">🗑️ Delete PayBack</button>`;
     openModal('💰 PayBack Details', `
         ${di('Agent Business', p.agent_business_name, true)} ${di('Agent Name', p.agent_name)}
         ${di('Cashed Out', fmtMoney(p.cashed_out_amount))} ${di('Agent Commission', fmtMoney(p.agent_commission))}
         ${di('Platform Share', fmtMoney(p.platform_share))} ${di('Provider TX ID', p.provider_tx_id)}
         ${di('Submitted', fmtDate(p.created_at), true)}
-    `, actions);
+    `, `<button class="btn-mini red" onclick="deleteRecord('paybacks','${safeId(p.id)}','PayBack'); closeModal();">🗑️ Delete</button>`);
 }
 function showPendingDetail(id) {
     const p = State.pendingItems.find(x => String(x.id) === String(id));
@@ -2483,8 +1632,7 @@ function showPendingDetail(id) {
     html += di('Country', p.country || '—');
     html += di('Submitted At', fmtDate(p.submitted_at || p.created_at), true);
     Object.keys(d).forEach(k => {
-        let v = d[k];
-        if (v && typeof v === 'object') v = JSON.stringify(v);
+        let v = d[k]; if (v && typeof v === 'object') v = JSON.stringify(v);
         html += di(k, v === '' || v === null || v === undefined ? '—' : v, true);
     });
     const status = (p.status || 'pending').toLowerCase();
@@ -2492,7 +1640,7 @@ function showPendingDetail(id) {
         <button class="btn-mini green" onclick="approvePendingItem('${safeId(p.id)}'); closeModal();">✅ Approve</button>
         <button class="btn-mini red" onclick="rejectPendingItem('${safeId(p.id)}'); closeModal();">❌ Reject</button>
     ` : '';
-    openModal('📋 Pending Item Details', html, actions);
+    openModal('📋 Pending Details', html, actions);
 }
 
 function showViolationLog() {
@@ -2503,26 +1651,22 @@ function showViolationLog() {
         ...State.users.filter(isSuspended).map(r => ({ ...r, _type: 'User', _title: accountTitle(r, 'users') }))
     ];
     if (!suspended.length) {
-        openModal('📋 Violation Log', `<div class="empty-state" style="padding:1.5rem;"><div class="em-icon">🎉</div>No suspended accounts. All clean.</div>`);
+        openModal('📋 Violation Log', `<div class="empty-state" style="padding:1.5rem;"><div class="em-icon">🎉</div>No suspended accounts.</div>`);
         return;
     }
     const body = suspended.map(s => {
         const reason = s.suspension_reason ? getReason(s.suspension_reason) : null;
-        const reasonLine = reason ? `${reason.icon} ${escapeHTML(reason.label)}` : (s.suspension_label ? escapeHTML(s.suspension_label) : 'Reason not recorded');
+        const reasonLine = reason ? `${reason.icon} ${escapeHTML(reason.label)}` : (s.suspension_label ? escapeHTML(s.suspension_label) : 'Not recorded');
         return `<div class="susp-history-item">
             <div><strong>${escapeHTML(s._type)}:</strong> ${escapeHTML(s._title)}</div>
             <div style="margin-top:3px;">${reasonLine}</div>
             ${s.suspension_notes ? `<div style="margin-top:3px; font-style:italic;">"${escapeHTML(s.suspension_notes)}"</div>` : ''}
-            <div class="sh-meta">⏱ ${s.suspended_at ? fmtDate(s.suspended_at) : 'Time not recorded'} · by ${escapeHTML(s.suspended_by || 'admin')}</div>
         </div>`;
     }).join('');
-    openModal('📋 Violation Log', `
-        <div class="detail-item full danger" style="margin-bottom:0.7rem;">
-            <div class="di-label">Total Suspended</div>
-            <div class="di-value">${suspended.length} account(s) currently suspended</div>
-        </div>
-        ${body}
-    `);
+    openModal('📋 Violation Log', `<div class="detail-item full danger" style="margin-bottom:0.7rem;">
+        <div class="di-label">Total Suspended</div>
+        <div class="di-value">${suspended.length} account(s)</div>
+    </div>${body}`);
 }
 
 async function changeComplaintStatus(id, status) {
@@ -2530,69 +1674,78 @@ async function changeComplaintStatus(id, status) {
     if (!prev) return;
     const prevStatus = prev.status;
     prev.status = status;
-    renderComplaints(val('searchComplaints'));
-    updateKPIs();
+    renderComplaints(val('searchComplaints')); updateKPIs();
     const res = await updateComplaintStatus(id, status);
     if (res) {
-        showToast(`✅ Complaint marked as ${status}`, 'success', 2000);
+        showToast(`✅ Marked as ${status}`, 'success', 2000);
         const i = State.complaints.findIndex(c => String(c.id) === String(id));
         if (i >= 0) State.complaints[i] = res;
-        renderComplaints(val('searchComplaints'));
-        updateKPIs();
+        renderComplaints(val('searchComplaints')); updateKPIs();
     } else {
         prev.status = prevStatus;
-        renderComplaints(val('searchComplaints'));
-        updateKPIs();
+        renderComplaints(val('searchComplaints')); updateKPIs();
         showToast('❌ Failed to update status', 'error', 3000);
     }
 }
 
-// ============================================================
-// APPROVE / REJECT (pending items)
-// ============================================================
 async function approvePendingItem(id) {
     if (!sb) { showToast('❌ Supabase not configured', 'error'); return; }
     const p = State.pendingItems.find(x => String(x.id) === String(id));
-    if (!p) { showToast('❌ Pending item not found', 'error'); return; }
+    if (!p) { showToast('❌ Not found', 'error'); return; }
     const d = asObj(p.data);
     const type = normalizeType(p.type);
     const title = pick(d, ['businessName','business_name','name','title'], '(untitled)');
-
-    let confirmMsg = `✅ APPROVE this ${type}?\n\n"${title}"\n\n`;
-    if (type === 'agent') confirmMsg += '• The agent will be marked ACTIVE and appear in the approved-agent dropdown.\n';
-    else if (type === 'business') confirmMsg += '• The business will be activated and become available for products & services.\n';
-    else if (type === 'product' || type === 'service') confirmMsg += '• The item will be activated and appear in the business quick-pick strip.\n';
-    confirmMsg += '\nContinue?';
-    if (!confirm(confirmMsg)) return;
-
+    if (!confirm(`✅ APPROVE this ${type}?\n\n"${title}"`)) return;
     const btn = document.querySelector(`button[onclick*="approvePendingItem('${safeId(id)}')"]`);
     if (btn) btn.classList.add('busy');
-
     try {
-        const result = await copyPendingToLive(type, d);
-        await markPendingReviewed(p.id, 'approved');
+        // Simplified approval — insert into live tables
+        if (type === 'agent') {
+            const ex = await sb.from('agents').select('*').ilike('business_name', title).limit(1);
+            const payload = {
+                business_name: title, owner_name: pick(d, ['ownerName','owner_name']),
+                city: pick(d, ['city']), mobile_money: pick(d, ['mobileMoney']),
+                country_code: pick(d, ['countryCode']), approved: true,
+                is_approved: true, status: 'active', is_active: true
+            };
+            if (ex.data && ex.data.length) await sb.from('agents').update(payload).eq('id', ex.data[0].id);
+            else await sb.from('agents').insert(payload);
+        } else if (type === 'business') {
+            const ex = await sb.from('businesses').select('*').ilike('name', title).limit(1);
+            const payload = {
+                name: title, contact: pick(d, ['contact']),
+                mobile_money: pick(d, ['mobileMoney']), city: pick(d, ['city']),
+                country: pick(d, ['country']), approved: true, status: 'active', is_active: true
+            };
+            if (ex.data && ex.data.length) await sb.from('businesses').update(payload).eq('id', ex.data[0].id);
+            else await sb.from('businesses').insert(payload);
+        } else if (type === 'product' || type === 'service') {
+            const bizName = pick(d, ['businessName','business_name']);
+            const bizRes = await sb.from('businesses').select('id').ilike('name', bizName).limit(1);
+            const bizId = bizRes.data && bizRes.data[0] ? bizRes.data[0].id : null;
+            if (bizId) {
+                await sb.from('products').insert({
+                    business_id: bizId, name: title,
+                    price: parseFloat(pick(d, ['price'], 0)) || 0,
+                    quantity: parseInt(pick(d, ['quantity'], 1)) || 1,
+                    quality: pick(d, ['quality'], 'Brand new'),
+                    icon: pick(d, ['icon'])
+                });
+            }
+        }
+        await sb.from('pending_items').update({
+            status: 'approved',
+            reviewed_at: new Date().toISOString(),
+            reviewed_by: 'admin'
+        }).eq('id', p.id);
         const local = State.pendingItems.find(x => String(x.id) === String(id));
-        if (local) { local.status = 'approved'; local.reviewed_at = new Date().toISOString(); local.reviewed_by = 'admin'; }
-        renderPending(val('searchPending'));
-        updateKPIs();
-
-        let okMsg = '✅ Approved: ' + title;
-        if (type === 'agent')    okMsg = `✅ Agent activated & listed in dropdown: ${title}`;
-        if (type === 'business') okMsg = `✅ Business activated: ${title}`;
-        if (type === 'product')  okMsg = `✅ Product added to quick-pick strip: ${title}`;
-        if (type === 'service')  okMsg = `✅ Service added to quick-pick strip: ${title}`;
-        if (result && result.action === 'updated') okMsg = '♻️ ' + okMsg.replace('✅ ', '');
-        showToast(okMsg, 'success', 4200);
-
-        await refreshAll();
-        setTimeout(() => { refreshAll().catch(() => {}); }, 900);
+        if (local) { local.status = 'approved'; }
+        renderPending(val('searchPending')); updateKPIs();
+        showToast(`✅ Approved: ${title}`, 'success', 4200);
+        setTimeout(() => refreshAll().catch(() => {}), 400);
     } catch (e) {
         logError('approvePendingItem', e);
-        const raw = String(e.message || 'unknown error');
-        let hint = '';
-        if (/invalid input syntax for type integer/i.test(raw)) hint = ' — a prefixed string reached an integer column. Hard-refresh and retry.';
-        else if (/foreign key/i.test(raw)) hint = ' — a foreign-key row is missing. Approve the parent first.';
-        showToast('❌ Approval failed: ' + raw + hint, 'error', 8000);
+        showToast('❌ Approval failed: ' + (e.message || 'unknown'), 'error', 6000);
         if (btn) btn.classList.remove('busy');
     }
 }
@@ -2601,116 +1754,58 @@ async function rejectPendingItem(id) {
     if (!sb) { showToast('❌ Supabase not configured', 'error'); return; }
     const p = State.pendingItems.find(x => String(x.id) === String(id));
     if (!p) return;
-    const d = asObj(p.data);
-    const title = pick(d, ['businessName','business_name','name','title'], '(untitled)');
-    if (!confirm(`❌ REJECT this ${normalizeType(p.type)}?\n\n"${title}"\n\nThe record is NOT copied into the live tables.`)) return;
+    if (!confirm(`❌ REJECT this ${normalizeType(p.type)}?`)) return;
     try {
-        const ok = await markPendingReviewed(p.id, 'rejected');
-        if (!ok) throw new Error('Could not update the pending item status.');
+        await sb.from('pending_items').update({
+            status: 'rejected',
+            reviewed_at: new Date().toISOString(),
+            reviewed_by: 'admin'
+        }).eq('id', p.id);
         const local = State.pendingItems.find(x => String(x.id) === String(id));
-        if (local) { local.status = 'rejected'; local.reviewed_at = new Date().toISOString(); local.reviewed_by = 'admin'; }
-        renderPending(val('searchPending'));
-        updateKPIs();
-        showToast('❌ Rejected: ' + title, 'info', 3000);
-    } catch (e) {
-        showToast('❌ Rejection failed: ' + (e.message || 'unknown error'), 'error', 4500);
-    }
+        if (local) { local.status = 'rejected'; }
+        renderPending(val('searchPending')); updateKPIs();
+        showToast('❌ Rejected', 'info', 3000);
+    } catch (e) { showToast('❌ Failed: ' + (e.message || 'unknown'), 'error', 4500); }
 }
 
-// ============================================================
-// AGENT-ADDED CLIENTS
-// ============================================================
 async function approveClient(id) {
     if (!sb) { showToast('❌ Supabase not configured', 'error'); return; }
     const c = State.agentClients.find(x => String(x.id) === String(id));
-    if (!c) { showToast('❌ Client not found', 'error'); return; }
-    if (!confirm(`✅ APPROVE client?\n\n"${c.name || '(no name)'}" · ${c.phone || 'no phone'}\n\nThey will become a live client and be linked to their agent.`)) return;
-
-    const btn = document.querySelector(`button[onclick*="approveClient('${safeId(id)}')"]`);
-    if (btn) btn.classList.add('busy');
-
-    const clientPayload = {
-        name: c.name || '', full_name: c.name || '', phone: c.phone || '',
-        email: c.email || null, address: c.address || null,
-        city: c.city || null, country: c.country || null,
-        agent_id: normalizeIntegerId(c.agent_id), agent_name: c.agent_name || null,
-        status: 'active', approved: true, is_approved: true, verified: true,
-        active: true, is_active: true, visible: true,
-        suspended: false, is_suspended: false
-    };
-
-    let ok = false;
-    let lastErr = null;
+    if (!c) { showToast('❌ Not found', 'error'); return; }
+    if (!confirm(`✅ APPROVE client "${c.name || '(no name)'}"?`)) return;
     try {
-        const r = await updateResilient('agent_clients', 'id', id, {
-            status: 'approved', approved: true, is_approved: true,
-            reviewed_at: new Date().toISOString(), reviewed_by: 'admin'
-        });
-        if (!r.error) ok = true; else lastErr = r.error;
-    } catch (e) { lastErr = e; }
-
-    try {
-        const existing = await findExistingRow('clients', [
-            { col: 'phone', val: c.phone },
-            { col: 'name',  val: c.name, mode: 'ilike' }
-        ]);
-        if (existing) {
-            const u = await updateResilient('clients', 'id', existing.id, clientPayload);
-            if (!u.error) ok = true; else lastErr = u.error;
-        } else {
-            const ins = await insertResilient('clients', clientPayload);
-            if (!ins.error) ok = true;
-            else if (ins.duplicate || String(ins.error.code) === '23505') ok = true;
-            else lastErr = ins.error;
-        }
-    } catch (e) { lastErr = e; }
-
-    if (!ok) {
-        showToast('❌ Could not approve client: ' + (lastErr?.message || 'unknown error'), 'error', 5200);
-        if (btn) btn.classList.remove('busy');
-        return;
-    }
-    const local = State.agentClients.find(x => String(x.id) === String(id));
-    if (local) { local.status = 'approved'; local.approved = true; }
-    renderAgentClients(val('searchAgentClients'));
-    updateKPIs();
-    showToast('✅ Client approved & activated: ' + (c.name || ''), 'success', 3400);
-    await refreshAll();
+        await sb.from('agent_clients').update({ status: 'approved', approved: true }).eq('id', id);
+        const exists = c.phone ? await sb.from('clients').select('id').eq('phone', c.phone).limit(1) : { data: [] };
+        const payload = {
+            name: c.name || '', full_name: c.name || '', phone: c.phone || '',
+            city: c.city || null, country: c.country || null,
+            agent_id: normalizeIntegerId(c.agent_id), status: 'active', approved: true, is_active: true
+        };
+        if (exists.data && exists.data.length) await sb.from('clients').update(payload).eq('id', exists.data[0].id);
+        else await sb.from('clients').insert(payload);
+        const local = State.agentClients.find(x => String(x.id) === String(id));
+        if (local) local.status = 'approved';
+        renderAgentClients(val('searchAgentClients')); updateKPIs();
+        showToast(`✅ Client approved: ${c.name || ''}`, 'success', 3400);
+        setTimeout(() => refreshAll().catch(() => {}), 400);
+    } catch (e) { showToast('❌ Failed: ' + (e.message || 'unknown'), 'error', 5000); }
 }
 
 async function rejectClient(id) {
     if (!sb) { showToast('❌ Supabase not configured', 'error'); return; }
-    const c = State.agentClients.find(x => String(x.id) === String(id));
-    if (!c) return;
-    if (!confirm(`❌ REJECT and remove this client?\n\n"${c.name || '(no name)'}"`)) return;
+    if (!confirm('❌ Reject this client?')) return;
     try {
-        let done = false;
-        const r = await updateResilient('agent_clients', 'id', id, {
-            status: 'rejected', reviewed_at: new Date().toISOString(), reviewed_by: 'admin'
-        });
-        if (!r.error) done = true;
-        if (!done) {
-            const { error } = await sb.from('agent_clients').delete().eq('id', id);
-            if (error) throw error;
-            State.agentClients = State.agentClients.filter(x => String(x.id) !== String(id));
-        } else {
-            const local = State.agentClients.find(x => String(x.id) === String(id));
-            if (local) local.status = 'rejected';
-        }
-        renderAgentClients(val('searchAgentClients'));
-        updateKPIs();
-        showToast('❌ Client rejected', 'info', 2800);
-    } catch (e) {
-        showToast('❌ Failed: ' + (e.message || 'unknown error'), 'error', 4200);
-    }
+        await sb.from('agent_clients').update({ status: 'rejected' }).eq('id', id);
+        const local = State.agentClients.find(x => String(x.id) === String(id));
+        if (local) local.status = 'rejected';
+        renderAgentClients(val('searchAgentClients')); updateKPIs();
+        showToast('❌ Rejected', 'info', 2800);
+    } catch (e) { showToast('❌ Failed: ' + (e.message || 'unknown'), 'error', 4200); }
 }
 
-// ============================================================
-// DIAGNOSTICS
-// ============================================================
 async function diagnoseUserSources() {
     if (!sb) { showToast('❌ Supabase not configured', 'error'); return; }
-    showToast('🩺 Probing user tables…', 'info', 2000);
+    showToast('🩺 Probing…', 'info', 2000);
     const report = [];
     for (const t of USER_SOURCES.concat(['all_registered_users'])) {
         try {
@@ -2721,10 +1816,6 @@ async function diagnoseUserSources() {
             report.push({ ok: false, text: `⏳ ${t} — ${e.message || 'timed out'}`, slow: true });
         }
     }
-    try {
-        const { data, error } = await withTimeout(sb.rpc('list_registered_users'), 5000, 'rpc');
-        report.push(error ? { ok: false, text: `❌ RPC list_registered_users — ${error.message}` } : { ok: true, text: `✅ RPC list_registered_users — ${(data||[]).length} row(s)` });
-    } catch (e) { report.push({ ok: false, text: `⏳ RPC — ${e.message}` }); }
     const rendered = report.map(r => {
         const cls = r.ok ? 'ok' : (r.slow ? 'slow' : 'fail');
         return `<div class="${cls}">${escapeHTML(r.text)}</div>`;
@@ -2735,87 +1826,59 @@ async function diagnoseUserSources() {
             <div class="diag-block" style="margin-top:4px;">${rendered}</div>
         </div>
         <div class="detail-item full info" style="margin-top:0.6rem;">
-            <div class="di-label">Currently resolved source</div>
-            <div class="di-value">${escapeHTML(USER_RESOLVED_SOURCE || 'none (using view/RPC fallback)')}</div>
+            <div class="di-label">Resolved source</div>
+            <div class="di-value">${escapeHTML(USER_RESOLVED_SOURCE || 'none')}</div>
         </div>
     `);
 }
 
-// ============================================================
-// CSV EXPORT
-// ============================================================
 function exportCSV(rows, filename) {
     if (!rows.length) { showToast('Nothing to export', 'error'); return; }
     const keys = Array.from(rows.reduce((set, r) => { Object.keys(r).forEach(k => set.add(k)); return set; }, new Set()));
-    const csv = [
-        keys.join(','),
-        ...rows.map(r => keys.map(k => {
-            let v = r[k] ?? '';
-            if (typeof v === 'object') v = JSON.stringify(v);
-            v = String(v).replace(/"/g, '""');
-            return `"${v}"`;
-        }).join(','))
-    ].join('\n');
+    const csv = [keys.join(','), ...rows.map(r => keys.map(k => {
+        let v = r[k] ?? ''; if (typeof v === 'object') v = JSON.stringify(v);
+        v = String(v).replace(/"/g, '""'); return `"${v}"`;
+    }).join(','))].join('\n');
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
-    a.href = url; a.download = filename;
-    a.click();
+    a.href = url; a.download = filename; a.click();
     URL.revokeObjectURL(url);
     showToast('✅ CSV downloaded', 'success');
 }
 
-// ============================================================
-// HEADER APPROVE BUTTON
-// ============================================================
 function getPendingActivity() {
     const items      = State.pendingItems.filter(p => (p.status || 'pending') === 'pending').length;
     const clients    = State.agentClients.filter(c => (c.status || 'pending') === 'pending').length;
     const complaints = State.complaints.filter(c => (c.status || 'pending') === 'pending').length;
     return { items, clients, complaints, total: items + clients + complaints };
 }
-
 let _lastApproveCount = null;
-
 function updateApproveButton() {
-    const btn = $('approveHeaderBtn');
-    if (!btn) return;
+    const btn = $('approveHeaderBtn'); if (!btn) return;
     const a = getPendingActivity();
     const countEl = $('approveCount');
-    if (a.total > 0) {
-        btn.classList.add('has-activity');
-        btn.title = `${a.total} item(s) awaiting approval — click to open the AfriPay Admin page`;
-    } else {
-        btn.classList.remove('has-activity');
-        btn.title = 'No pending activity — click to open the AfriPay Admin page';
-    }
+    if (a.total > 0) { btn.classList.add('has-activity'); btn.title = `${a.total} pending`; }
+    else { btn.classList.remove('has-activity'); btn.title = 'No pending'; }
     if (countEl) countEl.textContent = a.total;
     if (_lastApproveCount !== null && a.total > _lastApproveCount) {
-        showToast(`🔔 ${a.total - _lastApproveCount} new item(s) awaiting approval`, 'warn', 3400);
+        showToast(`🔔 ${a.total - _lastApproveCount} new pending`, 'warn', 3400);
     }
     _lastApproveCount = a.total;
 }
 
-// ============================================================
-// KPI UPDATER
-// ============================================================
 function updateKPIs() {
     const setTxt = (id, v) => { const el = $(id); if (el) el.textContent = v; };
     setTxt('kpiTx', State.transactions.length);
     setTxt('kpiTxSub', `${State.transactions.filter(t => (t.status || 'confirmed') === 'confirmed').length} confirmed`);
-
     const byCur = {};
-    State.transactions.forEach(t => {
-        const c = t.currency || 'SLL';
-        byCur[c] = (byCur[c] || 0) + (parseFloat(t.total) || 0);
-    });
+    State.transactions.forEach(t => { const c = t.currency || 'SLL'; byCur[c] = (byCur[c] || 0) + (parseFloat(t.total) || 0); });
     const volEntries = Object.entries(byCur).sort((a,b) => b[1] - a[1]).slice(0, 2);
     if (!volEntries.length) { setTxt('kpiVolume', '0'); setTxt('kpiVolumeSub', 'No data'); }
     else {
         setTxt('kpiVolume', `${fmtMoney(volEntries[0][1])} ${volEntries[0][0]}`);
-        setTxt('kpiVolumeSub', volEntries.length > 1 ? `+ ${fmtMoney(volEntries[1][1])} ${volEntries[1][0]}` : `${State.transactions.length} tx total`);
+        setTxt('kpiVolumeSub', volEntries.length > 1 ? `+ ${fmtMoney(volEntries[1][1])} ${volEntries[1][0]}` : `${State.transactions.length} tx`);
     }
-
     setTxt('kpiAgents', State.agents.length);
     setTxt('kpiAgentsSub', `${State.agents.filter(a => a.approved).length} approved`);
     setTxt('kpiComplaints', State.complaints.length);
@@ -2825,403 +1888,138 @@ function updateKPIs() {
     setTxt('kpiSubs', State.subscribers.length);
     setTxt('kpiUsers', State.users.length);
     setTxt('kpiUsersSub', `${State.users.filter(isSuspended).length} suspended`);
-
     const pendingItems = State.pendingItems.filter(p => (p.status || 'pending') === 'pending').length;
     const pendingClients = State.agentClients.filter(c => (c.status || 'pending') === 'pending').length;
     const totalPending = pendingItems + pendingClients;
     setTxt('kpiApprovals', totalPending);
     setTxt('kpiApprovalsSub', `${pendingItems} item(s) · ${pendingClients} client(s)`);
-
     const sAgents = State.agents.filter(isSuspended).length;
     const sBiz = State.businesses.filter(isSuspended).length;
     const sClients = State.clients.filter(isSuspended).length;
     const sUsers = State.users.filter(isSuspended).length;
-    const totalSuspended = sAgents + sBiz + sClients + sUsers;
-    const totalAccounts = State.agents.length + State.businesses.length + State.clients.length + State.users.length;
-    setTxt('kpiSuspended', totalSuspended);
-    setTxt('kpiSuspendedSub', `${totalAccounts} account(s) in system`);
-
-    const bComplaints = $('badgeComplaints');
-    if (bComplaints) {
-        const n = State.complaints.filter(c => (c.status || 'pending') === 'pending').length;
-        if (n > 0) { bComplaints.style.display = 'inline-block'; bComplaints.textContent = n; } else bComplaints.style.display = 'none';
-    }
-    const bAgents = $('badgeAgents');
-    if (bAgents) {
-        const n = sAgents || State.agents.filter(a => !a.approved).length;
-        if (n > 0) { bAgents.style.display = 'inline-block'; bAgents.textContent = n; } else bAgents.style.display = 'none';
-    }
-    const bApprovals = $('badgeApprovals');
-    if (bApprovals) {
-        if (totalPending > 0) { bApprovals.style.display = 'inline-block'; bApprovals.textContent = totalPending; } else bApprovals.style.display = 'none';
-    }
+    setTxt('kpiSuspended', sAgents + sBiz + sClients + sUsers);
+    setTxt('kpiSuspendedSub', `${State.agents.length + State.businesses.length + State.clients.length + State.users.length} total`);
+    setBadge('badgeAgents', sAgents || State.agents.filter(a => !a.approved).length);
     setBadge('badgeBusinesses', sBiz);
     setBadge('badgeClients', sClients);
     setBadge('badgeUsers', sUsers);
-
+    setBadge('badgeComplaints', State.complaints.filter(c => (c.status || 'pending') === 'pending').length);
+    setBadge('badgeApprovals', totalPending);
     updateApproveButton();
     touchLastUpdated();
 }
 
-// ============================================================
-// NOTICES
-// ============================================================
-function showOfflineStates() {
-    ['listAgents','listBusinesses','listClients','listUsers','listComplaints',
-     'listPending','listAgentClients','listPaybacks','listSubs','chatLive'].forEach(id => {
-        const el = $(id);
-        if (el) el.innerHTML = `<div class="empty-state"><div class="em-icon">🔌</div>No data — Supabase is not connected.</div>`;
-    });
-}
-
-function renderSdkMissingNotice() {
-    const wrap = $('listTx');
-    if (wrap) {
-        wrap.innerHTML = `<div class="empty-state">
-            <div class="em-icon">🔌</div>
-            Could not load the Supabase library.<br>
-            <span style="font-size:0.75rem;color:#bdc3c7;">Check your internet connection / content blockers, then reload.</span><br><br>
-            <button class="btn-mini blue" onclick="location.reload()">🔄 Reload page</button>
-        </div>`;
-    }
-    showOfflineStates();
-}
-
-// ============================================================
-// MASTER REFRESH
-// ============================================================
 function runStage2(name, fetcher, assign, renderFn) {
     return fetcher()
         .then(v => { assign(v); try { renderFn(); } catch (e) { logError('render:' + name, e); } })
         .catch(e => logError('stage2:' + name, e));
 }
-
 async function refreshAll() {
-    if (!sb) {
-        setConnection('offline');
-        setTxLoadFailed('Offline');
-        renderSdkMissingNotice();
-        return;
-    }
-
+    if (!sb) { setConnection('offline'); setTxLoadFailed('Offline'); return; }
     setTxLoadStatus('Loading…', false);
     try {
         const tx = await fetchTransactions();
         State.transactions = tx;
         renderTransactions(val('searchTx'));
         updateKPIs();
-        if (TX_LAST_ERROR) { setConnection('offline'); setTxLoadFailed('Failed'); }
-        else setConnection('online');
+        if (TX_LAST_ERROR) { setConnection('offline'); setTxLoadFailed('Failed'); } else setConnection('online');
     } catch (e) {
         TX_LAST_ERROR = e.message || 'unknown error';
-        setTxLoadFailed('Failed');
-        setConnection('offline');
+        setTxLoadFailed('Failed'); setConnection('offline');
         renderTransactions(val('searchTx'));
-    } finally {
-        touchLastUpdated();
     }
-
     await Promise.allSettled([
-        runStage2('agents',        fetchAgents,        v => State.agents = v,        () => renderAgents(val('searchAgents'))),
-        runStage2('complaints',    fetchComplaints,    v => State.complaints = v,    () => renderComplaints(val('searchComplaints'))),
-        runStage2('paybacks',      fetchPaybacks,      v => State.paybacks = v,      () => renderPaybacks(val('searchPaybacks'))),
-        runStage2('subscribers',   fetchSubscribers,   v => State.subscribers = v,   () => renderSubs(val('searchSubs'))),
-        runStage2('chat',          fetchChat,          v => State.chat = v,          renderChat),
-        runStage2('pending',       fetchPendingItems,  v => State.pendingItems = v,  () => renderPending(val('searchPending'))),
-        runStage2('agentClients',  fetchAgentClients,  v => State.agentClients = v,  () => renderAgentClients(val('searchAgentClients'))),
-        runStage2('businesses',    fetchBusinesses,    v => State.businesses = v,    () => renderBusinesses(val('searchBusinesses'))),
-        runStage2('clients',       fetchClients,       v => State.clients = v,       () => renderClients(val('searchClients'))),
-        runStage2('users',         fetchUsers,         v => State.users = v,         () => renderUsers(val('searchUsers')))
+        runStage2('agents', fetchAgents, v => State.agents = v, () => renderAgents(val('searchAgents'))),
+        runStage2('complaints', fetchComplaints, v => State.complaints = v, () => renderComplaints(val('searchComplaints'))),
+        runStage2('paybacks', fetchPaybacks, v => State.paybacks = v, () => renderPaybacks(val('searchPaybacks'))),
+        runStage2('subscribers', fetchSubscribers, v => State.subscribers = v, () => renderSubs(val('searchSubs'))),
+        runStage2('chat', fetchChat, v => State.chat = v, renderChat),
+        runStage2('pending', fetchPendingItems, v => State.pendingItems = v, () => renderPending(val('searchPending'))),
+        runStage2('agentClients', fetchAgentClients, v => State.agentClients = v, () => renderAgentClients(val('searchAgentClients'))),
+        runStage2('businesses', fetchBusinesses, v => State.businesses = v, () => renderBusinesses(val('searchBusinesses'))),
+        runStage2('clients', fetchClients, v => State.clients = v, () => renderClients(val('searchClients'))),
+        runStage2('users', fetchUsers, v => State.users = v, () => renderUsers(val('searchUsers')))
     ]);
-    State.stage2Loaded = true;
     updateKPIs();
     touchLastUpdated();
 }
 
-// ============================================================
-// REALTIME
-// ============================================================
-function safeSubscribe(name, builder) {
-    if (!sb) return null;
-    try { const ch = builder(); State.channels.push(ch); return ch; }
-    catch (e) { return null; }
-}
-
-function subscribeRealtime() {
-    if (!sb) return;
-    if (State.realtimeSubscribed) return;
-    State.realtimeSubscribed = true;
-
-    safeSubscribe('agents', () => sb.channel('dash_agents_rt')
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'agents' }, (payload) => {
-            if (payload.eventType === 'INSERT') State.agents.unshift(payload.new);
-            else if (payload.eventType === 'UPDATE') {
-                const i = State.agents.findIndex(a => a.id === payload.new.id);
-                if (i >= 0) State.agents[i] = payload.new; else State.agents.unshift(payload.new);
-            } else if (payload.eventType === 'DELETE') State.agents = State.agents.filter(a => a.id !== payload.old.id);
-            renderAgents(val('searchAgents')); updateKPIs();
-        }).subscribe());
-
-    ['businesses', 'clients'].forEach(tbl => {
-        safeSubscribe(tbl, () => sb.channel('dash_' + tbl + '_rt')
-            .on('postgres_changes', { event: '*', schema: 'public', table: tbl }, async () => {
-                if (tbl === 'businesses') State.businesses = await fetchBusinesses();
-                if (tbl === 'clients')    State.clients    = await fetchClients();
-                renderAccountList(tbl); updateKPIs();
-            }).subscribe());
-    });
-
-    ['users', 'profiles'].forEach(tbl => {
-        safeSubscribe(tbl, () => sb.channel('dash_' + tbl + '_rt')
-            .on('postgres_changes', { event: '*', schema: 'public', table: tbl }, async () => {
-                USER_RESOLVED_SOURCE = null;
-                State.users = await fetchUsers();
-                renderUsers(val('searchUsers'));
-                updateKPIs();
-            }).subscribe());
-    });
-
-    safeSubscribe('complaints', () => sb.channel('dash_complaints_rt')
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'complaints' }, (payload) => {
-            if (payload.eventType === 'INSERT') State.complaints.unshift(payload.new);
-            else if (payload.eventType === 'UPDATE') {
-                const i = State.complaints.findIndex(c => c.id === payload.new.id);
-                if (i >= 0) State.complaints[i] = payload.new;
-            }
-            renderComplaints(val('searchComplaints')); updateKPIs();
-        }).subscribe());
-
-    safeSubscribe('pending_items', () => sb.channel('dash_pending_rt')
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'pending_items' }, async () => {
-            State.pendingItems = await fetchPendingItems();
-            renderPending(val('searchPending')); updateKPIs();
-        }).subscribe());
-
-    safeSubscribe('agent_clients', () => sb.channel('dash_aclients_rt')
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'agent_clients' }, async () => {
-            State.agentClients = await fetchAgentClients();
-            renderAgentClients(val('searchAgentClients')); updateKPIs();
-        }).subscribe());
-
-    safeSubscribe('paybacks', () => sb.channel('dash_paybacks_rt')
-        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'paybacks' }, (payload) => {
-            State.paybacks.unshift(payload.new); renderPaybacks(val('searchPaybacks')); updateKPIs();
-        }).subscribe());
-
-    safeSubscribe('subscribers', () => sb.channel('dash_subs_rt')
-        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'subscribers' }, (payload) => {
-            State.subscribers.unshift(payload.new); renderSubs(val('searchSubs')); updateKPIs();
-        }).subscribe());
-
-    safeSubscribe('chat', () => sb.channel('dash_chat_rt')
-        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'chat_messages' }, (payload) => {
-            State.chat.push(payload.new); if (State.chat.length > 200) State.chat.shift(); renderChat();
-        }).subscribe());
-}
-
-// ============================================================
-// POLLING
-// ============================================================
-function startPolling() {
-    setInterval(async () => {
-        if (!sb) return;
-        try {
-            const tx = await fetchTransactions();
-            const prevSig = listSignature(State.transactions, ['id', 'status', 'total']);
-            const newSig  = listSignature(tx, ['id', 'status', 'total']);
-            if (prevSig !== newSig) {
-                State.transactions = tx;
-                renderTransactions(val('searchTx'));
-                updateKPIs();
-            }
-            touchLastUpdated();
-        } catch (e) { }
-    }, 60000);
-
-    setTimeout(() => {
-        setInterval(async () => {
-            if (!sb) return;
-            try {
-                USER_RESOLVED_SOURCE = null;
-                const results = await Promise.allSettled([
-                    fetchAgents(), fetchComplaints(), fetchPaybacks(), fetchSubscribers(),
-                    fetchPendingItems(), fetchAgentClients(),
-                    fetchBusinesses(), fetchClients(), fetchUsers()
-                ]);
-                const [ag, co, pb, sbx, pi, ac, biz, cli, usr] = results.map(r => r.status === 'fulfilled' ? r.value : []);
-                const sigKeys = ['id', 'status', 'suspended', 'is_suspended', 'is_active'];
-                const changed =
-                    listSignature(ag, sigKeys)  !== listSignature(State.agents, sigKeys) ||
-                    listSignature(usr, sigKeys) !== listSignature(State.users, sigKeys) ||
-                    listSignature(biz, sigKeys) !== listSignature(State.businesses, sigKeys) ||
-                    listSignature(cli, sigKeys) !== listSignature(State.clients, sigKeys) ||
-                    listSignature(pi, ['id', 'status']) !== listSignature(State.pendingItems, ['id', 'status']) ||
-                    listSignature(co, ['id', 'status']) !== listSignature(State.complaints, ['id', 'status']);
-
-                State.agents = ag; State.complaints = co;
-                State.users = usr; State.paybacks = pb;
-                State.subscribers = sbx; State.pendingItems = pi;
-                State.agentClients = ac; State.businesses = biz; State.clients = cli;
-
-                if (changed) {
-                    renderAgents(val('searchAgents'));
-                    renderComplaints(val('searchComplaints'));
-                    renderUsers(val('searchUsers'));
-                    renderBusinesses(val('searchBusinesses'));
-                    renderClients(val('searchClients'));
-                    renderPending(val('searchPending'));
-                    updateKPIs();
-                }
-            } catch (e) { }
-        }, 60000);
-    }, 5000);
-}
-
-// ============================================================
-// TAB SWITCH
-// ============================================================
-function switchTab(tab) {
-    State.activeTab = tab;
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
-    document.querySelectorAll('.panel').forEach(p => p.classList.toggle('active', p.id === 'panel-' + tab));
-}
-
-// ============================================================
-// EVENTS
-// ============================================================
 function setupEvents() {
-    document.querySelectorAll('.tab-btn').forEach(b => {
-        b.addEventListener('click', () => switchTab(b.dataset.tab));
-    });
-
+    document.querySelectorAll('.tab-btn').forEach(b => b.addEventListener('click', () => {
+        State.activeTab = b.dataset.tab;
+        document.querySelectorAll('.tab-btn').forEach(x => x.classList.toggle('active', x.dataset.tab === b.dataset.tab));
+        document.querySelectorAll('.panel').forEach(p => p.classList.toggle('active', p.id === 'panel-' + b.dataset.tab));
+    }));
     const searchMap = {
-        searchTx: renderTransactions,
-        searchAgents: renderAgents,
-        searchBusinesses: renderBusinesses,
-        searchClients: renderClients,
-        searchUsers: renderUsers,
-        searchComplaints: renderComplaints,
-        searchPaybacks: renderPaybacks,
-        searchSubs: renderSubs
+        searchTx: renderTransactions, searchAgents: renderAgents,
+        searchBusinesses: renderBusinesses, searchClients: renderClients,
+        searchUsers: renderUsers, searchComplaints: renderComplaints,
+        searchPaybacks: renderPaybacks, searchSubs: renderSubs
     };
-    Object.keys(searchMap).forEach(id => {
-        on(id, 'input', () => searchMap[id](val(id)));
-    });
-
-    on('agentStatusFilter',    'change', () => renderAgents(val('searchAgents')));
+    Object.keys(searchMap).forEach(id => on(id, 'input', () => searchMap[id](val(id))));
+    on('agentStatusFilter', 'change', () => renderAgents(val('searchAgents')));
     on('businessStatusFilter', 'change', () => renderBusinesses(val('searchBusinesses')));
-    on('clientStatusFilter',   'change', () => renderClients(val('searchClients')));
-    on('userStatusFilter',     'change', () => renderUsers(val('searchUsers')));
-    on('userRoleFilter',       'change', () => renderUsers(val('searchUsers')));
-
-    on('searchPending',      'input',  () => renderPending(val('searchPending')));
-    on('pendingTypeFilter',  'change', () => renderPending(val('searchPending')));
-    on('searchAgentClients', 'input',  () => renderAgentClients(val('searchAgentClients')));
-
-    on('refreshPending', 'click', async () => {
-        State.pendingItems = await fetchPendingItems();
-        renderPending(val('searchPending')); updateKPIs();
-        showToast('🔄 Approvals refreshed', 'info');
-    });
-    on('refreshAgentClients', 'click', async () => {
-        State.agentClients = await fetchAgentClients();
-        renderAgentClients(val('searchAgentClients')); updateKPIs();
-        showToast('🔄 Clients refreshed', 'info');
-    });
+    on('clientStatusFilter', 'change', () => renderClients(val('searchClients')));
+    on('userStatusFilter', 'change', () => renderUsers(val('searchUsers')));
+    on('userRoleFilter', 'change', () => renderUsers(val('searchUsers')));
+    on('searchPending', 'input', () => renderPending(val('searchPending')));
+    on('pendingTypeFilter', 'change', () => renderPending(val('searchPending')));
+    on('searchAgentClients', 'input', () => renderAgentClients(val('searchAgentClients')));
+    on('refreshPending', 'click', async () => { State.pendingItems = await fetchPendingItems(); renderPending(val('searchPending')); updateKPIs(); });
+    on('refreshAgentClients', 'click', async () => { State.agentClients = await fetchAgentClients(); renderAgentClients(val('searchAgentClients')); updateKPIs(); });
     on('toggleReviewed', 'click', (e) => {
         State.showReviewed = !State.showReviewed;
         e.currentTarget.textContent = State.showReviewed ? '🙈 Hide Reviewed' : '👁️ Show Reviewed';
         renderPending(val('searchPending'));
     });
-
-    on('refreshTx', 'click', async () => {
-        setTxLoadStatus('Refreshing…', false);
-        State.transactions = await fetchTransactions();
-        renderTransactions(val('searchTx'));
-        updateKPIs();
-        showToast('🔄 Transactions refreshed', 'info');
-    });
-    on('refreshAgents', 'click', async () => { State.agents = await fetchAgents(); renderAgents(val('searchAgents')); updateKPIs(); showToast('🔄 Agents refreshed', 'info'); });
-    on('refreshBusinesses', 'click', async () => { State.businesses = await fetchBusinesses(); renderBusinesses(val('searchBusinesses')); updateKPIs(); showToast('🔄 Businesses refreshed', 'info'); });
-    on('refreshClients', 'click', async () => { State.clients = await fetchClients(); renderClients(val('searchClients')); updateKPIs(); showToast('🔄 Clients refreshed', 'info'); });
+    on('refreshTx', 'click', async () => { State.transactions = await fetchTransactions(); renderTransactions(val('searchTx')); updateKPIs(); });
+    on('refreshAgents', 'click', async () => { State.agents = await fetchAgents(); renderAgents(val('searchAgents')); updateKPIs(); });
+    on('refreshBusinesses', 'click', async () => { State.businesses = await fetchBusinesses(); renderBusinesses(val('searchBusinesses')); updateKPIs(); });
+    on('refreshClients', 'click', async () => { State.clients = await fetchClients(); renderClients(val('searchClients')); updateKPIs(); });
     on('refreshUsers', 'click', async () => {
         USER_RESOLVED_SOURCE = null;
-        State.users = await fetchUsers();
-        renderUsers(val('searchUsers'));
-        updateKPIs();
-        showToast('🔄 Users refreshed', 'info');
+        State.users = await fetchUsers(); renderUsers(val('searchUsers')); updateKPIs();
     });
-    on('refreshComplaints', 'click', async () => { State.complaints = await fetchComplaints(); renderComplaints(val('searchComplaints')); updateKPIs(); showToast('🔄 Complaints refreshed', 'info'); });
-    on('refreshPaybacks', 'click', async () => { State.paybacks = await fetchPaybacks(); renderPaybacks(val('searchPaybacks')); updateKPIs(); showToast('🔄 Paybacks refreshed', 'info'); });
-    on('refreshSubs', 'click', async () => { State.subscribers = await fetchSubscribers(); renderSubs(val('searchSubs')); updateKPIs(); showToast('🔄 Subscribers refreshed', 'info'); });
-    on('refreshChat', 'click', async () => { State.chat = await fetchChat(); renderChat(); showToast('🔄 Chat refreshed', 'info'); });
-
+    on('refreshComplaints', 'click', async () => { State.complaints = await fetchComplaints(); renderComplaints(val('searchComplaints')); updateKPIs(); });
+    on('refreshPaybacks', 'click', async () => { State.paybacks = await fetchPaybacks(); renderPaybacks(val('searchPaybacks')); updateKPIs(); });
+    on('refreshSubs', 'click', async () => { State.subscribers = await fetchSubscribers(); renderSubs(val('searchSubs')); updateKPIs(); });
+    on('refreshChat', 'click', async () => { State.chat = await fetchChat(); renderChat(); });
     on('showViolationLog', 'click', showViolationLog);
-
-    on('approveHeaderBtn', 'click', () => {
-        const a = getPendingActivity();
-        if (a.total > 0) showToast(`⏳ Opening AfriPay Admin · ${a.total} item(s) pending…`, 'warn', 1800);
-        else showToast('✅ Opening AfriPay Admin…', 'info', 1400);
-        setTimeout(() => {
-            window.open('https://aminejalloh-io.github.io/fouzan-business/', '_blank', 'noopener,noreferrer');
-        }, 220);
-    });
-
+    on('approveHeaderBtn', 'click', () => { window.open('https://aminejalloh-io.github.io/fouzan-business/', '_blank', 'noopener,noreferrer'); });
     on('showUserSource', 'click', () => {
         openModal('🔎 User Data Source', `
             <div class="detail-item full info">
                 <div class="di-label">Resolved source</div>
-                <div class="di-value">${escapeHTML(USER_RESOLVED_SOURCE || 'none — using view/RPC fallback')}</div>
-            </div>
-            <div class="detail-item full" style="margin-top:0.6rem; background:#f8fafc;">
-                <div class="di-label">How to ensure new signups appear</div>
-                <div class="di-value" style="font-size:0.78rem; color:#7f8c8d; font-weight:500;">
-                    1. Ensure the <strong>users</strong> table exists with columns: name, full_name, phone, email, city, country, emoji, role, nin, id_number, avatar_data_url, suspended, suspension_reason, suspension_label, suspension_notes, suspended_at, suspended_by, created_at.<br>
-                    2. Set RLS policy: <code>CREATE POLICY "public_all_users" ON users FOR ALL USING (true) WITH CHECK (true);</code><br>
-                    3. Publish <strong>users</strong> to Realtime.<br>
-                    Click <strong>🩺 Diagnose Users</strong> to check each.
-                </div>
+                <div class="di-value">${escapeHTML(USER_RESOLVED_SOURCE || 'none')}</div>
             </div>
         `);
     });
     on('diagnoseUsers', 'click', diagnoseUserSources);
-
     on('closeReasonModal', 'click', closeReasonModal);
     on('cancelReason', 'click', closeReasonModal);
     on('confirmReason', 'click', confirmSuspendFromModal);
     on('reasonModal', 'click', (e) => { if (e.target === $('reasonModal')) closeReasonModal(); });
-
     on('globalRefreshBtn', 'click', async () => {
-        showToast('🔄 Refreshing all…', 'info', 1500);
+        showToast('🔄 Refreshing…', 'info', 1500);
         USER_RESOLVED_SOURCE = null;
-        Object.keys(TableColumnsCache).forEach(k => delete TableColumnsCache[k]);
         await refreshAll();
-        showToast('✅ All refreshed', 'success', 1800);
+        showToast('✅ Refreshed', 'success', 1800);
     });
-
-    on('clearChatView', 'click', () => {
-        State.chat = []; renderChat();
-        showToast('🗑️ Chat view cleared (cloud data preserved)', 'info');
-    });
-
-    on('exportTx', 'click',         () => exportCSV(State.transactions, 'afripay_transactions.csv'));
-    on('exportAgents', 'click',     () => exportCSV(State.agents, 'afripay_agents.csv'));
+    on('clearChatView', 'click', () => { State.chat = []; renderChat(); });
+    on('exportTx', 'click', () => exportCSV(State.transactions, 'afripay_transactions.csv'));
+    on('exportAgents', 'click', () => exportCSV(State.agents, 'afripay_agents.csv'));
     on('exportBusinesses', 'click', () => exportCSV(State.businesses, 'afripay_businesses.csv'));
-    on('exportClients', 'click',    () => exportCSV(State.clients, 'afripay_clients.csv'));
-    on('exportUsers', 'click',      () => exportCSV(State.users, 'afripay_users.csv'));
-    on('exportPaybacks', 'click',   () => exportCSV(State.paybacks, 'afripay_paybacks.csv'));
-    on('exportSubs', 'click',       () => exportCSV(State.subscribers, 'afripay_subscribers.csv'));
-
+    on('exportClients', 'click', () => exportCSV(State.clients, 'afripay_clients.csv'));
+    on('exportUsers', 'click', () => exportCSV(State.users, 'afripay_users.csv'));
+    on('exportPaybacks', 'click', () => exportCSV(State.paybacks, 'afripay_paybacks.csv'));
+    on('exportSubs', 'click', () => exportCSV(State.subscribers, 'afripay_subscribers.csv'));
     on('closeModal', 'click', closeModal);
     on('detailModal', 'click', (e) => { if (e.target === $('detailModal')) closeModal(); });
-
     document.addEventListener('keydown', (e) => {
         if (e.key !== 'Escape') return;
         if ($('reasonModal').classList.contains('open')) closeReasonModal();
         else if ($('detailModal').classList.contains('open')) closeModal();
     });
-
-    // Expose globals for inline onclick handlers
     window.showTxDetail = showTxDetail;
     window.showComplaintDetail = showComplaintDetail;
     window.showPaybackDetail = showPaybackDetail;
@@ -3238,11 +2036,10 @@ function setupEvents() {
     window.deleteAgentClient = deleteAgentClient;
     window.closeModal = closeModal;
     window.closeReasonModal = closeReasonModal;
-    window.updateApproveButton = updateApproveButton;
 }
 
 // ============================================================
-// SCHEMA VERIFICATION — patient, distinguishing missing/slow/rls
+// SCHEMA VERIFICATION — 15s + 12s (NOT 4s)
 // ============================================================
 async function probeTable(table) {
     try {
@@ -3251,29 +2048,17 @@ async function probeTable(table) {
             15000, table + ':count'
         );
         if (!error) return { status: 'ok', count: count };
-        if (/relation .* does not exist|does not exist/i.test(error.message)) {
-            return { status: 'missing', error: error.message };
-        }
-        if (/permission denied|row level security|rls/i.test(error.message)) {
-            return { status: 'rls', error: error.message };
-        }
-        console.warn(`⚠️ count probe on ${table} failed (${error.message}); trying fallback`);
+        if (/relation .* does not exist|does not exist/i.test(error.message)) return { status: 'missing', error: error.message };
+        if (/permission denied|row level security|rls/i.test(error.message)) return { status: 'rls', error: error.message };
+        console.warn(`⚠️ count probe on ${table} failed: ${error.message}`);
     } catch (e) {
         console.warn(`⚠️ count probe on ${table} timed out; trying fallback`);
     }
-
     try {
-        const { data, error } = await withTimeout(
-            sb.from(table).select('id').limit(1),
-            12000, table + ':select'
-        );
+        const { data, error } = await withTimeout(sb.from(table).select('id').limit(1), 12000, table + ':select');
         if (!error) return { status: 'ok', count: null };
-        if (/relation .* does not exist|does not exist/i.test(error.message)) {
-            return { status: 'missing', error: error.message };
-        }
-        if (/permission denied|row level security|rls/i.test(error.message)) {
-            return { status: 'rls', error: error.message };
-        }
+        if (/relation .* does not exist|does not exist/i.test(error.message)) return { status: 'missing', error: error.message };
+        if (/permission denied|row level security|rls/i.test(error.message)) return { status: 'rls', error: error.message };
         return { status: 'error', error: error.message };
     } catch (e) {
         return { status: 'slow', error: 'took longer than 12s' };
@@ -3283,7 +2068,6 @@ async function probeTable(table) {
 async function verifySchema() {
     if (!sb) return;
     const tables = ['users', 'agents', 'pending_items'];
-
     const results = await Promise.all(tables.map(async t => {
         let r = await probeTable(t);
         if (r.status === 'slow') {
@@ -3295,96 +2079,93 @@ async function verifySchema() {
 
     const lines = results.map(r => {
         if (r.status === 'ok')      return `✅ ${r.table}: ${r.count == null ? 'reachable' : r.count + ' row(s)'}`;
-        if (r.status === 'missing') return `❌ ${r.table}: MISSING (${r.error})`;
-        if (r.status === 'rls')     return `🔒 ${r.table}: blocked by RLS (${r.error})`;
-        if (r.status === 'slow')    return `⏳ ${r.table}: slow to respond (${r.error})`;
+        if (r.status === 'missing') return `❌ ${r.table}: MISSING`;
+        if (r.status === 'rls')     return `🔒 ${r.table}: RLS blocked`;
+        if (r.status === 'slow')    return `⏳ ${r.table}: slow`;
         return `❌ ${r.table}: ${r.error}`;
     });
-    console.log('📋 Schema check:\n' + lines.join('\n'));
+    console.log('📋 Schema check (v2.4):\n' + lines.join('\n'));
 
     const missing = results.filter(r => r.status === 'missing');
     const slow    = results.filter(r => r.status === 'slow');
     const rls     = results.filter(r => r.status === 'rls');
-
     const box = document.getElementById('bootError');
     if (!box) return;
 
-    // Reset any prior styling
-    box.style.background = '';
-    box.style.borderColor = '';
-    box.style.color = '';
-
     if (missing.length > 0) {
         box.style.display = 'block';
-        box.setAttribute('data-count', '1');
-        box.innerHTML =
-            '<div class="be-title">⚠️ Missing table(s) detected</div>' +
-            '<div class="be-detail">' +
+        box.style.background = '';
+        box.style.color = '';
+        box.style.borderColor = '';
+        box.innerHTML = '<div class="be-title">⚠️ Missing table(s)</div><div class="be-detail">' +
             missing.map(m => `❌ ${m.table}: ${escapeHTML(m.error)}`).join('<br>') +
-            '<br><br>Run the SQL migration to create the missing tables.</div>';
+            '<br><br>Run the SQL migration.</div>';
     } else if (rls.length > 0) {
         box.style.display = 'block';
-        box.setAttribute('data-count', '1');
-        box.innerHTML =
-            '<div class="be-title">🔒 Row Level Security is blocking reads</div>' +
-            '<div class="be-detail">' +
-            rls.map(m => `🔒 ${m.table}: ${escapeHTML(m.error)}`).join('<br>') +
-            '<br><br>Add a policy: <code>CREATE POLICY "public_all_X" ON X FOR ALL USING (true) WITH CHECK (true);</code></div>';
+        box.style.background = '';
+        box.innerHTML = '<div class="be-title">🔒 RLS blocking reads</div><div class="be-detail">' +
+            rls.map(m => `🔒 ${m.table}`).join('<br>') + '</div>';
     } else if (slow.length > 0) {
         box.style.display = 'block';
-        box.setAttribute('data-count', '1');
         box.style.background = 'linear-gradient(135deg, #fff8e1, #fef3cd)';
         box.style.borderColor = '#ffe08a';
         box.style.color = '#7a5900';
-        box.innerHTML =
-            '<div class="be-title">⏳ One table responded slowly</div>' +
-            '<div class="be-detail">' +
+        box.innerHTML = '<div class="be-title">⏳ Slow response (cold start)</div><div class="be-detail">' +
             slow.map(m => `⏳ ${m.table}: ${escapeHTML(m.error)}`).join('<br>') +
-            '<br><br>This is usually a Supabase cold-start. The dashboard will retry automatically.</div>';
-        setTimeout(() => {
-            if (box.getAttribute('data-count') === '1') box.style.display = 'none';
-        }, 8000);
+            '<br><br>The dashboard will retry automatically.</div>';
+        setTimeout(() => { box.style.display = 'none'; }, 8000);
     } else {
-        // All good — hide any prior banner
         box.style.display = 'none';
     }
 }
 
-// ============================================================
-// INIT
-// ============================================================
 async function initDashboard() {
     setConnection('connecting');
     setTxLoadStatus('Connecting…', false);
-    updateApproveButton();
-
     const sdkOk = await ensureSupabaseSDK();
-    if (!sdkOk) {
-        setConnection('offline');
-        renderSdkMissingNotice();
-        markBootComplete();
-        return;
-    }
-
+    if (!sdkOk) { setConnection('offline'); markBootComplete(); return; }
     try {
         sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        console.log('✅ Supabase client initialized (Dashboard)');
-    } catch (e) {
-        sb = null;
-    }
-    if (!sb) {
-        setConnection('offline');
-        renderSdkMissingNotice();
-        markBootComplete();
-        return;
-    }
-
+        console.log('✅ Supabase client initialized (v2.4)');
+    } catch (e) { sb = null; }
+    if (!sb) { setConnection('offline'); markBootComplete(); return; }
     try { setupEvents(); } catch (e) { logError('setupEvents', e); }
     markBootComplete();
-
     refreshAll().then(() => {
-        try { subscribeRealtime(); } catch (e) { logError('subscribeRealtime', e); }
-        try { startPolling(); } catch (e) { logError('startPolling', e); }
+        try {
+            sb.channel('v24_agents').on('postgres_changes', { event: '*', schema: 'public', table: 'agents' }, async () => {
+                State.agents = await fetchAgents(); renderAgents(val('searchAgents')); updateKPIs();
+            }).subscribe();
+            sb.channel('v24_users').on('postgres_changes', { event: '*', schema: 'public', table: 'users' }, async () => {
+                USER_RESOLVED_SOURCE = null; State.users = await fetchUsers(); renderUsers(val('searchUsers')); updateKPIs();
+            }).subscribe();
+            sb.channel('v24_biz').on('postgres_changes', { event: '*', schema: 'public', table: 'businesses' }, async () => {
+                State.businesses = await fetchBusinesses(); renderBusinesses(val('searchBusinesses')); updateKPIs();
+            }).subscribe();
+            sb.channel('v24_cli').on('postgres_changes', { event: '*', schema: 'public', table: 'clients' }, async () => {
+                State.clients = await fetchClients(); renderClients(val('searchClients')); updateKPIs();
+            }).subscribe();
+            sb.channel('v24_pend').on('postgres_changes', { event: '*', schema: 'public', table: 'pending_items' }, async () => {
+                State.pendingItems = await fetchPendingItems(); renderPending(val('searchPending')); updateKPIs();
+            }).subscribe();
+        } catch (e) { logError('realtime', e); }
+        setInterval(async () => {
+            if (!sb) return;
+            try {
+                USER_RESOLVED_SOURCE = null;
+                State.agents = await fetchAgents();
+                State.users = await fetchUsers();
+                State.businesses = await fetchBusinesses();
+                State.clients = await fetchClients();
+                State.pendingItems = await fetchPendingItems();
+                renderAgents(val('searchAgents'));
+                renderUsers(val('searchUsers'));
+                renderBusinesses(val('searchBusinesses'));
+                renderClients(val('searchClients'));
+                renderPending(val('searchPending'));
+                updateKPIs();
+            } catch (e) { }
+        }, 60000);
     }).catch(e => logError('refreshAll', e));
 }
 
@@ -3392,12 +2173,6 @@ function boot() {
     initDashboard().then(verifySchema).catch(e => {
         logError('boot', e);
         setConnection('offline');
-        const wrap = $('listTx');
-        if (wrap) {
-            wrap.innerHTML = `<div class="empty-state"><div class="em-icon">⚠️</div>
-                Startup error: ${escapeHTML(e.message || 'unknown')}<br><br>
-                <button class="btn-mini blue" onclick="location.reload()">🔄 Reload page</button></div>`;
-        }
         markBootComplete();
     });
 }
