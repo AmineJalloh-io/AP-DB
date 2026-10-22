@@ -18,7 +18,6 @@
         gap: 0.6rem; box-shadow: 0 10px 30px -8px rgba(0,0,0,0.3); margin-bottom: 1rem;
     }
 
-    /* ---------- LEFT SIDE OF THE HEADER (brand + Approve button) ---------- */
     .topbar-left { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; min-width: 0; }
 
     .brand { display: flex; align-items: center; gap: 0.7rem; }
@@ -26,7 +25,6 @@
     .brand-text { font-size: 1.4rem; font-weight: 800; letter-spacing: -0.5px; background: linear-gradient(135deg, #FFF, #FFD966, #6bc6ff); -webkit-background-clip: text; background-clip: text; color: transparent; }
     .brand-sub { font-size: 0.7rem; opacity: 0.75; font-weight: 500; }
 
-    /* ---------- HEADER APPROVE BUTTON ---------- */
     .approve-btn {
         display: inline-flex; align-items: center; gap: 8px;
         background: linear-gradient(135deg, #2c7da0 0%, #1c6e8f 100%);
@@ -39,7 +37,6 @@
     .approve-btn:hover { transform: translateY(-1px); }
     .approve-btn:active { transform: translateY(0) scale(0.98); }
 
-    /* RED state — an activity has taken place */
     .approve-btn.has-activity {
         background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
         box-shadow: 0 4px 14px -4px rgba(231,76,60,0.9), 0 0 0 0 rgba(231,76,60,0.55);
@@ -121,6 +118,7 @@
     .list-row.suspended { background: #fff8f8; opacity: 0.75; }
     .list-row.suspended:hover { background: #fdf1f1; opacity: 0.9; }
     .list-row.suspended .row-title { color: #a93226; }
+    .list-row.deleting { opacity: 0.35; pointer-events: none; background: #fdeaea; }
 
     .row-avatar { width: 38px; height: 38px; border-radius: 50%; background: #f0f6fb; color: #1c6e8f; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; font-weight: 800; flex-shrink: 0; overflow: hidden; }
     .row-avatar img { width: 100%; height: 100%; object-fit: cover; }
@@ -169,10 +167,12 @@
     .toast.warn { background: linear-gradient(135deg, #f39c12, #d68910); }
 
     .chat-live { background: #f8fafc; border-radius: 0.8rem; padding: 0.8rem; max-height: 60vh; overflow-y: auto; display: flex; flex-direction: column; gap: 0.4rem; }
-    .chat-bubble { background: white; border-radius: 0.7rem; padding: 0.5rem 0.8rem; max-width: 75%; font-size: 0.8rem; box-shadow: 0 1px 3px rgba(0,0,0,0.05); align-self: flex-start; border-left: 3px solid #2c7da0; }
+    .chat-bubble { background: white; border-radius: 0.7rem; padding: 0.5rem 0.8rem; max-width: 75%; font-size: 0.8rem; box-shadow: 0 1px 3px rgba(0,0,0,0.05); align-self: flex-start; border-left: 3px solid #2c7da0; position: relative; }
     .chat-bubble .cb-name { font-weight: 800; color: #1c6e8f; font-size: 0.72rem; }
     .chat-bubble .cb-time { font-size: 0.62rem; color: #95a5a6; margin-left: 6px; }
     .chat-bubble .cb-msg { margin-top: 3px; color: #1e3b4a; }
+    .chat-bubble .chat-del-btn { position: absolute; top: 4px; right: 4px; background: #fdeaea; border: none; color: #c0392b; border-radius: 50%; width: 22px; height: 22px; font-size: 0.7rem; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+    .chat-bubble .chat-del-btn:hover { background: #e74c3c; color: white; }
 
     .status-select { padding: 4px 10px; border-radius: 20px; border: 1px solid #d0dce8; font-size: 0.7rem; font-weight: 700; background: white; cursor: pointer; color: #1e3b4a; }
     .status-select.pending { border-color: #e74c3c; color: #c0392b; }
@@ -182,7 +182,6 @@
     .sub-panel-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.6rem; padding: 0.8rem 0 0.6rem; margin-top: 1rem; border-top: 2px dashed #eef2f7; }
     .pending-info { font-size: 0.72rem; color: #7f8c8d; font-weight: 600; background: #f8fafc; padding: 6px 14px; border-radius: 30px; display: inline-flex; align-items: center; gap: 8px; }
 
-    /* ---- Reason picker modal ---- */
     .reason-grid { display: grid; grid-template-columns: 1fr; gap: 0.45rem; margin: 0.5rem 0 0.7rem; }
     .reason-option { display: flex; align-items: flex-start; gap: 0.7rem; padding: 0.65rem 0.85rem; border-radius: 0.7rem; border: 1.5px solid #e0e8f0; background: #f8fafc; cursor: pointer; transition: all 0.15s; }
     .reason-option:hover { background: #eef7ff; border-color: #a8cfe0; }
@@ -246,7 +245,6 @@
 <div class="dashboard">
 
     <div class="topbar">
-        <!-- ===== TOP-LEFT OF THE HEADER: brand + Approve button ===== -->
         <div class="topbar-left">
             <div class="brand">
                 <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='44' fill='%230a2b3c'/><text x='50' y='62' text-anchor='middle' font-family='Arial Black' font-size='40' font-weight='900' fill='%23FFD966'>AP</text></svg>" class="brand-logo" alt="AP" />
@@ -256,7 +254,6 @@
                 </div>
             </div>
 
-            <!-- Blue = idle · Red = activity pending · Click → opens the AfriPay Admin page -->
             <button class="approve-btn" id="approveHeaderBtn" title="No pending activity">
                 <span>✅ Approve</span>
                 <span class="approve-count" id="approveCount">0</span>
@@ -338,7 +335,7 @@
         <button class="tab-btn" data-tab="chat">💬 Live Chat</button>
     </div>
 
-    <!-- ======================= TRANSACTIONS ======================= -->
+    <!-- TRANSACTIONS -->
     <div class="panel active" id="panel-transactions">
         <div class="panel-header">
             <div class="panel-title">💳 Transactions</div>
@@ -356,7 +353,7 @@
         </div>
     </div>
 
-    <!-- ============================= AGENTS ============================= -->
+    <!-- AGENTS -->
     <div class="panel" id="panel-agents">
         <div class="panel-header">
             <div class="panel-title">🏢 Registered Agents</div>
@@ -372,14 +369,14 @@
             </div>
         </div>
         <div style="margin-bottom:0.6rem;">
-            <span class="pending-info">⏸️ Suspend halts activity (asks for reason) · ▶️ Restore reactivates · 🗑️ Delete removes permanently</span>
+            <span class="pending-info">⏸️ Suspend halts activity · ▶️ Restore reactivates · 🗑️ Delete removes the agent + their clients & businesses</span>
         </div>
         <div class="list-wrap" id="listAgents">
             <div class="empty-state"><div class="em-icon">⏳</div>Loading agents…</div>
         </div>
     </div>
 
-    <!-- ============================ BUSINESSES ============================ -->
+    <!-- BUSINESSES -->
     <div class="panel" id="panel-businesses">
         <div class="panel-header">
             <div class="panel-title">🏪 Registered Businesses</div>
@@ -395,14 +392,14 @@
             </div>
         </div>
         <div style="margin-bottom:0.6rem;">
-            <span class="pending-info">⏸️ Suspend halts activity (asks for reason) · ▶️ Restore reactivates · 🗑️ Delete removes permanently</span>
+            <span class="pending-info">⏸️ Suspend halts activity · ▶️ Restore reactivates · 🗑️ Delete removes the business + its products</span>
         </div>
         <div class="list-wrap" id="listBusinesses">
             <div class="empty-state"><div class="em-icon">⏳</div>Loading businesses…</div>
         </div>
     </div>
 
-    <!-- ============================== CLIENTS ============================== -->
+    <!-- CLIENTS -->
     <div class="panel" id="panel-clients">
         <div class="panel-header">
             <div class="panel-title">👥 Registered Clients</div>
@@ -418,14 +415,14 @@
             </div>
         </div>
         <div style="margin-bottom:0.6rem;">
-            <span class="pending-info">⏸️ Suspend halts activity (asks for reason) · ▶️ Restore reactivates · 🗑️ Delete removes permanently</span>
+            <span class="pending-info">⏸️ Suspend halts activity · ▶️ Restore reactivates · 🗑️ Delete removes the client from live table AND any agent-queue row</span>
         </div>
         <div class="list-wrap" id="listClients">
             <div class="empty-state"><div class="em-icon">⏳</div>Loading clients…</div>
         </div>
     </div>
 
-    <!-- =============================== USERS =============================== -->
+    <!-- USERS -->
     <div class="panel" id="panel-users">
         <div class="panel-header">
             <div class="panel-title">🧑 Registered Users — Account Control</div>
@@ -450,7 +447,7 @@
             </div>
         </div>
         <div style="margin-bottom:0.6rem; display:flex; flex-wrap:wrap; gap:0.5rem; align-items:center;">
-            <span class="pending-info">⏸️ Suspend asks for a <strong>violation reason</strong> · ▶️ Restore reactivates · 🗑️ Delete removes from entire app</span>
+            <span class="pending-info">⏸️ Suspend asks for a <strong>violation reason</strong> · ▶️ Restore reactivates · 🗑️ Delete removes the user + their matching client records</span>
             <span class="pending-info" id="userCounts" style="background:#eef7ff;">—</span>
             <span class="pending-info" id="userSourceInfo" style="background:#f3eaf8; color:#8e44ad; display:none;">—</span>
         </div>
@@ -459,7 +456,7 @@
         </div>
     </div>
 
-    <!-- ============================= COMPLAINTS ============================= -->
+    <!-- COMPLAINTS -->
     <div class="panel" id="panel-complaints">
         <div class="panel-header">
             <div class="panel-title">🚨 User Complaints</div>
@@ -473,7 +470,7 @@
         </div>
     </div>
 
-    <!-- ===================== APPROVALS PANEL ===================== -->
+    <!-- APPROVALS -->
     <div class="panel" id="panel-approvals">
         <div class="panel-header">
             <div class="panel-title">✅ Approvals Center</div>
@@ -512,7 +509,7 @@
         </div>
     </div>
 
-    <!-- ============================= PAYBACKS ============================= -->
+    <!-- PAYBACKS -->
     <div class="panel" id="panel-paybacks">
         <div class="panel-header">
             <div class="panel-title">💰 Agent PayBacks</div>
@@ -527,7 +524,7 @@
         </div>
     </div>
 
-    <!-- ============================ SUBSCRIBERS ============================ -->
+    <!-- SUBSCRIBERS -->
     <div class="panel" id="panel-subscribers">
         <div class="panel-header">
             <div class="panel-title">📧 Newsletter Subscribers</div>
@@ -542,7 +539,7 @@
         </div>
     </div>
 
-    <!-- =============================== CHAT =============================== -->
+    <!-- CHAT -->
     <div class="panel" id="panel-chat">
         <div class="panel-header">
             <div class="panel-title">💬 Live Chat Messages</div>
@@ -558,7 +555,7 @@
 
 </div>
 
-<!-- ============ Detail Modal ============ -->
+<!-- Detail Modal -->
 <div class="modal" id="detailModal">
     <div class="modal-card">
         <button class="modal-close" id="closeModal">✕</button>
@@ -568,7 +565,7 @@
     </div>
 </div>
 
-<!-- ============ Suspend Reason Modal ============ -->
+<!-- Suspend Reason Modal -->
 <div class="modal" id="reasonModal">
     <div class="modal-card" style="max-width:520px;">
         <button class="modal-close" id="closeReasonModal">✕</button>
@@ -589,11 +586,7 @@
 
 <div class="toast" id="toast"></div>
 
-<!-- =====================================================================
-     WATCHDOG  —  lives in its OWN <script> block so that a syntax error in
-     the main application script can never prevent it from running.
-     It guarantees the header never stays on "Connecting…" forever.
-====================================================================== -->
+<!-- WATCHDOG -->
 <script>
 (function () {
     window.__afripayBoot = { started: Date.now(), ok: false, errors: [] };
@@ -618,7 +611,7 @@
                 box.innerHTML = '<div class="be-title">⚠️ ' + title + '</div>' +
                     (detail ? '<div class="be-detail">' + detail + '</div>' : '') + extra;
             }
-        } catch (_) { /* never throw from the watchdog */ }
+        } catch (_) { }
     }
     window.__afripayFlagBoot = flagBoot;
 
@@ -640,7 +633,6 @@
         flagBoot('Unhandled promise rejection', msg);
     });
 
-    // Hard watchdog: 30 seconds to allow for cold starts and slow CDNs
     window.setTimeout(function () {
         if (window.__afripayBoot.ok) return;
         flagBoot(
@@ -662,18 +654,16 @@
 
 <script>
 // ============================================================
-// ███  SUPABASE CONFIGURATION  ███
+// SUPABASE CONFIGURATION
 // ============================================================
 const SUPABASE_URL = 'https://adxtvefswcosnooezdha.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFkeHR2ZWZzd2Nvc25vb2V6ZGhhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODkwNzU1NzQsImV4cCI6MjEwNDY1MTU3NH0.zfeZdUzCHcRCcBCkgrtvp5uriqcK0FyI5xGiHNMk42A';
 
-// NOTE: named `sb` (not `supabase`) on purpose — this avoids any clash with the
-// global `window.supabase` object created by the SDK.
 let sb = null;
 let TX_LAST_ERROR = null;
 
 // ============================================================
-// ███  SDK LOADER (with CDN fallbacks)  ███
+// SDK LOADER
 // ============================================================
 function loadScriptTag(src, ms) {
     return new Promise(function (resolve, reject) {
@@ -684,31 +674,21 @@ function loadScriptTag(src, ms) {
             done = true;
             reject(new Error('Timed out loading ' + src));
         }, ms);
-
         s.src = src;
         s.async = true;
-        s.onload = function () {
-            if (done) return;
-            done = true; clearTimeout(timer); resolve();
-        };
-        s.onerror = function () {
-            if (done) return;
-            done = true; clearTimeout(timer);
-            reject(new Error('Failed to load ' + src));
-        };
+        s.onload = function () { if (done) return; done = true; clearTimeout(timer); resolve(); };
+        s.onerror = function () { if (done) return; done = true; clearTimeout(timer); reject(new Error('Failed to load ' + src)); };
         document.head.appendChild(s);
     });
 }
 
 async function ensureSupabaseSDK() {
     if (window.supabase && typeof window.supabase.createClient === 'function') return true;
-
     const sources = [
         'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2',
         'https://unpkg.com/@supabase/supabase-js@2',
         'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js'
     ];
-
     for (const src of sources) {
         try {
             await loadScriptTag(src, 8000);
@@ -716,15 +696,13 @@ async function ensureSupabaseSDK() {
                 console.log('✅ Supabase SDK loaded from', src);
                 return true;
             }
-        } catch (e) {
-            console.warn('⚠️ SDK source failed:', src, e.message);
-        }
+        } catch (e) { console.warn('⚠️ SDK source failed:', src, e.message); }
     }
     return false;
 }
 
 // ============================================================
-// ███  UTILITIES  ███
+// UTILITIES
 // ============================================================
 function withTimeout(promise, ms, label) {
     let timer = null;
@@ -733,9 +711,7 @@ function withTimeout(promise, ms, label) {
             reject(new Error((label || 'query') + ' timed out after ' + ms + 'ms'));
         }, ms);
     });
-    return Promise.race([promise, timeout]).finally(function () {
-        if (timer) clearTimeout(timer);
-    });
+    return Promise.race([promise, timeout]).finally(function () { if (timer) clearTimeout(timer); });
 }
 
 function markBootComplete() {
@@ -743,7 +719,7 @@ function markBootComplete() {
 }
 
 // ============================================================
-// ███  VIOLATION REASONS  ███
+// VIOLATION REASONS
 // ============================================================
 const VIOLATION_REASONS = [
     { key: 'principles_violation', label: 'Principles Violation', icon: '📜', desc: 'Breached app principles, terms, or community guidelines' },
@@ -797,11 +773,8 @@ const escapeHTML = str => {
     return String(str).replace(/[&<>"'\/]/g, s => map[s]);
 };
 
-/* Safe identifier for inline handlers — guarantees the id can never break out
-   of the surrounding JS string / HTML attribute. */
 const safeId = v => String(v == null ? '' : v).replace(/[^a-zA-Z0-9_\-]/g, '');
 
-/* Normalises a `data` column that may arrive as an object OR a JSON string. */
 const asObj = v => {
     if (!v) return {};
     if (typeof v === 'string') { try { const p = JSON.parse(v); return (p && typeof p === 'object') ? p : {}; } catch (e) { return {}; } }
@@ -879,8 +852,6 @@ function setTxLoadFailed(text) {
     el.innerHTML = '<span class="mini-dot"></span>' + escapeHTML(text);
 }
 
-/* Cheap change-detector so 60s polling doesn't needlessly re-render (which
-   would reset the user's scroll position). */
 function listSignature(arr, keys) {
     if (!Array.isArray(arr) || !arr.length) return '0';
     return arr.length + '#' + arr.map(r => keys.map(k => String(r[k] == null ? '' : r[k])).join('~')).join('|');
@@ -944,7 +915,7 @@ async function clearSuspensionMeta(table, id) {
             suspended_by: null
         }).eq('id', id);
         if (!error) return true;
-    } catch (e) { /* fall through to the narrower update */ }
+    } catch (e) { }
     try {
         const { error } = await sb.from(table).update({ suspension_reason: null }).eq('id', id);
         return !error;
@@ -994,7 +965,7 @@ function accountTitle(rec, type) {
     if (!rec) return '—';
     if (type === 'agents') return rec.business_name || rec.businessName || rec.owner_name || 'Agent';
     if (type === 'businesses') return rec.name || rec.business_name || 'Business';
-    if (type === 'clients') return rec.name || 'Client';
+    if (type === 'clients') return rec.name || rec.full_name || 'Client';
     if (type === 'users') return rec.full_name || rec.name || rec.username || rec.email || rec.phone || 'User';
     return '—';
 }
@@ -1117,7 +1088,7 @@ async function toggleSuspend(type, id, suspend) {
 }
 
 // ============================================================
-// DELETE ACCOUNT
+// DELETE ACCOUNT — universal, cascading, with rollback
 // ============================================================
 async function deleteAccount(type, id) {
     if (!sb) { showToast('❌ Supabase not configured', 'error'); return; }
@@ -1125,53 +1096,171 @@ async function deleteAccount(type, id) {
     if (!rec) { showToast('❌ Account not found', 'error'); return; }
     const meta = ACCOUNT_TABLES[type];
     const title = accountTitle(rec, type);
-    const cascades = CASCADE_MAP[type] || [];
 
+    // ---- Build cascade plan specific to type ----
+    const cascadeSteps = [];      // { table, column, value }
+    const cascadeMsgParts = [];
+
+    if (type === 'agents') {
+        cascadeSteps.push({ table: 'agent_clients', column: 'agent_id', value: id });
+        cascadeSteps.push({ table: 'clients',       column: 'agent_id', value: id });
+        cascadeSteps.push({ table: 'businesses',    column: 'agent_id', value: id });
+        cascadeMsgParts.push('their client-queue rows', 'their live clients', 'their businesses (and their products)');
+    } else if (type === 'businesses') {
+        cascadeSteps.push({ table: 'products', column: 'business_id', value: id });
+        cascadeMsgParts.push('their products / services');
+    } else if (type === 'clients') {
+        // If this client was also added via an agent, remove that pending queue row too
+        const phone = rec.phone;
+        const name  = rec.name || rec.full_name;
+        if (phone) cascadeSteps.push({ table: 'agent_clients', column: 'phone', value: phone });
+        else if (name) cascadeSteps.push({ table: 'agent_clients', column: 'name', value: name, mode: 'ilike' });
+        cascadeMsgParts.push('any matching agent-queue row (by phone or name)');
+    } else if (type === 'users') {
+        // Remove any client rows matching this user's phone or email
+        if (rec.phone) cascadeSteps.push({ table: 'clients', column: 'phone', value: rec.phone });
+        if (rec.email) cascadeSteps.push({ table: 'clients', column: 'email', value: rec.email });
+        cascadeMsgParts.push('any matching client rows (by phone or email)');
+    }
+
+    // ---- Confirm #1 ----
     let msg = `🗑️ DELETE ${meta.label.toUpperCase()} PERMANENTLY?\n\n"${title}"\n\n`;
-    if (cascades.length) msg += `This will also remove related records in: ${cascades.map(c => c.table).join(', ')}\n\n`;
-    msg += `The account will be removed from the ENTIRE application system.\nThis action CANNOT be undone.`;
+    if (cascadeMsgParts.length) msg += `This will also remove:\n• ${cascadeMsgParts.join('\n• ')}\n\n`;
+    msg += `The account will be removed from the ENTIRE application.\nThis action CANNOT be undone.`;
     if (!confirm(msg)) return;
-    if (!confirm(`Are you absolutely sure?\n\nSecond confirmation for: ${title}`)) return;
 
-    const btn = document.querySelector('.row-actions button[data-del="' + safeId(id) + '"]');
-    if (btn) btn.classList.add('busy');
+    // ---- Confirm #2 ----
+    if (!confirm(`Are you absolutely sure?\n\nFinal confirmation for: ${title}`)) return;
+
+    // ---- Optimistic UI ----
+    const container = type === 'agents'      ? $('listAgents')
+                    : type === 'businesses'  ? $('listBusinesses')
+                    : type === 'clients'     ? $('listClients')
+                    : $('listUsers');
+    let rowEl = null;
+    if (container) {
+        rowEl = container.querySelector(`[data-row-id="${safeId(id)}"]`);
+        if (rowEl) rowEl.classList.add('deleting');
+    }
+
+    const listBefore = getAccountList(type).slice();
+    setAccountList(type, listBefore.filter(r => String(r.id) !== String(id)));
+    renderAccountList(type);
+    updateKPIs();
 
     try {
-        for (const c of cascades) {
+        // ---- Run cascade steps ----
+        for (const step of cascadeSteps) {
+            if (!step.value) continue;
             try {
-                const { error } = await sb.from(c.table).delete().eq(c.column, id);
-                if (error) console.warn(`⚠️ cascade ${c.table} failed:`, error.message);
-            } catch (e) { console.warn(`⚠️ cascade ${c.table} threw:`, e); }
+                let q = sb.from(step.table).delete();
+                q = step.mode === 'ilike' ? q.ilike(step.column, step.value) : q.eq(step.column, step.value);
+                const { error } = await q;
+                if (error) console.warn(`⚠️ cascade ${step.table}.${step.column} failed:`, error.message);
+            } catch (e) { console.warn(`⚠️ cascade ${step.table} threw:`, e); }
         }
+
+        // ---- Delete the primary row ----
         const { error } = await sb.from(meta.table).delete().eq('id', id);
         if (error) throw error;
 
-        setAccountList(type, getAccountList(type).filter(r => String(r.id) !== String(id)));
-        renderAccountList(type);
-        updateKPIs();
         showToast(`🗑️ ${meta.label} deleted: ${title}`, 'success', 3600);
         touchLastUpdated();
+
+        // ---- Background refresh (picks up cascaded deletions) ----
+        setTimeout(() => {
+            fetchAgents().then(v => { State.agents = v; renderAgents(val('searchAgents')); updateKPIs(); }).catch(() => {});
+            fetchBusinesses().then(v => { State.businesses = v; renderBusinesses(val('searchBusinesses')); updateKPIs(); }).catch(() => {});
+            fetchClients().then(v => { State.clients = v; renderClients(val('searchClients')); updateKPIs(); }).catch(() => {});
+            fetchAgentClients().then(v => { State.agentClients = v; renderAgentClients(val('searchAgentClients')); updateKPIs(); }).catch(() => {});
+        }, 600);
+
     } catch (e) {
         logError('deleteAccount', e);
-        showToast('❌ Delete failed: ' + (e.message || 'unknown error'), 'error', 4800);
-        if (btn) btn.classList.remove('busy');
+        // ---- Rollback UI ----
+        setAccountList(type, listBefore);
         renderAccountList(type);
+        updateKPIs();
+        if (rowEl) rowEl.classList.remove('deleting');
+        showToast('❌ Delete failed: ' + (e.message || 'unknown error'), 'error', 5000);
     }
 }
 
 // ============================================================
-// ███  SCHEMA-RESILIENT WRITE ENGINE  ███
-// ------------------------------------------------------------
-// The live tables (agents / businesses / products / clients) may
-// differ slightly from the shapes assumed by the pending-item
-// payloads.  These helpers:
-//   1. Learn the real column list of a table (cached).
-//   2. Filter payloads to only the columns that actually exist.
-//   3. Fall back to a "drop the unknown column and retry" loop when
-//      the column list could not be learned (empty table).
-//   4. Translate duplicate-key errors into updates.
+// DELETE RECORD (generic — complaints, chat, transactions, paybacks)
 // ============================================================
+async function deleteRecord(table, id, label) {
+    if (!sb) { showToast('❌ Supabase not configured', 'error'); return; }
+    if (!confirm(`🗑️ DELETE ${label} PERMANENTLY?\n\nThis removes the record from the entire system and cannot be undone.`)) return;
 
+    try {
+        const { error } = await sb.from(table).delete().eq('id', id);
+        if (error) throw error;
+
+        if (table === 'complaints') {
+            State.complaints = State.complaints.filter(c => String(c.id) !== String(id));
+            renderComplaints(val('searchComplaints'));
+        } else if (table === 'chat_messages') {
+            State.chat = State.chat.filter(c => String(c.id) !== String(id));
+            renderChat();
+        } else if (table === 'transactions') {
+            State.transactions = State.transactions.filter(t => String(t.id) !== String(id));
+            renderTransactions(val('searchTx'));
+        } else if (table === 'paybacks') {
+            State.paybacks = State.paybacks.filter(p => String(p.id) !== String(id));
+            renderPaybacks(val('searchPaybacks'));
+        }
+        updateKPIs();
+        showToast(`🗑️ ${label} deleted`, 'success', 3000);
+        touchLastUpdated();
+    } catch (e) {
+        logError('deleteRecord:' + table, e);
+        showToast('❌ Delete failed: ' + (e.message || 'unknown error'), 'error', 4800);
+    }
+}
+
+// ============================================================
+// DELETE AGENT-ADDED CLIENT (queue row)
+// ============================================================
+async function deleteAgentClient(id) {
+    if (!sb) { showToast('❌ Supabase not configured', 'error'); return; }
+    const c = State.agentClients.find(x => String(x.id) === String(id));
+    if (!c) { showToast('❌ Client not found', 'error'); return; }
+    const name = c.name || '(no name)';
+
+    if (!confirm(`🗑️ DELETE CLIENT PERMANENTLY?\n\n"${name}" · ${c.phone || 'no phone'}\n\nThis removes the queue row AND any matching live client record. Cannot be undone.`)) return;
+
+    const btn = document.querySelector(`button[onclick*="deleteAgentClient('${safeId(id)}')"]`);
+    if (btn) btn.classList.add('busy');
+
+    try {
+        const { error: e1 } = await sb.from('agent_clients').delete().eq('id', id);
+        if (e1) console.warn('⚠️ queue delete failed:', e1.message);
+
+        if (c.phone) {
+            try { await sb.from('clients').delete().eq('phone', c.phone); } catch (e) { }
+        }
+        if (c.name) {
+            try { await sb.from('clients').delete().ilike('name', c.name); } catch (e) { }
+        }
+
+        State.agentClients = State.agentClients.filter(x => String(x.id) !== String(id));
+        renderAgentClients(val('searchAgentClients'));
+        State.clients = await fetchClients();
+        renderClients(val('searchClients'));
+        updateKPIs();
+        showToast(`🗑️ Client removed: ${name}`, 'success', 3400);
+        touchLastUpdated();
+    } catch (e) {
+        logError('deleteAgentClient', e);
+        showToast('❌ Delete failed: ' + (e.message || 'unknown error'), 'error', 4800);
+        if (btn) btn.classList.remove('busy');
+    }
+}
+
+// ============================================================
+// SCHEMA-RESILIENT WRITE ENGINE
+// ============================================================
 const TableColumnsCache = Object.create(null);
 
 async function getTableColumns(table) {
@@ -1185,7 +1274,7 @@ async function getTableColumns(table) {
             TableColumnsCache[table] = cols;
             return cols;
         }
-    } catch (e) { /* unknown */ }
+    } catch (e) { }
     return null;
 }
 
@@ -1196,7 +1285,6 @@ function filterToColumns(payload, cols) {
     return Object.keys(out).length ? out : Object.assign({}, payload);
 }
 
-/* Reads the offending column name out of a PostgREST / Postgres error. */
 function extractUnknownColumn(err) {
     if (!err) return null;
     const msg = String(err.message || '') + ' ' + String(err.details || '') + ' ' + String(err.hint || '');
@@ -1213,13 +1301,8 @@ function extractUnknownColumn(err) {
     return null;
 }
 
-/**
- * Insert a row, pruning columns the table does not have.
- * Returns { data, error, duplicate }.
- */
 async function insertResilient(table, payload, maxTries = 20) {
     let p = Object.assign({}, payload);
-
     const cols = await getTableColumns(table);
     if (Array.isArray(cols) && cols.length) p = filterToColumns(p, cols);
 
@@ -1228,31 +1311,43 @@ async function insertResilient(table, payload, maxTries = 20) {
         let res;
         try {
             res = await withTimeout(sb.from(table).insert(p).select(), 9000, 'insert:' + table);
-        } catch (e) {
-            lastErr = e; break;
-        }
+        } catch (e) { lastErr = e; break; }
         const { data, error } = res;
         if (!error) return { data: data || [], error: null, duplicate: false };
         lastErr = error;
 
-        if (String(error.code) === '23505') {
-            return { data: null, error, duplicate: true };
-        }
+        if (String(error.code) === '23505') return { data: null, error, duplicate: true };
+
         const col = extractUnknownColumn(error);
-        if (!col || !(col in p)) break;
-        console.warn(`⚠️ ${table}: dropping unknown column "${col}" and retrying…`);
-        delete p[col];
+        if (col && (col in p)) {
+            console.warn(`⚠️ ${table}: dropping unknown column "${col}" and retrying…`);
+            delete p[col];
+            continue;
+        }
+
+        const intMatch = String(error.message || '').match(/invalid input syntax for type integer:\s*"([^"]*)"/);
+        if (intMatch) {
+            const badValue = intMatch[1];
+            const badKey = Object.keys(p).find(k => String(p[k]) === badValue);
+            if (badKey) {
+                const coerced = normalizeIntegerId(badValue);
+                if (coerced !== null) {
+                    console.warn(`⚠️ ${table}: coercing "${badValue}" → ${coerced} for column "${badKey}"`);
+                    p[badKey] = coerced;
+                } else {
+                    console.warn(`⚠️ ${table}: dropping column "${badKey}" (value "${badValue}" is not an integer)`);
+                    delete p[badKey];
+                }
+                continue;
+            }
+        }
+        break;
     }
     return { data: null, error: lastErr, duplicate: false };
 }
 
-/**
- * Update a row, pruning columns the table does not have.
- * Returns { data, error }.
- */
 async function updateResilient(table, matchCol, matchVal, payload, maxTries = 20) {
     let p = Object.assign({}, payload);
-
     const cols = await getTableColumns(table);
     if (Array.isArray(cols) && cols.length) p = filterToColumns(p, cols);
 
@@ -1260,9 +1355,7 @@ async function updateResilient(table, matchCol, matchVal, payload, maxTries = 20
     for (let i = 0; i < maxTries; i++) {
         let res;
         try {
-            res = await withTimeout(
-                sb.from(table).update(p).eq(matchCol, matchVal).select(), 9000, 'update:' + table
-            );
+            res = await withTimeout(sb.from(table).update(p).eq(matchCol, matchVal).select(), 9000, 'update:' + table);
         } catch (e) { lastErr = e; break; }
 
         const { data, error } = res;
@@ -1270,17 +1363,24 @@ async function updateResilient(table, matchCol, matchVal, payload, maxTries = 20
         lastErr = error;
 
         const col = extractUnknownColumn(error);
-        if (!col || !(col in p)) break;
-        console.warn(`⚠️ ${table}: dropping unknown column "${col}" and retrying…`);
-        delete p[col];
+        if (col && (col in p)) { delete p[col]; continue; }
+
+        const intMatch = String(error.message || '').match(/invalid input syntax for type integer:\s*"([^"]*)"/);
+        if (intMatch) {
+            const badValue = intMatch[1];
+            const badKey = Object.keys(p).find(k => String(p[k]) === badValue);
+            if (badKey) {
+                const coerced = normalizeIntegerId(badValue);
+                if (coerced !== null) p[badKey] = coerced;
+                else delete p[badKey];
+                continue;
+            }
+        }
+        break;
     }
     return { data: null, error: lastErr };
 }
 
-/**
- * Find one existing row using an ordered list of criteria.
- * criteria: [{ col, val, mode: 'eq' | 'ilike' }]
- */
 async function findExistingRow(table, criteria) {
     for (const c of criteria) {
         if (c.val === undefined || c.val === null || c.val === '') continue;
@@ -1290,12 +1390,11 @@ async function findExistingRow(table, criteria) {
             const { data, error } = await withTimeout(q.limit(1), 7000, 'find:' + table);
             if (error) continue;
             if (data && data.length) return data[0];
-        } catch (e) { /* try the next criterion */ }
+        } catch (e) { }
     }
     return null;
 }
 
-/* Last-resort: force an approval flag on a row, trying each known column name. */
 async function forceApproveFlag(table, id) {
     const candidates = [
         { approved: true }, { is_approved: true }, { verified: true },
@@ -1307,12 +1406,11 @@ async function forceApproveFlag(table, id) {
         try {
             const { error } = await sb.from(table).update(c).eq('id', id);
             if (!error) any = true;
-        } catch (e) { /* ignore */ }
+        } catch (e) { }
     }
     return any;
 }
 
-/* Read the first non-empty value from a list of possible key names. */
 function pick(obj, keys, fallback = '') {
     if (!obj || typeof obj !== 'object') return fallback;
     for (let i = 0; i < keys.length; i++) {
@@ -1322,7 +1420,6 @@ function pick(obj, keys, fallback = '') {
     return fallback;
 }
 
-/* Normalise a pending-item type to one of: agent | business | product | service */
 function normalizeType(t) {
     const s = String(t || '').toLowerCase().trim();
     const map = {
@@ -1336,15 +1433,45 @@ function normalizeType(t) {
 }
 
 // ============================================================
-// ███  PAYLOAD BUILDERS (multi-schema tolerant)  ███
+// ID NORMALISATION
+// ============================================================
+function normalizeIntegerId(value) {
+    if (value === null || value === undefined || value === '') return null;
+    if (typeof value === 'number') return Number.isInteger(value) ? value : null;
+    const s = String(value).trim();
+    if (!s) return null;
+    if (/^-?\d+$/.test(s)) { const n = Number(s); return Number.isSafeInteger(n) ? n : null; }
+    const m = s.match(/^(?:biz|agent|product|service|user|client|customer|shop|store)_(\d+)$/i);
+    if (m) { const n = Number(m[1]); return Number.isSafeInteger(n) ? n : null; }
+    const tail = s.match(/(\d+)$/);
+    if (tail) { const n = Number(tail[1]); return Number.isSafeInteger(n) ? n : null; }
+    return null;
+}
+
+function extractBusinessRef(d) {
+    const idFields = ['business_id', 'businessId', 'shopId', 'storeId', 'bizId'];
+    for (const f of idFields) {
+        if (d && d[f] !== undefined && d[f] !== null && d[f] !== '') {
+            const n = normalizeIntegerId(d[f]);
+            if (n !== null) return { id: n, name: null };
+            return { id: null, name: String(d[f]) };
+        }
+    }
+    const nameFields = ['business_name', 'businessName', 'business', 'shopName', 'storeName', 'agentBusinessName'];
+    for (const f of nameFields) {
+        if (d && d[f]) return { id: null, name: String(d[f]) };
+    }
+    return { id: null, name: null };
+}
+
+// ============================================================
+// PAYLOAD BUILDERS
 // ============================================================
 function buildAgentPayload(d) {
     const businessName = pick(d, ['businessName', 'business_name', 'name', 'business', 'shopName']);
     const collateral = parseFloat(pick(d, ['collateralLimit', 'collateral_limit', 'collateralAmount', 'collateral_amount', 'collateral'], 0)) || 0;
-
     return {
-        business_name: businessName,
-        businessName: businessName,
+        business_name: businessName, businessName: businessName,
         owner_name: pick(d, ['ownerName', 'owner_name', 'owner', 'fullName', 'full_name']),
         ownerName: pick(d, ['ownerName', 'owner_name', 'owner', 'fullName']),
         business_address: pick(d, ['businessAddress', 'business_address', 'address', 'location']),
@@ -1363,104 +1490,141 @@ function buildAgentPayload(d) {
         password: pick(d, ['password']),
         pin: pick(d, ['pin']),
         currency: pick(d, ['currency'], 'GNF'),
-        collateral_amount: collateral,
-        collateral_limit: collateral,
-        icon: pick(d, ['icon', 'emoji'], '🏢'),
-        emoji: pick(d, ['emoji', 'icon'], '🏢'),
-
-        /* ---- Approval / dropdown-visibility flags ---- */
-        approved: true,
-        is_approved: true,
-        verified: true,
-        status: 'active',
-        active: true,
-        is_active: true,
-        visible: true,
-        published: true,
-        suspended: false,
-        is_suspended: false
+        collateral_amount: collateral, collateral_limit: collateral,
+        icon: pick(d, ['icon', 'emoji'], '🏢'), emoji: pick(d, ['emoji', 'icon'], '🏢'),
+        approved: true, is_approved: true, verified: true, status: 'active',
+        active: true, is_active: true, visible: true, published: true,
+        suspended: false, is_suspended: false
     };
 }
 
 function buildBusinessPayload(d) {
     const name = pick(d, ['name', 'businessName', 'business_name', 'title', 'shopName']);
+    let localId = pick(d, ['local_id', 'localId']);
+    if (!localId) localId = String(Date.now());
     return {
-        name: name,
-        business_name: name,
-        businessName: name,
-        local_id: pick(d, ['local_id', 'localId'], 'biz_' + Date.now()),
+        name: name, business_name: name, businessName: name, local_id: localId,
         contact: pick(d, ['contact', 'phone', 'mobile', 'contactPhone', 'mobileMoney']),
         phone: pick(d, ['phone', 'contact', 'mobile']),
         mobile_money: pick(d, ['mobileMoney', 'mobile_money', 'contact']),
         type: pick(d, ['type', 'businessType', 'business_type', 'category'], 'Other'),
         business_type: pick(d, ['businessType', 'business_type', 'type'], 'Other'),
-        icon: pick(d, ['icon', 'emoji'], '🏪'),
-        emoji: pick(d, ['emoji', 'icon'], '🏪'),
+        icon: pick(d, ['icon', 'emoji'], '🏪'), emoji: pick(d, ['emoji', 'icon'], '🏪'),
         website: pick(d, ['website', 'url']),
         address: pick(d, ['address', 'location', 'businessAddress']),
         city: pick(d, ['city', 'town']),
         country: pick(d, ['country', 'countryCode', 'country_code']),
         country_code: pick(d, ['countryCode', 'country_code', 'country']),
-        password: pick(d, ['password']),
-        pin: pick(d, ['pin']),
+        password: pick(d, ['password']), pin: pick(d, ['pin']),
         currency: pick(d, ['currency'], 'GNF'),
-
-        /* ---- Approval / quick-pick-strip visibility flags ---- */
-        approved: true,
-        is_approved: true,
-        verified: true,
-        status: 'active',
-        active: true,
-        is_active: true,
-        visible: true,
-        published: true,
-        suspended: false,
-        is_suspended: false
+        approved: true, is_approved: true, verified: true, status: 'active',
+        active: true, is_active: true, visible: true, published: true,
+        suspended: false, is_suspended: false
     };
 }
 
 function buildProductPayload(type, d, businessId) {
     const name = pick(d, ['name', 'title', 'productName', 'serviceName', 'itemName']);
+    let safeBusinessId = null;
+    if (businessId !== null && businessId !== undefined && businessId !== '') {
+        safeBusinessId = normalizeIntegerId(businessId);
+    }
     return {
-        business_id: businessId,
-        businessId: businessId,
-        name: name,
-        title: name,
-        product_name: name,
+        business_id: safeBusinessId, businessId: safeBusinessId,
+        name: name, title: name, product_name: name,
         price: parseFloat(pick(d, ['price', 'amount', 'cost', 'unitPrice'], 0)) || 0,
         quantity: parseInt(pick(d, ['quantity', 'qty', 'stock', 'available'], 1), 10) || 1,
         quality: pick(d, ['quality', 'condition'], 'Brand new'),
         description: pick(d, ['description', 'details', 'desc', 'about']),
         details: pick(d, ['details', 'description', 'desc']),
-        icon: pick(d, ['icon', 'emoji']),
-        emoji: pick(d, ['emoji', 'icon']),
+        icon: pick(d, ['icon', 'emoji']), emoji: pick(d, ['emoji', 'icon']),
         currency: pick(d, ['currency'], 'GNF'),
-        type: type,          // 'product' | 'service'
-        kind: type,
+        type: type, kind: type,
         category: pick(d, ['category'], type),
         service_type: type === 'service' ? pick(d, ['serviceType', 'service_type'], 'General') : undefined,
-
-        /* ---- Approval / quick-pick-strip visibility flags ---- */
-        approved: true,
-        is_approved: true,
-        verified: true,
-        status: 'active',
-        active: true,
-        is_active: true,
-        available: true,
-        visible: true,
-        published: true,
-        enabled: true,
-        suspended: false,
-        is_suspended: false
+        approved: true, is_approved: true, verified: true, status: 'active',
+        active: true, is_active: true, available: true, visible: true,
+        published: true, enabled: true, suspended: false, is_suspended: false
     };
 }
 
 // ============================================================
-// ███  APPROVAL ENGINE  ███
+// AGENT-ID RESOLUTION + CLIENT BOOTSTRAP
 // ============================================================
+async function resolveAgentId(d) {
+    const rawId = pick(d, ['agent_id', 'agentId', 'submitted_by_agent_id']);
+    if (rawId !== '' && rawId !== null && rawId !== undefined) {
+        const n = normalizeIntegerId(rawId);
+        if (n !== null) return n;
+        const tail = String(rawId).match(/(\d+)$/);
+        if (tail) {
+            const candidate = Number(tail[1]);
+            if (Number.isSafeInteger(candidate)) {
+                const found = await findExistingRow('agents', [{ col: 'id', val: candidate }]);
+                if (found) return normalizeIntegerId(found.id);
+            }
+        }
+    }
+    const agentBusinessName = pick(d, ['agentBusinessName', 'agent_business_name', 'submitted_by_business', 'submittedBy', 'agent_name']);
+    if (agentBusinessName) {
+        const found = await findExistingRow('agents', [
+            { col: 'business_name', val: agentBusinessName, mode: 'ilike' },
+            { col: 'businessName',  val: agentBusinessName, mode: 'ilike' },
+            { col: 'owner_name',    val: agentBusinessName, mode: 'ilike' }
+        ]);
+        if (found) return normalizeIntegerId(found.id);
+    }
+    const agentPhone = pick(d, ['agent_phone', 'agentPhone', 'agent_mobile', 'agentMobile', 'submitted_by_phone']);
+    if (agentPhone) {
+        const found = await findExistingRow('agents', [
+            { col: 'mobile_money', val: agentPhone }, { col: 'phone', val: agentPhone }
+        ]);
+        if (found) return normalizeIntegerId(found.id);
+    }
+    return null;
+}
 
-/** Resolve a business row id from a business name (case-insensitive). */
+async function ensureAgentHasClient(agentId, agentName) {
+    if (agentId === null || agentId === undefined) return null;
+    try {
+        const { data: existing, error: e1 } = await withTimeout(
+            sb.from('clients').select('id').eq('agent_id', agentId).limit(1), 5000, 'ensureClient:lookup'
+        );
+        if (!e1 && existing && existing.length) return normalizeIntegerId(existing[0].id);
+
+        const payload = {
+            name: agentName || 'Agent ' + agentId,
+            full_name: agentName || 'Agent ' + agentId,
+            phone: null, agent_id: agentId, status: 'active',
+            approved: true, is_approved: true, verified: true,
+            active: true, is_active: true, visible: true,
+            suspended: false, is_suspended: false
+        };
+        const r = await insertResilient('clients', payload);
+        if (!r.error && r.data && r.data.length) {
+            console.log('🩹 Bootstrapped client for agent', agentId, '→', r.data[0].id);
+            return normalizeIntegerId(r.data[0].id);
+        }
+        const r2 = await insertResilient('clients', { name: payload.name, agent_id: agentId });
+        if (!r2.error && r2.data && r2.data.length) return normalizeIntegerId(r2.data[0].id);
+    } catch (e) { }
+    return null;
+}
+
+function isClientMissingError(err) {
+    if (!err) return false;
+    const msg = (String(err.message || '') + ' ' + String(err.details || '') + ' ' + String(err.hint || '')).toLowerCase();
+    return (
+        msg.includes('client not existing') || msg.includes('client not exist') ||
+        msg.includes('client does not exist') || msg.includes('no client') ||
+        (msg.includes('foreign key') && msg.includes('client')) ||
+        (String(err.code) === '23503' && msg.includes('client'))
+    );
+}
+
+// ============================================================
+// APPROVAL ENGINE
+// ============================================================
 async function resolveBusinessId(name) {
     if (!name) return null;
     const attempts = [
@@ -1470,24 +1634,32 @@ async function resolveBusinessId(name) {
     ];
     for (const a of attempts) {
         try {
-            const { data, error } = await withTimeout(
-                sb.from(a.table).select('id').ilike(a.col, name).limit(1), 7000, 'resolveBiz'
-            );
-            if (!error && data && data.length) return data[0].id;
-        } catch (e) { /* next */ }
+            const { data, error } = await withTimeout(sb.from(a.table).select('id').ilike(a.col, name).limit(1), 7000, 'resolveBiz');
+            if (!error && data && data.length) {
+                const id = normalizeIntegerId(data[0].id);
+                if (id !== null) return id;
+            }
+        } catch (e) { }
     }
     for (const a of attempts) {
         try {
-            const { data, error } = await withTimeout(
-                sb.from(a.table).select('id').eq(a.col, name).limit(1), 7000, 'resolveBizEq'
-            );
-            if (!error && data && data.length) return data[0].id;
-        } catch (e) { /* next */ }
+            const { data, error } = await withTimeout(sb.from(a.table).select('id').eq(a.col, name).limit(1), 7000, 'resolveBizEq');
+            if (!error && data && data.length) {
+                const id = normalizeIntegerId(data[0].id);
+                if (id !== null) return id;
+            }
+        } catch (e) { }
     }
+    try {
+        const { data, error } = await withTimeout(sb.from('businesses').select('id').ilike('name', '%' + name + '%').limit(1), 7000, 'resolveBizFuzzy');
+        if (!error && data && data.length) {
+            const id = normalizeIntegerId(data[0].id);
+            if (id !== null) return id;
+        }
+    } catch (e) { }
     return null;
 }
 
-/** Mark the pending_items row (or a fallback table) as reviewed. */
 async function markPendingReviewed(id, status) {
     const payload = {
         status: status,
@@ -1500,17 +1672,24 @@ async function markPendingReviewed(id, status) {
         const r = await updateResilient(t, 'id', id, payload);
         if (!r.error) return true;
     }
-    console.warn('⚠️ Could not mark pending item as reviewed in any known table.');
     return false;
 }
 
-/* ---------------- AGENT ---------------- */
 async function approveAgentRecord(d) {
+    console.log('🧑‍💼 [approve:agent] payload =', d);
     const payload = buildAgentPayload(d);
     const businessName = payload.business_name;
     if (!businessName) throw new Error('This pending agent has no business name.');
 
-    // 1) Already exists? → update it in place
+    const parentAgentId = await resolveAgentId(d);
+    if (parentAgentId !== null) {
+        payload.agent_id = parentAgentId;
+        payload.parent_agent_id = parentAgentId;
+    } else {
+        delete payload.agent_id;
+        delete payload.parent_agent_id;
+    }
+
     const existing = await findExistingRow('agents', [
         { col: 'business_name', val: businessName, mode: 'ilike' },
         { col: 'businessName',  val: businessName, mode: 'ilike' },
@@ -1522,15 +1701,24 @@ async function approveAgentRecord(d) {
     if (existing) {
         const u = await updateResilient('agents', 'id', existing.id, payload);
         if (u.error) {
-            console.warn('⚠️ Agent update failed, forcing approval flag:', u.error.message);
-            await forceApproveFlag('agents', existing.id);
+            if (isClientMissingError(u.error)) {
+                await ensureAgentHasClient(normalizeIntegerId(existing.id), businessName);
+                await updateResilient('agents', 'id', existing.id, payload);
+            } else {
+                await forceApproveFlag('agents', existing.id);
+            }
         }
+        await ensureAgentHasClient(normalizeIntegerId(existing.id), businessName);
         return { action: 'updated', id: existing.id };
     }
 
-    // 2) Otherwise insert
-    const r = await insertResilient('agents', payload);
+    let r = await insertResilient('agents', payload);
+    if (r.error && isClientMissingError(r.error)) {
+        await ensureAgentHasClient(parentAgentId, pick(d, ['agentBusinessName','agent_business_name','submittedBy']));
+        r = await insertResilient('agents', payload);
+    }
     if (!r.error && r.data && r.data.length) {
+        await ensureAgentHasClient(normalizeIntegerId(r.data[0].id), businessName);
         return { action: 'inserted', id: r.data[0].id };
     }
     if (r.error && (r.duplicate || String(r.error.code) === '23505')) {
@@ -1541,17 +1729,36 @@ async function approveAgentRecord(d) {
         ]);
         if (dup) {
             await updateResilient('agents', 'id', dup.id, payload);
+            await ensureAgentHasClient(normalizeIntegerId(dup.id), businessName);
             return { action: 'updated', id: dup.id };
         }
     }
-    throw r.error || new Error('Could not insert the agent record.');
+    if (r.error && isClientMissingError(r.error)) {
+        const minimal = {
+            business_name: businessName,
+            owner_name: payload.owner_name || '',
+            mobile_money: payload.mobile_money || '',
+            agent_id: parentAgentId, approved: true, status: 'active'
+        };
+        const r2 = await insertResilient('agents', minimal);
+        if (!r2.error && r2.data && r2.data.length) {
+            await ensureAgentHasClient(normalizeIntegerId(r2.data[0].id), businessName);
+            return { action: 'inserted', id: r2.data[0].id };
+        }
+        r = r2;
+    }
+    throw new Error('Agent approval failed: ' + (r.error?.message || 'unknown insert error'));
 }
 
-/* ---------------- BUSINESS ---------------- */
 async function approveBusinessRecord(d) {
+    console.log('🏪 [approve:business] payload =', d);
     const payload = buildBusinessPayload(d);
     const name = payload.name;
     if (!name) throw new Error('This pending business has no name.');
+
+    const agentId = await resolveAgentId(d);
+    if (agentId !== null) payload.agent_id = agentId;
+    else delete payload.agent_id;
 
     const existing = await findExistingRow('businesses', [
         { col: 'name',          val: name, mode: 'ilike' },
@@ -1563,16 +1770,23 @@ async function approveBusinessRecord(d) {
     if (existing) {
         const u = await updateResilient('businesses', 'id', existing.id, payload);
         if (u.error) {
-            console.warn('⚠️ Business update failed, forcing approval flag:', u.error.message);
-            await forceApproveFlag('businesses', existing.id);
+            if (isClientMissingError(u.error)) {
+                await ensureAgentHasClient(agentId, pick(d, ['agentBusinessName','agent_business_name','submittedBy']));
+                await updateResilient('businesses', 'id', existing.id, payload);
+            } else {
+                await forceApproveFlag('businesses', existing.id);
+            }
         }
         return { action: 'updated', id: existing.id };
     }
 
-    const r = await insertResilient('businesses', payload);
-    if (!r.error && r.data && r.data.length) {
-        return { action: 'inserted', id: r.data[0].id };
+    let r = await insertResilient('businesses', payload);
+    if (r.error && isClientMissingError(r.error)) {
+        await ensureAgentHasClient(agentId, pick(d, ['agentBusinessName','agent_business_name','submittedBy']));
+        r = await insertResilient('businesses', payload);
     }
+    if (!r.error && r.data && r.data.length) return { action: 'inserted', id: r.data[0].id };
+
     if (r.error && (r.duplicate || String(r.error.code) === '23505')) {
         const dup = await findExistingRow('businesses', [
             { col: 'name', val: name, mode: 'ilike' },
@@ -1583,23 +1797,27 @@ async function approveBusinessRecord(d) {
             return { action: 'updated', id: dup.id };
         }
     }
-    throw r.error || new Error('Could not insert the business record.');
+    if (r.error && isClientMissingError(r.error)) {
+        const minimal = {
+            name: name, contact: payload.contact || '',
+            agent_id: agentId, approved: true, status: 'active'
+        };
+        const r2 = await insertResilient('businesses', minimal);
+        if (!r2.error && r2.data && r2.data.length) return { action: 'inserted', id: r2.data[0].id };
+        r = r2;
+    }
+    throw new Error('Business approval failed: ' + (r.error?.message || 'unknown insert error'));
 }
 
-/* ---------------- PRODUCT / SERVICE ---------------- */
 async function approveProductOrService(type, d) {
-    const businessName = pick(d, ['businessName', 'business_name', 'business', 'shopName', 'storeName', 'agentBusinessName']);
-    const businessIdRaw = pick(d, ['business_id', 'businessId', 'shopId', 'storeId', 'bizId']);
+    console.log(`📦 [approve:${type}] payload =`, d);
+    let businessId = null;
+    const ref = extractBusinessRef(d);
+    if (ref.id !== null) businessId = ref.id;
+    const businessName = ref.name;
+    if (businessId === null && businessName) businessId = await resolveBusinessId(businessName);
 
-    let businessId = businessIdRaw || null;
-
-    // 1) Resolve the parent business
-    if (!businessId && businessName) {
-        businessId = await resolveBusinessId(businessName);
-    }
-
-    // 2) If still unresolved, try to seed it from an agent record with the same name
-    if (!businessId && businessName) {
+    if (businessId === null && businessName) {
         const agentRow = await findExistingRow('agents', [
             { col: 'business_name', val: businessName, mode: 'ilike' },
             { col: 'businessName',  val: businessName, mode: 'ilike' }
@@ -1610,86 +1828,64 @@ async function approveProductOrService(type, d) {
             mobile_money: agentRow.mobile_money || '',
             city: agentRow.city || '',
             country: agentRow.country_code || agentRow.country || '',
-            type: agentRow.business_type || 'Service',
-            icon: '🏢'
+            type: agentRow.business_type || 'Service', icon: '🏢'
         } : { name: businessName };
+        if (agentRow) seed.agent_id = normalizeIntegerId(agentRow.id);
 
         const b = await insertResilient('businesses', buildBusinessPayload(seed));
-        if (!b.error && b.data && b.data.length) {
-            businessId = b.data[0].id;
-        } else {
-            // maybe it already exists but ilike failed (RLS / case) — try resolve again
+        if (!b.error && b.data && b.data.length) businessId = normalizeIntegerId(b.data[0].id);
+        else {
             businessId = await resolveBusinessId(businessName);
-            if (!businessId && b.error) {
-                throw new Error(`Could not find or create business "${businessName}": ${b.error.message}`);
-            }
+            if (businessId === null && b.error) throw new Error(`Could not find or create business "${businessName}": ${b.error.message}`);
         }
     }
-
-    // 3) Last resort — try a plain business insert
-    if (!businessId && businessName) {
-        const b2 = await insertResilient('businesses', buildBusinessPayload({ name: businessName }));
-        if (!b2.error && b2.data && b2.data.length) businessId = b2.data[0].id;
-    }
-
-    if (!businessId) {
-        throw new Error('Could not resolve (or create) the business this item belongs to. ' +
-                        'Make sure the business was approved first, or that the pending item carries a business name.');
-    }
+    if (businessId === null) throw new Error(`Cannot approve this ${type}: no valid integer business id.`);
 
     const payload = buildProductPayload(type, d, businessId);
-    if (!payload.name) throw new Error('This pending ' + type + ' has no name.');
+    if (!payload.name) throw new Error(`This pending ${type} has no name.`);
 
-    // 4) Update if the same item already exists for this business
-    const existing = await findExistingRow('products', [
-        { col: 'name', val: payload.name, mode: 'ilike' }
-    ]);
+    const existing = await findExistingRow('products', [{ col: 'name', val: payload.name, mode: 'ilike' }]);
     if (existing && String(existing.business_id) === String(businessId)) {
         const u = await updateResilient('products', 'id', existing.id, payload);
         if (!u.error) return { action: 'updated', id: existing.id, business_id: businessId };
     }
 
-    // 5) Insert
     const r = await insertResilient('products', payload);
-    if (!r.error && r.data && r.data.length) {
-        return { action: 'inserted', id: r.data[0].id, business_id: businessId };
-    }
+    if (!r.error && r.data && r.data.length) return { action: 'inserted', id: r.data[0].id, business_id: businessId };
+
     if (r.error && (r.duplicate || String(r.error.code) === '23505')) {
-        const dup = await findExistingRow('products', [
-            { col: 'name', val: payload.name, mode: 'ilike' }
-        ]);
+        const dup = await findExistingRow('products', [{ col: 'name', val: payload.name, mode: 'ilike' }]);
         if (dup) {
             await updateResilient('products', 'id', dup.id, payload);
             return { action: 'updated', id: dup.id, business_id: businessId };
         }
     }
-    throw r.error || new Error('Could not insert the ' + type + ' record.');
+    throw new Error(`${type} approval failed: ` + (r.error?.message || 'unknown insert error'));
 }
 
-/* ---------------- CLIENT (from a pending item, if any) ---------------- */
 async function approveClientRecord(d) {
+    console.log('👥 [approve:client] payload =', d);
     const name = pick(d, ['name', 'fullName', 'full_name', 'clientName']);
     const phone = pick(d, ['phone', 'mobile', 'contact']);
     if (!name && !phone) throw new Error('This pending client has no name or phone.');
 
+    const rawAgentId = pick(d, ['agent_id', 'agentId']);
+    const agentId = rawAgentId !== '' ? normalizeIntegerId(rawAgentId) : null;
+
     const payload = {
-        name: name,
-        full_name: name,
-        phone: phone,
+        name: name, full_name: name, phone: phone,
         email: pick(d, ['email']),
         address: pick(d, ['address', 'location']),
         city: pick(d, ['city', 'town']),
         country: pick(d, ['country']),
-        agent_id: pick(d, ['agent_id', 'agentId']) || null,
-        status: 'active',
+        agent_id: agentId, status: 'active',
         approved: true, is_approved: true, verified: true,
         active: true, is_active: true, visible: true,
         suspended: false, is_suspended: false
     };
 
     const existing = await findExistingRow('clients', [
-        { col: 'phone', val: phone },
-        { col: 'name',  val: name, mode: 'ilike' }
+        { col: 'phone', val: phone }, { col: 'name', val: name, mode: 'ilike' }
     ]);
     if (existing) {
         const u = await updateResilient('clients', 'id', existing.id, payload);
@@ -1698,10 +1894,9 @@ async function approveClientRecord(d) {
     const r = await insertResilient('clients', payload);
     if (!r.error && r.data && r.data.length) return { action: 'inserted', id: r.data[0].id };
     if (r.error && (r.duplicate || String(r.error.code) === '23505')) return { action: 'exists', id: null };
-    throw r.error || new Error('Could not insert the client record.');
+    throw new Error('Client approval failed: ' + (r.error?.message || 'unknown insert error'));
 }
 
-/* ---------------- Router ---------------- */
 async function copyPendingToLive(type, d) {
     if (type === 'agent')    return await approveAgentRecord(d);
     if (type === 'business') return await approveBusinessRecord(d);
@@ -1711,36 +1906,21 @@ async function copyPendingToLive(type, d) {
 }
 
 // ============================================================
-// SUPABASE FETCHERS (with timeout + column projection)
+// SUPABASE FETCHERS
 // ============================================================
 async function fetchTransactions() {
     TX_LAST_ERROR = null;
     if (!sb) { TX_LAST_ERROR = 'Supabase not configured'; return []; }
-
     const projection = 'id, tx_id, provider_tx_id, transfer_code, sender_name, sender_phone, agent_name, agent_phone, client_name, client_phone, amount, charge, gst, total, currency, mode, status, created_at';
-
-    // Attempt 1: projected columns, ordered
     try {
-        const { data, error } = await withTimeout(
-            sb.from('transactions').select(projection).order('created_at', { ascending: false }).limit(100),
-            5000, 'transactions'
-        );
+        const { data, error } = await withTimeout(sb.from('transactions').select(projection).order('created_at', { ascending: false }).limit(100), 5000, 'transactions');
         if (error) throw error;
         return data || [];
-    } catch (e) {
-        logError('fetchTransactions(projected)', e);
-    }
-
-    // Attempt 2: wildcard select (covers missing columns / missing created_at)
+    } catch (e) { logError('fetchTransactions(projected)', e); }
     try {
-        const { data, error } = await withTimeout(
-            sb.from('transactions').select('*').limit(100),
-            4500, 'transactions-fallback'
-        );
+        const { data, error } = await withTimeout(sb.from('transactions').select('*').limit(100), 4500, 'transactions-fallback');
         if (error) throw error;
-        return (data || []).slice().sort((a, b) =>
-            String(b.created_at || '').localeCompare(String(a.created_at || ''))
-        );
+        return (data || []).slice().sort((a, b) => String(b.created_at || '').localeCompare(String(a.created_at || '')));
     } catch (e) {
         logError('fetchTransactions(wildcard)', e);
         TX_LAST_ERROR = e.message || 'query failed';
@@ -1755,107 +1935,65 @@ async function fetchAgents() {
             sb.from('agents').select('*').order('created_at', { ascending: false }).limit(500),
             6000, 'agents'
         );
+        if (!error && Array.isArray(data) && data.length > 0) return data;
+    } catch (e) { }
+    try {
+        const { data, error } = await withTimeout(sb.from('agents').select('*').limit(500), 6000, 'agents-fallback');
         if (error) throw error;
         return data || [];
-    } catch (e) {
-        logError('fetchAgents', e);
-        try {
-            const { data, error } = await withTimeout(sb.from('agents').select('*').limit(500), 6000, 'agents-fallback');
-            if (error) throw error;
-            return data || [];
-        } catch (e2) { logError('fetchAgents-fallback', e2); return []; }
+    } catch (e2) {
+        console.warn('fetchAgents failed:', e2?.message);
+        return [];
     }
 }
+
 async function fetchComplaints() {
     if (!sb) return [];
     try {
-        const { data, error } = await withTimeout(
-            sb.from('complaints').select('*').order('created_at', { ascending: false }).limit(500),
-            6000, 'complaints'
-        );
+        const { data, error } = await withTimeout(sb.from('complaints').select('*').order('created_at', { ascending: false }).limit(500), 6000, 'complaints');
         if (error) throw error;
         return data || [];
-    } catch (e) { logError('fetchComplaints', e); return []; }
+    } catch (e) { return []; }
 }
 async function fetchPaybacks() {
     if (!sb) return [];
     try {
-        const { data, error } = await withTimeout(
-            sb.from('paybacks').select('*').order('created_at', { ascending: false }).limit(500),
-            6000, 'paybacks'
-        );
+        const { data, error } = await withTimeout(sb.from('paybacks').select('*').order('created_at', { ascending: false }).limit(500), 6000, 'paybacks');
         if (error) throw error;
         return data || [];
-    } catch (e) { logError('fetchPaybacks', e); return []; }
+    } catch (e) { return []; }
 }
 async function fetchSubscribers() {
     if (!sb) return [];
     try {
-        const { data, error } = await withTimeout(
-            sb.from('subscribers').select('*').order('subscribed_at', { ascending: false }).limit(500),
-            6000, 'subscribers'
-        );
+        const { data, error } = await withTimeout(sb.from('subscribers').select('*').order('subscribed_at', { ascending: false }).limit(500), 6000, 'subscribers');
         if (error) throw error;
         return data || [];
-    } catch (e) {
-        logError('fetchSubscribers', e);
-        try {
-            const { data, error } = await withTimeout(sb.from('subscribers').select('*').limit(500), 6000, 'subs-fb');
-            if (error) throw error;
-            return data || [];
-        } catch (e2) { return []; }
-    }
+    } catch (e) { return []; }
 }
 async function fetchChat() {
     if (!sb) return [];
     try {
-        const { data, error } = await withTimeout(
-            sb.from('chat_messages').select('*').order('created_at', { ascending: true }).limit(200),
-            6000, 'chat'
-        );
+        const { data, error } = await withTimeout(sb.from('chat_messages').select('*').order('created_at', { ascending: true }).limit(200), 6000, 'chat');
         if (error) throw error;
         return data || [];
-    } catch (e) { logError('fetchChat', e); return []; }
+    } catch (e) { return []; }
 }
 async function fetchPendingItems() {
     if (!sb) return [];
     try {
-        const { data, error } = await withTimeout(
-            sb.from('pending_items').select('*').order('submitted_at', { ascending: false }).limit(500),
-            6000, 'pending_items'
-        );
+        const { data, error } = await withTimeout(sb.from('pending_items').select('*').order('submitted_at', { ascending: false }).limit(500), 6000, 'pending_items');
         if (error) throw error;
         return data || [];
-    } catch (e) {
-        logError('fetchPendingItems', e);
-        try {
-            const { data, error } = await withTimeout(
-                sb.from('pending_items').select('*').limit(500), 6000, 'pending_items-fb'
-            );
-            if (error) throw error;
-            return data || [];
-        } catch (e2) { return []; }
-    }
+    } catch (e) { return []; }
 }
 async function fetchAgentClients() {
     if (!sb) return [];
     try {
-        const { data, error } = await withTimeout(
-            sb.from('agent_clients').select('*').order('created_at', { ascending: false }).limit(500),
-            6000, 'agent_clients'
-        );
+        const { data, error } = await withTimeout(sb.from('agent_clients').select('*').order('created_at', { ascending: false }).limit(500), 6000, 'agent_clients');
         if (error) throw error;
         return data || [];
-    } catch (e) {
-        logError('fetchAgentClients', e);
-        try {
-            const { data, error } = await withTimeout(
-                sb.from('agent_clients').select('*').limit(500), 6000, 'agent_clients-fb'
-            );
-            if (error) throw error;
-            return data || [];
-        } catch (e2) { return []; }
-    }
+    } catch (e) { return []; }
 }
 
 async function safeFetch(table, orderCol = 'created_at', limit = 500) {
@@ -1872,7 +2010,7 @@ async function safeFetch(table, orderCol = 'created_at', limit = 500) {
             const { data, error } = await withTimeout(sb.from(table).select('*').limit(limit || 500), 6000, table + '-fb');
             if (error) throw error;
             return data || [];
-        } catch (e2) { logError('safeFetch:' + table, e2); return []; }
+        } catch (e2) { return []; }
     }
 }
 const fetchBusinesses = () => safeFetch('businesses');
@@ -1881,79 +2019,56 @@ const fetchClients    = () => safeFetch('clients');
 // ============================================================
 // ROBUST USER FETCHER
 // ============================================================
-const USER_SOURCES = [
-    'users', 'profiles', 'app_users', 'registrations',
-    'customers', 'accounts', 'user_profiles', 'members'
-];
+const USER_SOURCES = ['users', 'profiles', 'app_users', 'registrations', 'customers', 'accounts', 'user_profiles', 'members'];
 let USER_RESOLVED_SOURCE = null;
 
 async function fetchUsers() {
     if (!sb) return [];
-
-    // Fast path — a previously resolved source.
     if (USER_RESOLVED_SOURCE) {
         try {
-            const { data, error } = await withTimeout(
-                sb.from(USER_RESOLVED_SOURCE).select('*').limit(2000),
-                6000, 'users-cached'
-            );
+            const { data, error } = await withTimeout(sb.from(USER_RESOLVED_SOURCE).select('*').limit(2000), 6000, 'users-cached');
             if (!error) {
                 setUserSourceInfo(USER_RESOLVED_SOURCE, (data || []).length);
                 return data || [];
             }
-        } catch (e) { /* fall through and re-probe */ }
+        } catch (e) { }
         USER_RESOLVED_SOURCE = null;
     }
-
-    // Probe each candidate. A table that responds WITHOUT error exists — even if
-    // it is currently empty. Remember the first empty one as a fallback so a
-    // brand-new (still empty) `users` table is still picked up correctly.
     let emptyCandidate = null;
-
-    for (const table of USER_SOURCES) {
+    const orderedSources = ['users'].concat(USER_SOURCES.filter(t => t !== 'users'));
+    for (const table of orderedSources) {
         try {
-            const { data, error } = await withTimeout(
-                sb.from(table).select('*').limit(2000), 6000, table + '-probe'
-            );
+            const { data, error } = await withTimeout(sb.from(table).select('*').limit(2000), 6000, table + '-probe');
             if (error) continue;
             if (!Array.isArray(data)) continue;
             if (data.length > 0) {
-                console.log(`✅ Users resolved to table "${table}" (${data.length} rows)`);
                 USER_RESOLVED_SOURCE = table;
                 setUserSourceInfo(table, data.length);
                 return data;
             }
             if (!emptyCandidate) emptyCandidate = table;
-        } catch (e) { /* try next */ }
+        } catch (e) { }
     }
-
     if (emptyCandidate) {
-        console.log(`ℹ️ Users resolved to empty table "${emptyCandidate}"`);
         USER_RESOLVED_SOURCE = emptyCandidate;
         setUserSourceInfo(emptyCandidate, 0);
         return [];
     }
-
     try {
         const { data, error } = await withTimeout(sb.from('all_registered_users').select('*').limit(2000), 6000, 'view');
         if (!error && Array.isArray(data)) {
-            console.log('✅ Users resolved to view "all_registered_users"');
             USER_RESOLVED_SOURCE = 'all_registered_users';
             setUserSourceInfo('all_registered_users', data.length);
             return data;
         }
-    } catch (e) { /* ignore */ }
-
+    } catch (e) { }
     try {
         const { data, error } = await withTimeout(sb.rpc('list_registered_users'), 6000, 'rpc');
         if (!error && Array.isArray(data)) {
-            console.log('✅ Users resolved via RPC list_registered_users');
             setUserSourceInfo('RPC:list_registered_users', data.length);
             return data;
         }
-    } catch (e) { /* ignore */ }
-
-    console.warn('⚠️ No user source found. Run the SQL setup in Supabase.');
+    } catch (e) { }
     setUserSourceInfo('none', 0);
     return [];
 }
@@ -1967,7 +2082,7 @@ function setUserSourceInfo(source, count) {
 async function updateComplaintStatus(id, status) {
     if (!sb) return null;
     try { const { data, error } = await sb.from('complaints').update({ status }).eq('id', id).select().single(); if (error) throw error; return data; }
-    catch (e) { logError('updateComplaintStatus', e); return null; }
+    catch (e) { return null; }
 }
 
 // ============================================================
@@ -2011,12 +2126,7 @@ function renderTransactions(filter = '') {
 
     if (!items.length) {
         if (TX_LAST_ERROR) {
-            wrap.innerHTML = `<div class="empty-state">
-                <div class="em-icon">⚠️</div>
-                Could not load transactions.<br>
-                <span style="font-size:0.72rem;color:#bdc3c7;">${escapeHTML(TX_LAST_ERROR)}</span><br><br>
-                <button class="btn-mini blue" id="retryTxInline">🔄 Try again</button>
-            </div>`;
+            wrap.innerHTML = `<div class="empty-state"><div class="em-icon">⚠️</div>Could not load transactions.<br><span style="font-size:0.72rem;color:#bdc3c7;">${escapeHTML(TX_LAST_ERROR)}</span><br><br><button class="btn-mini blue" id="retryTxInline">🔄 Try again</button></div>`;
             on('retryTxInline', 'click', () => { const b = $('refreshTx'); if (b) b.click(); });
             setTxLoadFailed('Failed');
         } else {
@@ -2030,7 +2140,7 @@ function renderTransactions(filter = '') {
         const mode = String(t.mode || 'Local').toLowerCase().includes('int') ? 'blue' : 'green';
         const tid = safeId(t.id);
         return `
-            <div class="list-row">
+            <div class="list-row" data-row-id="${tid}">
                 <div class="row-avatar">${escapeHTML(String(t.currency || 'SLL').substring(0,3))}</div>
                 <div class="row-main">
                     <div class="row-title">${escapeHTML(t.tx_id || 'TX')}</div>
@@ -2044,6 +2154,7 @@ function renderTransactions(filter = '') {
                 <div class="row-amount">${escapeHTML(t.currency || '')} ${fmtMoney(t.total)}</div>
                 <div class="row-actions">
                     <button class="btn-mini blue" onclick="showTxDetail('${tid}')">👁️ View</button>
+                    <button class="btn-mini red" onclick="deleteRecord('transactions','${tid}','Transaction ${escapeHTML(t.tx_id || '')}')">🗑️ Delete</button>
                 </div>
             </div>`;
     }).join('');
@@ -2071,7 +2182,7 @@ function renderAgents(filter = '') {
         const name = a.business_name || a.businessName || 'Agent';
         const initials = String(name).substring(0,2).toUpperCase();
         return `
-            <div class="list-row ${suspended ? 'suspended' : ''}">
+            <div class="list-row ${suspended ? 'suspended' : ''}" data-row-id="${safeId(a.id)}">
                 <div class="row-avatar ${suspended ? 'susp' : ''}">${escapeHTML(initials)}</div>
                 <div class="row-main">
                     <div class="row-title">${escapeHTML(name)}</div>
@@ -2105,7 +2216,7 @@ function renderBusinesses(filter = '') {
     wrap.innerHTML = items.map(b => {
         const suspended = isSuspended(b);
         return `
-            <div class="list-row ${suspended ? 'suspended' : ''}">
+            <div class="list-row ${suspended ? 'suspended' : ''}" data-row-id="${safeId(b.id)}">
                 <div class="row-avatar ${suspended ? 'susp' : ''}" style="${suspended ? '' : 'background:#fef4e6;color:#c97e2a;'}">${escapeHTML(b.icon || b.emoji || '🏪')}</div>
                 <div class="row-main">
                     <div class="row-title">${escapeHTML(b.name || b.business_name || '—')}</div>
@@ -2130,22 +2241,23 @@ function renderClients(filter = '') {
     if (statusF === 'active') items = items.filter(c => !isSuspended(c));
     else if (statusF === 'suspended') items = items.filter(c => isSuspended(c));
     if (q) items = items.filter(c =>
-        (c.name || '').toLowerCase().includes(q) ||
+        (c.name || c.full_name || '').toLowerCase().includes(q) ||
         (c.phone || '').toLowerCase().includes(q) ||
         (c.city || '').toLowerCase().includes(q)
     );
     if (!items.length) { wrap.innerHTML = `<div class="empty-state"><div class="em-icon">👥</div>No clients found.</div>`; return; }
     wrap.innerHTML = items.map(c => {
         const suspended = isSuspended(c);
+        const displayName = c.name || c.full_name || '—';
         return `
-            <div class="list-row ${suspended ? 'suspended' : ''}">
+            <div class="list-row ${suspended ? 'suspended' : ''}" data-row-id="${safeId(c.id)}">
                 <div class="row-avatar ${suspended ? 'susp' : ''}">👤</div>
                 <div class="row-main">
-                    <div class="row-title">${escapeHTML(c.name || '—')}</div>
+                    <div class="row-title">${escapeHTML(displayName)}</div>
                     <div class="row-sub">📱 ${escapeHTML(c.phone || '—')} · 📍 ${escapeHTML(c.city || '—')}, ${escapeHTML(c.country || '—')}</div>
                     <div class="row-sub" style="margin-top:3px;">
                         ${suspendedBadge(c)}
-                        ${c.agent_id ? `<span class="badge blue">Agent: ${escapeHTML(String(c.agent_id).substring(0,12))}</span>` : ''}
+                        ${c.agent_id ? `<span class="badge blue">Agent: ${escapeHTML(String(c.agent_id).substring(0,12))}</span>` : `<span class="badge purple">Direct</span>`}
                         <span class="badge gray">${shortDate(c.created_at)}</span>
                     </div>
                 </div>
@@ -2160,7 +2272,6 @@ function renderUsers(filter = '') {
     const q = filter.toLowerCase();
     const statusF = val('userStatusFilter') || 'all';
     const roleF   = val('userRoleFilter') || 'all';
-
     let items = State.users;
     if (statusF === 'active') items = items.filter(u => !isSuspended(u));
     else if (statusF === 'suspended') items = items.filter(u => isSuspended(u));
@@ -2192,14 +2303,11 @@ function renderUsers(filter = '') {
         const name = u.full_name || u.name || u.username || u.email || '—';
         const initials = String(name).substring(0,2).toUpperCase();
         return `
-            <div class="list-row ${suspended ? 'suspended' : ''}">
+            <div class="list-row ${suspended ? 'suspended' : ''}" data-row-id="${safeId(u.id)}">
                 <div class="row-avatar ${suspended ? 'susp' : ''}">${escapeHTML(initials)}</div>
                 <div class="row-main">
                     <div class="row-title">${escapeHTML(name)}</div>
-                    <div class="row-sub">
-                        ${u.email ? `📧 ${escapeHTML(u.email)}` : ''}
-                        ${u.phone ? ` · 📱 ${escapeHTML(u.phone)}` : ''}
-                    </div>
+                    <div class="row-sub">${u.email ? `📧 ${escapeHTML(u.email)}` : ''}${u.phone ? ` · 📱 ${escapeHTML(u.phone)}` : ''}</div>
                     <div class="row-sub" style="margin-top:3px;">
                         ${suspendedBadge(u)}
                         ${u.role ? `<span class="badge purple">${escapeHTML(u.role)}</span>` : `<span class="badge purple">user</span>`}
@@ -2229,7 +2337,7 @@ function renderComplaints(filter = '') {
         const statusClass = status === 'resolved' ? 'green' : (status === 'reviewing' ? 'orange' : 'red');
         const cid = safeId(c.id);
         return `
-            <div class="list-row">
+            <div class="list-row" data-row-id="${cid}">
                 <div class="row-avatar" style="background:#fdeaea; color:#c0392b;">🚨</div>
                 <div class="row-main">
                     <div class="row-title">${escapeHTML(c.category || 'Complaint')}</div>
@@ -2247,6 +2355,7 @@ function renderComplaints(filter = '') {
                         <option value="resolved" ${status==='resolved'?'selected':''}>Resolved</option>
                     </select>
                     <button class="btn-mini blue" onclick="showComplaintDetail('${cid}')">👁️ View</button>
+                    <button class="btn-mini red" onclick="deleteRecord('complaints','${cid}','Complaint: ${escapeHTML(c.category || '')}')">🗑️ Delete</button>
                 </div>
             </div>`;
     }).join('');
@@ -2279,7 +2388,7 @@ function renderPending(filter = '') {
         const title = pick(d, ['businessName','business_name','name','title'], '(untitled)');
         const pid = safeId(p.id);
         return `
-            <div class="list-row">
+            <div class="list-row" data-row-id="${pid}">
                 <div class="row-avatar">${typeIcon}</div>
                 <div class="row-main">
                     <div class="row-title">${escapeHTML(title)}</div>
@@ -2316,7 +2425,7 @@ function renderAgentClients(filter = '') {
         const statusClass = status === 'approved' ? 'green' : (status === 'rejected' ? 'red' : 'orange');
         const cid = safeId(c.id);
         return `
-            <div class="list-row">
+            <div class="list-row" data-row-id="${cid}">
                 <div class="row-avatar" style="background:#e8f0f8; color:#1c6e8f;">👤</div>
                 <div class="row-main">
                     <div class="row-title">${escapeHTML(c.name || '—')}</div>
@@ -2332,6 +2441,7 @@ function renderAgentClients(filter = '') {
                         <button class="btn-mini green" onclick="approveClient('${cid}')">✅ Approve</button>
                         <button class="btn-mini red" onclick="rejectClient('${cid}')">❌ Reject</button>
                     ` : ''}
+                    <button class="btn-mini red" onclick="deleteAgentClient('${cid}')">🗑️ Delete</button>
                 </div>
             </div>`;
     }).join('');
@@ -2349,7 +2459,7 @@ function renderPaybacks(filter = '') {
     );
     if (!items.length) { wrap.innerHTML = `<div class="empty-state"><div class="em-icon">💰</div>No paybacks found.</div>`; return; }
     wrap.innerHTML = items.map(p => `
-        <div class="list-row">
+        <div class="list-row" data-row-id="${safeId(p.id)}">
             <div class="row-avatar" style="background:#fef4e6; color:#c97e2a;">💰</div>
             <div class="row-main">
                 <div class="row-title">${escapeHTML(p.agent_business_name || '—')}</div>
@@ -2361,7 +2471,10 @@ function renderPaybacks(filter = '') {
                 </div>
             </div>
             <div class="row-amount" style="color:#e67e22;">+${fmtMoney(p.agent_commission)}</div>
-            <div class="row-actions"><button class="btn-mini blue" onclick="showPaybackDetail('${safeId(p.id)}')">👁️ View</button></div>
+            <div class="row-actions">
+                <button class="btn-mini blue" onclick="showPaybackDetail('${safeId(p.id)}')">👁️ View</button>
+                <button class="btn-mini red" onclick="deleteRecord('paybacks','${safeId(p.id)}','PayBack ${escapeHTML(p.provider_tx_id || '')}')">🗑️ Delete</button>
+            </div>
         </div>
     `).join('');
 }
@@ -2374,7 +2487,7 @@ function renderSubs(filter = '') {
     if (q) items = items.filter(s => (s.email || '').toLowerCase().includes(q));
     if (!items.length) { wrap.innerHTML = `<div class="empty-state"><div class="em-icon">📧</div>No subscribers found.</div>`; return; }
     wrap.innerHTML = items.map(s => `
-        <div class="list-row">
+        <div class="list-row" data-row-id="${safeId(s.id)}">
             <div class="row-avatar" style="background:#f3eaf8; color:#8e44ad;">📧</div>
             <div class="row-main">
                 <div class="row-title">${escapeHTML(s.email || '—')}</div>
@@ -2390,6 +2503,7 @@ function renderChat() {
     if (!State.chat.length) { wrap.innerHTML = `<div class="empty-state"><div class="em-icon">💬</div>Waiting for messages…</div>`; return; }
     wrap.innerHTML = State.chat.slice(-100).map(m => `
         <div class="chat-bubble">
+            <button class="chat-del-btn" onclick="deleteRecord('chat_messages','${safeId(m.id)}','Chat message from ${escapeHTML(m.sender_name || 'Anonymous')}')" title="Delete message">✕</button>
             <span class="cb-name">${escapeHTML(m.sender_name || 'Anonymous')}</span>
             <span class="cb-time">${shortDate(m.created_at)}</span>
             <div class="cb-msg">${escapeHTML(m.message || '')}</div>
@@ -2422,10 +2536,7 @@ function di(label, value, full = false, cls = '') {
 }
 
 function buildUserActivitySummary(user) {
-    const identifiers = [
-        user.phone, user.email, user.username, user.name, user.full_name
-    ].filter(Boolean).map(v => String(v).toLowerCase());
-
+    const identifiers = [user.phone, user.email, user.username, user.name, user.full_name].filter(Boolean).map(v => String(v).toLowerCase());
     const txMatches = State.transactions.filter(t => {
         const fields = [t.sender_phone, t.sender_name, t.client_phone, t.client_name].filter(Boolean).map(v => String(v).toLowerCase());
         return fields.some(f => identifiers.includes(f));
@@ -2435,7 +2546,6 @@ function buildUserActivitySummary(user) {
         const fields = [c.phone, c.name].filter(Boolean).map(v => String(v).toLowerCase());
         return fields.some(f => identifiers.includes(f));
     });
-
     return { txCount: txMatches.length, totalVolume: totalVol, compCount: compMatches.length };
 }
 
@@ -2504,26 +2614,29 @@ function showTxDetail(id) {
         ${di('GST', fmtMoney(t.gst))} ${di('Total', fmtMoney(t.total))}
         ${di('Created At', fmtDate(t.created_at), true)}
     `;
-    openModal('💳 Transaction Details', html);
+    const actions = `<button class="btn-mini red" onclick="deleteRecord('transactions','${safeId(t.id)}','Transaction ${escapeHTML(t.tx_id || '')}'); closeModal();">🗑️ Delete Transaction</button>`;
+    openModal('💳 Transaction Details', html, actions);
 }
 function showComplaintDetail(id) {
     const c = State.complaints.find(x => String(x.id) === String(id));
     if (!c) return;
+    const actions = `<button class="btn-mini red" onclick="deleteRecord('complaints','${safeId(c.id)}','Complaint: ${escapeHTML(c.category || '')}'); closeModal();">🗑️ Delete Complaint</button>`;
     openModal('🚨 Complaint Details', `
         ${di('Category', c.category, true)} ${di('Status', c.status || 'pending')}
         ${di('Name', c.name)} ${di('Phone', c.phone)}
         ${di('Submitted', fmtDate(c.created_at))} ${di('Details', c.details, true)}
-    `);
+    `, actions);
 }
 function showPaybackDetail(id) {
     const p = State.paybacks.find(x => String(x.id) === String(id));
     if (!p) return;
+    const actions = `<button class="btn-mini red" onclick="deleteRecord('paybacks','${safeId(p.id)}','PayBack ${escapeHTML(p.provider_tx_id || '')}'); closeModal();">🗑️ Delete PayBack</button>`;
     openModal('💰 PayBack Details', `
         ${di('Agent Business', p.agent_business_name, true)} ${di('Agent Name', p.agent_name)}
         ${di('Cashed Out', fmtMoney(p.cashed_out_amount))} ${di('Agent Commission', fmtMoney(p.agent_commission))}
         ${di('Platform Share', fmtMoney(p.platform_share))} ${di('Provider TX ID', p.provider_tx_id)}
         ${di('Submitted', fmtDate(p.created_at), true)}
-    `);
+    `, actions);
 }
 function showPendingDetail(id) {
     const p = State.pendingItems.find(x => String(x.id) === String(id));
@@ -2555,14 +2668,10 @@ function showViolationLog() {
         ...State.clients.filter(isSuspended).map(r => ({ ...r, _type: 'Client', _title: accountTitle(r, 'clients') })),
         ...State.users.filter(isSuspended).map(r => ({ ...r, _type: 'User', _title: accountTitle(r, 'users') }))
     ];
-
     if (!suspended.length) {
-        openModal('📋 Violation Log', `<div class="empty-state" style="padding:1.5rem;">
-            <div class="em-icon">🎉</div>No suspended accounts. All clean.
-        </div>`);
+        openModal('📋 Violation Log', `<div class="empty-state" style="padding:1.5rem;"><div class="em-icon">🎉</div>No suspended accounts. All clean.</div>`);
         return;
     }
-
     const body = suspended.map(s => {
         const reason = s.suspension_reason ? getReason(s.suspension_reason) : null;
         const reasonLine = reason ? `${reason.icon} ${escapeHTML(reason.label)}` : (s.suspension_label ? escapeHTML(s.suspension_label) : 'Reason not recorded');
@@ -2573,7 +2682,6 @@ function showViolationLog() {
             <div class="sh-meta">⏱ ${s.suspended_at ? fmtDate(s.suspended_at) : 'Time not recorded'} · by ${escapeHTML(s.suspended_by || 'admin')}</div>
         </div>`;
     }).join('');
-
     openModal('📋 Violation Log', `
         <div class="detail-item full danger" style="margin-bottom:0.7rem;">
             <div class="di-label">Total Suspended</div>
@@ -2606,72 +2714,53 @@ async function changeComplaintStatus(id, status) {
 }
 
 // ============================================================
-// ███  APPROVE / REJECT (pending items)  ███
+// APPROVE / REJECT (pending items)
 // ============================================================
 async function approvePendingItem(id) {
     if (!sb) { showToast('❌ Supabase not configured', 'error'); return; }
-
     const p = State.pendingItems.find(x => String(x.id) === String(id));
     if (!p) { showToast('❌ Pending item not found', 'error'); return; }
-
     const d = asObj(p.data);
     const type = normalizeType(p.type);
     const title = pick(d, ['businessName','business_name','name','title'], '(untitled)');
 
     let confirmMsg = `✅ APPROVE this ${type}?\n\n"${title}"\n\n`;
-    if (type === 'agent') {
-        confirmMsg += '• The agent will be marked ACTIVE and appear in the approved-agent dropdown.\n';
-    } else if (type === 'business') {
-        confirmMsg += '• The business will be activated and become available for products & services.\n';
-    } else if (type === 'product' || type === 'service') {
-        confirmMsg += '• The item will be activated and appear in the business quick-pick strip.\n';
-    }
+    if (type === 'agent') confirmMsg += '• The agent will be marked ACTIVE and appear in the approved-agent dropdown.\n';
+    else if (type === 'business') confirmMsg += '• The business will be activated and become available for products & services.\n';
+    else if (type === 'product' || type === 'service') confirmMsg += '• The item will be activated and appear in the business quick-pick strip.\n';
     confirmMsg += '\nContinue?';
-
     if (!confirm(confirmMsg)) return;
 
-    // Disable the button while working (visual feedback)
     const btn = document.querySelector(`button[onclick*="approvePendingItem('${safeId(id)}')"]`);
     if (btn) btn.classList.add('busy');
 
     try {
-        // ---- 1) Copy the payload into the live table ----
         const result = await copyPendingToLive(type, d);
-
-        // ---- 2) Mark the pending row as reviewed ----
         await markPendingReviewed(p.id, 'approved');
-
-        // ---- 3) Update local state so the UI reflects it immediately ----
         const local = State.pendingItems.find(x => String(x.id) === String(id));
-        if (local) {
-            local.status = 'approved';
-            local.reviewed_at = new Date().toISOString();
-            local.reviewed_by = 'admin';
-        }
+        if (local) { local.status = 'approved'; local.reviewed_at = new Date().toISOString(); local.reviewed_by = 'admin'; }
         renderPending(val('searchPending'));
         updateKPIs();
 
-        // ---- 4) Success message tailored to the type ----
         let okMsg = '✅ Approved: ' + title;
         if (type === 'agent')    okMsg = `✅ Agent activated & listed in dropdown: ${title}`;
         if (type === 'business') okMsg = `✅ Business activated: ${title}`;
         if (type === 'product')  okMsg = `✅ Product added to quick-pick strip: ${title}`;
         if (type === 'service')  okMsg = `✅ Service added to quick-pick strip: ${title}`;
         if (result && result.action === 'updated') okMsg = '♻️ ' + okMsg.replace('✅ ', '');
-
         showToast(okMsg, 'success', 4200);
 
-        // ---- 5) Pull fresh data so the tables/dropdowns reflect the change ----
         await refreshAll();
-
-        // Small extra refresh pass — catches eventual-consistency lag on the live tables
         setTimeout(() => { refreshAll().catch(() => {}); }, 900);
-
     } catch (e) {
         logError('approvePendingItem', e);
-        showToast('❌ Approval failed: ' + (e.message || 'unknown error'), 'error', 6000);
+        const raw = String(e.message || 'unknown error');
+        let hint = '';
+        if (isClientMissingError(e)) hint = ' — the database requires a matching client row for this agent.';
+        else if (/invalid input syntax for type integer/i.test(raw)) hint = ' — a prefixed string reached an integer column. Hard-refresh and retry.';
+        else if (/foreign key/i.test(raw)) hint = ' — a foreign-key row is missing. Approve the parent first.';
+        showToast('❌ Approval failed: ' + raw + hint, 'error', 8000);
         if (btn) btn.classList.remove('busy');
-        console.error('Full approval error →', e);
     }
 }
 
@@ -2682,67 +2771,51 @@ async function rejectPendingItem(id) {
     const d = asObj(p.data);
     const title = pick(d, ['businessName','business_name','name','title'], '(untitled)');
     if (!confirm(`❌ REJECT this ${normalizeType(p.type)}?\n\n"${title}"\n\nThe record is NOT copied into the live tables.`)) return;
-
     try {
         const ok = await markPendingReviewed(p.id, 'rejected');
         if (!ok) throw new Error('Could not update the pending item status.');
-
         const local = State.pendingItems.find(x => String(x.id) === String(id));
         if (local) { local.status = 'rejected'; local.reviewed_at = new Date().toISOString(); local.reviewed_by = 'admin'; }
         renderPending(val('searchPending'));
         updateKPIs();
         showToast('❌ Rejected: ' + title, 'info', 3000);
     } catch (e) {
-        logError('rejectPendingItem', e);
         showToast('❌ Rejection failed: ' + (e.message || 'unknown error'), 'error', 4500);
     }
 }
 
 // ============================================================
-// ███  AGENT-ADDED CLIENTS  ███
+// AGENT-ADDED CLIENTS
 // ============================================================
 async function approveClient(id) {
     if (!sb) { showToast('❌ Supabase not configured', 'error'); return; }
     const c = State.agentClients.find(x => String(x.id) === String(id));
     if (!c) { showToast('❌ Client not found', 'error'); return; }
-
     if (!confirm(`✅ APPROVE client?\n\n"${c.name || '(no name)'}" · ${c.phone || 'no phone'}\n\nThey will become a live client and be linked to their agent.`)) return;
 
     const btn = document.querySelector(`button[onclick*="approveClient('${safeId(id)}')"]`);
     if (btn) btn.classList.add('busy');
 
     const clientPayload = {
-        name: c.name || '',
-        full_name: c.name || '',
-        phone: c.phone || '',
-        email: c.email || null,
-        address: c.address || null,
-        city: c.city || null,
-        country: c.country || null,
-        agent_id: c.agent_id || null,
-        agent_name: c.agent_name || null,
-        status: 'active',
-        approved: true, is_approved: true, verified: true,
+        name: c.name || '', full_name: c.name || '', phone: c.phone || '',
+        email: c.email || null, address: c.address || null,
+        city: c.city || null, country: c.country || null,
+        agent_id: normalizeIntegerId(c.agent_id), agent_name: c.agent_name || null,
+        status: 'active', approved: true, is_approved: true, verified: true,
         active: true, is_active: true, visible: true,
         suspended: false, is_suspended: false
     };
 
     let ok = false;
     let lastErr = null;
-
-    // A) Flip the queue row to approved
     try {
         const r = await updateResilient('agent_clients', 'id', id, {
-            status: 'approved',
-            approved: true,
-            is_approved: true,
-            reviewed_at: new Date().toISOString(),
-            reviewed_by: 'admin'
+            status: 'approved', approved: true, is_approved: true,
+            reviewed_at: new Date().toISOString(), reviewed_by: 'admin'
         });
         if (!r.error) ok = true; else lastErr = r.error;
     } catch (e) { lastErr = e; }
 
-    // B) Mirror it into the live `clients` table so it shows in Clients
     try {
         const existing = await findExistingRow('clients', [
             { col: 'phone', val: c.phone },
@@ -2760,18 +2833,15 @@ async function approveClient(id) {
     } catch (e) { lastErr = e; }
 
     if (!ok) {
-        logError('approveClient', lastErr);
         showToast('❌ Could not approve client: ' + (lastErr?.message || 'unknown error'), 'error', 5200);
         if (btn) btn.classList.remove('busy');
         return;
     }
-
     const local = State.agentClients.find(x => String(x.id) === String(id));
     if (local) { local.status = 'approved'; local.approved = true; }
     renderAgentClients(val('searchAgentClients'));
     updateKPIs();
     showToast('✅ Client approved & activated: ' + (c.name || ''), 'success', 3400);
-
     await refreshAll();
     setTimeout(() => { refreshAll().catch(() => {}); }, 800);
 }
@@ -2781,15 +2851,12 @@ async function rejectClient(id) {
     const c = State.agentClients.find(x => String(x.id) === String(id));
     if (!c) return;
     if (!confirm(`❌ REJECT and remove this client?\n\n"${c.name || '(no name)'}"`)) return;
-
     try {
-        // Prefer a soft-reject (keeps the audit trail); fall back to delete.
         let done = false;
         const r = await updateResilient('agent_clients', 'id', id, {
             status: 'rejected', reviewed_at: new Date().toISOString(), reviewed_by: 'admin'
         });
         if (!r.error) done = true;
-
         if (!done) {
             const { error } = await sb.from('agent_clients').delete().eq('id', id);
             if (error) throw error;
@@ -2798,12 +2865,10 @@ async function rejectClient(id) {
             const local = State.agentClients.find(x => String(x.id) === String(id));
             if (local) local.status = 'rejected';
         }
-
         renderAgentClients(val('searchAgentClients'));
         updateKPIs();
         showToast('❌ Client rejected', 'info', 2800);
     } catch (e) {
-        logError('rejectClient', e);
         showToast('❌ Failed: ' + (e.message || 'unknown error'), 'error', 4200);
     }
 }
@@ -2814,31 +2879,22 @@ async function rejectClient(id) {
 async function diagnoseUserSources() {
     if (!sb) { showToast('❌ Supabase not configured', 'error'); return; }
     showToast('🩺 Probing user tables…', 'info', 2000);
-
     const report = [];
     for (const t of USER_SOURCES.concat(['all_registered_users'])) {
         try {
-            const { count, error } = await withTimeout(
-                sb.from(t).select('*', { count: 'exact', head: true }),
-                4000, t
-            );
+            const { count, error } = await withTimeout(sb.from(t).select('*', { count: 'exact', head: true }), 4000, t);
             if (error) report.push(`❌ ${t} — ${error.message}`);
             else       report.push(`✅ ${t} — ${count} row(s)`);
-        } catch (e) {
-            report.push(`❌ ${t} — ${e.message || 'unreachable'}`);
-        }
+        } catch (e) { report.push(`❌ ${t} — ${e.message || 'unreachable'}`); }
     }
     try {
         const { data, error } = await withTimeout(sb.rpc('list_registered_users'), 4000, 'rpc');
-        report.push(error ? `❌ RPC list_registered_users — ${error.message}`
-                          : `✅ RPC list_registered_users — ${(data||[]).length} row(s)`);
+        report.push(error ? `❌ RPC list_registered_users — ${error.message}` : `✅ RPC list_registered_users — ${(data||[]).length} row(s)`);
     } catch (e) { report.push(`❌ RPC — ${e.message}`); }
-
     const rendered = report.map(r => {
         const cls = r.startsWith('✅') ? 'ok' : (r.startsWith('❌') ? 'fail' : '');
         return `<div class="${cls}">${escapeHTML(r)}</div>`;
     }).join('');
-
     openModal('🩺 User Source Diagnostics', `
         <div class="detail-item full" style="background:#f8fafc;">
             <div class="di-label">Probe results</div>
@@ -2847,14 +2903,6 @@ async function diagnoseUserSources() {
         <div class="detail-item full info" style="margin-top:0.6rem;">
             <div class="di-label">Currently resolved source</div>
             <div class="di-value">${escapeHTML(USER_RESOLVED_SOURCE || 'none (using view/RPC fallback)')}</div>
-        </div>
-        <div class="detail-item full" style="margin-top:0.6rem; background:#fff8f8;">
-            <div class="di-label" style="color:#c0392b;">If every row shows ❌ or 0</div>
-            <div class="di-value" style="font-size:0.75rem; color:#7f8c8d; font-weight:500;">
-                Run the SQL setup in Supabase (the <strong>users</strong> and <strong>profiles</strong> tables,
-                the <strong>on_auth_user_created</strong> trigger, RLS policies,
-                and the <strong>all_registered_users</strong> view).
-            </div>
         </div>
     `);
 }
@@ -2884,7 +2932,7 @@ function exportCSV(rows, filename) {
 }
 
 // ============================================================
-// HEADER APPROVE BUTTON  (blue = idle · red = activity)
+// HEADER APPROVE BUTTON
 // ============================================================
 function getPendingActivity() {
     const items      = State.pendingItems.filter(p => (p.status || 'pending') === 'pending').length;
@@ -2900,19 +2948,14 @@ function updateApproveButton() {
     if (!btn) return;
     const a = getPendingActivity();
     const countEl = $('approveCount');
-
     if (a.total > 0) {
-        // ---- ACTIVITY PRESENT → RED ----
         btn.classList.add('has-activity');
         btn.title = `${a.total} item(s) awaiting approval — click to open the AfriPay Admin page`;
     } else {
-        // ---- NO ACTIVITY → BLUE ----
         btn.classList.remove('has-activity');
         btn.title = 'No pending activity — click to open the AfriPay Admin page';
     }
     if (countEl) countEl.textContent = a.total;
-
-    // Notify only when the count grows (not on first render, not on decrease)
     if (_lastApproveCount !== null && a.total > _lastApproveCount) {
         showToast(`🔔 ${a.total - _lastApproveCount} new item(s) awaiting approval`, 'warn', 3400);
     }
@@ -2924,7 +2967,6 @@ function updateApproveButton() {
 // ============================================================
 function updateKPIs() {
     const setTxt = (id, v) => { const el = $(id); if (el) el.textContent = v; };
-
     setTxt('kpiTx', State.transactions.length);
     setTxt('kpiTxSub', `${State.transactions.filter(t => (t.status || 'confirmed') === 'confirmed').length} confirmed`);
 
@@ -2937,9 +2979,7 @@ function updateKPIs() {
     if (!volEntries.length) { setTxt('kpiVolume', '0'); setTxt('kpiVolumeSub', 'No data'); }
     else {
         setTxt('kpiVolume', `${fmtMoney(volEntries[0][1])} ${volEntries[0][0]}`);
-        setTxt('kpiVolumeSub', volEntries.length > 1
-            ? `+ ${fmtMoney(volEntries[1][1])} ${volEntries[1][0]}`
-            : `${State.transactions.length} tx total`);
+        setTxt('kpiVolumeSub', volEntries.length > 1 ? `+ ${fmtMoney(volEntries[1][1])} ${volEntries[1][0]}` : `${State.transactions.length} tx total`);
     }
 
     setTxt('kpiAgents', State.agents.length);
@@ -2949,7 +2989,6 @@ function updateKPIs() {
     setTxt('kpiPaybacks', State.paybacks.length);
     setTxt('kpiPaybacksSub', `${fmtMoney(State.paybacks.reduce((s, p) => s + (parseFloat(p.agent_commission) || 0), 0))} total`);
     setTxt('kpiSubs', State.subscribers.length);
-
     setTxt('kpiUsers', State.users.length);
     setTxt('kpiUsersSub', `${State.users.filter(isSuspended).length} suspended`);
 
@@ -2965,7 +3004,6 @@ function updateKPIs() {
     const sUsers = State.users.filter(isSuspended).length;
     const totalSuspended = sAgents + sBiz + sClients + sUsers;
     const totalAccounts = State.agents.length + State.businesses.length + State.clients.length + State.users.length;
-
     setTxt('kpiSuspended', totalSuspended);
     setTxt('kpiSuspendedSub', `${totalAccounts} account(s) in system`);
 
@@ -2987,9 +3025,7 @@ function updateKPIs() {
     setBadge('badgeClients', sClients);
     setBadge('badgeUsers', sUsers);
 
-    // ---- keep the header Approve button in sync (blue ⇄ red) ----
     updateApproveButton();
-
     touchLastUpdated();
 }
 
@@ -3010,9 +3046,7 @@ function renderSdkMissingNotice() {
         wrap.innerHTML = `<div class="empty-state">
             <div class="em-icon">🔌</div>
             Could not load the Supabase library.<br>
-            <span style="font-size:0.75rem;color:#bdc3c7;">
-                Check your internet connection / content blockers, then reload.
-            </span><br><br>
+            <span style="font-size:0.75rem;color:#bdc3c7;">Check your internet connection / content blockers, then reload.</span><br><br>
             <button class="btn-mini blue" onclick="location.reload()">🔄 Reload page</button>
         </div>`;
     }
@@ -3020,16 +3054,11 @@ function renderSdkMissingNotice() {
 }
 
 // ============================================================
-// MASTER REFRESH — Two-stage loader
-// Stage 1: Transactions render immediately
-// Stage 2: Everything else in parallel, non-blocking
+// MASTER REFRESH
 // ============================================================
 function runStage2(name, fetcher, assign, renderFn) {
     return fetcher()
-        .then(v => {
-            assign(v);
-            try { renderFn(); } catch (e) { logError('render:' + name, e); }
-        })
+        .then(v => { assign(v); try { renderFn(); } catch (e) { logError('render:' + name, e); } })
         .catch(e => logError('stage2:' + name, e));
 }
 
@@ -3041,21 +3070,15 @@ async function refreshAll() {
         return;
     }
 
-    // ---- STAGE 1: Transactions (visible immediately) ----
     setTxLoadStatus('Loading…', false);
     try {
         const tx = await fetchTransactions();
         State.transactions = tx;
         renderTransactions(val('searchTx'));
         updateKPIs();
-        if (TX_LAST_ERROR) {
-            setConnection('offline');
-            setTxLoadFailed('Failed');
-        } else {
-            setConnection('online');
-        }
+        if (TX_LAST_ERROR) { setConnection('offline'); setTxLoadFailed('Failed'); }
+        else setConnection('online');
     } catch (e) {
-        logError('refreshAll.stage1', e);
         TX_LAST_ERROR = e.message || 'unknown error';
         setTxLoadFailed('Failed');
         setConnection('offline');
@@ -3064,7 +3087,6 @@ async function refreshAll() {
         touchLastUpdated();
     }
 
-    // ---- STAGE 2: Everything else, parallel & non-blocking ----
     await Promise.allSettled([
         runStage2('agents',        fetchAgents,        v => State.agents = v,        () => renderAgents(val('searchAgents'))),
         runStage2('complaints',    fetchComplaints,    v => State.complaints = v,    () => renderComplaints(val('searchComplaints'))),
@@ -3077,7 +3099,6 @@ async function refreshAll() {
         runStage2('clients',       fetchClients,       v => State.clients = v,       () => renderClients(val('searchClients'))),
         runStage2('users',         fetchUsers,         v => State.users = v,         () => renderUsers(val('searchUsers')))
     ]);
-
     State.stage2Loaded = true;
     updateKPIs();
     touchLastUpdated();
@@ -3088,17 +3109,14 @@ async function refreshAll() {
 // ============================================================
 function safeSubscribe(name, builder) {
     if (!sb) return null;
-    try { const ch = builder(); State.channels.push(ch); console.log(`📡 ${name}`); return ch; }
-    catch (e) { logError(`subscribe ${name}`, e); return null; }
+    try { const ch = builder(); State.channels.push(ch); return ch; }
+    catch (e) { return null; }
 }
 
 function subscribeRealtime() {
     if (!sb) return;
-    if (State.realtimeSubscribed) return;   // never double-subscribe
+    if (State.realtimeSubscribed) return;
     State.realtimeSubscribed = true;
-
-    // NOTE: transactions intentionally NOT subscribed (removed for performance).
-    // The dashboard polls them every 60 seconds instead.
 
     safeSubscribe('agents', () => sb.channel('dash_agents_rt')
         .on('postgres_changes', { event: '*', schema: 'public', table: 'agents' }, (payload) => {
@@ -3121,17 +3139,11 @@ function subscribeRealtime() {
 
     ['users', 'profiles'].forEach(tbl => {
         safeSubscribe(tbl, () => sb.channel('dash_' + tbl + '_rt')
-            .on('postgres_changes', { event: '*', schema: 'public', table: tbl }, async (payload) => {
-                console.log(`📡 ${tbl} realtime:`, payload.eventType);
+            .on('postgres_changes', { event: '*', schema: 'public', table: tbl }, async () => {
                 USER_RESOLVED_SOURCE = null;
                 State.users = await fetchUsers();
                 renderUsers(val('searchUsers'));
                 updateKPIs();
-                if (payload.eventType === 'INSERT') {
-                    const rec = payload.new || {};
-                    const name = rec.full_name || rec.name || rec.email || 'new user';
-                    showToast(`🧑 New registration: ${name}`, 'success', 3600);
-                }
             }).subscribe());
     });
 
@@ -3177,7 +3189,6 @@ function subscribeRealtime() {
 // POLLING
 // ============================================================
 function startPolling() {
-    // Transactions: light poll every 60s
     setInterval(async () => {
         if (!sb) return;
         try {
@@ -3190,23 +3201,20 @@ function startPolling() {
                 updateKPIs();
             }
             touchLastUpdated();
-        } catch (e) { /* silent */ }
+        } catch (e) { }
     }, 60000);
 
-    // Everything else: every 60s, offset by 5s so both don't fire at once
     setTimeout(() => {
         setInterval(async () => {
             if (!sb) return;
             try {
+                USER_RESOLVED_SOURCE = null;
                 const results = await Promise.allSettled([
                     fetchAgents(), fetchComplaints(), fetchPaybacks(), fetchSubscribers(),
                     fetchPendingItems(), fetchAgentClients(),
                     fetchBusinesses(), fetchClients(), fetchUsers()
                 ]);
-                const [ag, co, pb, sbx, pi, ac, biz, cli, usr] = results.map(r =>
-                    r.status === 'fulfilled' ? r.value : []
-                );
-
+                const [ag, co, pb, sbx, pi, ac, biz, cli, usr] = results.map(r => r.status === 'fulfilled' ? r.value : []);
                 const sigKeys = ['id', 'status', 'suspended', 'is_suspended', 'is_active'];
                 const changed =
                     listSignature(ag, sigKeys)  !== listSignature(State.agents, sigKeys) ||
@@ -3230,7 +3238,7 @@ function startPolling() {
                     renderPending(val('searchPending'));
                     updateKPIs();
                 }
-            } catch (e) { /* silent */ }
+            } catch (e) { }
         }, 60000);
     }, 5000);
 }
@@ -3253,14 +3261,14 @@ function setupEvents() {
     });
 
     const searchMap = {
-        searchTx:          renderTransactions,
-        searchAgents:      renderAgents,
-        searchBusinesses:  renderBusinesses,
-        searchClients:     renderClients,
-        searchUsers:       renderUsers,
-        searchComplaints:  renderComplaints,
-        searchPaybacks:    renderPaybacks,
-        searchSubs:        renderSubs
+        searchTx: renderTransactions,
+        searchAgents: renderAgents,
+        searchBusinesses: renderBusinesses,
+        searchClients: renderClients,
+        searchUsers: renderUsers,
+        searchComplaints: renderComplaints,
+        searchPaybacks: renderPaybacks,
+        searchSubs: renderSubs
     };
     Object.keys(searchMap).forEach(id => {
         on(id, 'input', () => searchMap[id](val(id)));
@@ -3316,15 +3324,10 @@ function setupEvents() {
 
     on('showViolationLog', 'click', showViolationLog);
 
-    // ---------- HEADER APPROVE BUTTON → opens the AfriPay Admin page ----------
     on('approveHeaderBtn', 'click', () => {
         const a = getPendingActivity();
-        if (a.total > 0) {
-            showToast(`⏳ Opening AfriPay Admin · ${a.total} item(s) pending…`, 'warn', 1800);
-        } else {
-            showToast('✅ Opening AfriPay Admin…', 'info', 1400);
-        }
-        // Small delay lets the toast render before navigation
+        if (a.total > 0) showToast(`⏳ Opening AfriPay Admin · ${a.total} item(s) pending…`, 'warn', 1800);
+        else showToast('✅ Opening AfriPay Admin…', 'info', 1400);
         setTimeout(() => {
             window.open('https://aminejalloh-io.github.io/fouzan-business/', '_blank', 'noopener,noreferrer');
         }, 220);
@@ -3358,7 +3361,6 @@ function setupEvents() {
     on('globalRefreshBtn', 'click', async () => {
         showToast('🔄 Refreshing all…', 'info', 1500);
         USER_RESOLVED_SOURCE = null;
-        // Clear the column cache so schema changes are picked up
         Object.keys(TableColumnsCache).forEach(k => delete TableColumnsCache[k]);
         await refreshAll();
         showToast('✅ All refreshed', 'success', 1800);
@@ -3380,13 +3382,13 @@ function setupEvents() {
     on('closeModal', 'click', closeModal);
     on('detailModal', 'click', (e) => { if (e.target === $('detailModal')) closeModal(); });
 
-    // Esc closes whichever modal is open
     document.addEventListener('keydown', (e) => {
         if (e.key !== 'Escape') return;
         if ($('reasonModal').classList.contains('open')) closeReasonModal();
         else if ($('detailModal').classList.contains('open')) closeModal();
     });
 
+    // Expose globals for inline onclick handlers
     window.showTxDetail = showTxDetail;
     window.showComplaintDetail = showComplaintDetail;
     window.showPaybackDetail = showPaybackDetail;
@@ -3399,36 +3401,68 @@ function setupEvents() {
     window.rejectClient = rejectClient;
     window.toggleSuspend = toggleSuspend;
     window.deleteAccount = deleteAccount;
+    window.deleteRecord = deleteRecord;
+    window.deleteAgentClient = deleteAgentClient;
     window.closeModal = closeModal;
     window.closeReasonModal = closeReasonModal;
     window.updateApproveButton = updateApproveButton;
 }
 
 // ============================================================
+// SCHEMA VERIFICATION
+// ============================================================
+async function verifySchema() {
+    if (!sb) return;
+    const checks = [
+        { table: 'users', label: 'users' },
+        { table: 'agents', label: 'agents' },
+        { table: 'pending_items', label: 'pending_items' }
+    ];
+    const report = [];
+    for (const c of checks) {
+        try {
+            const { count, error } = await withTimeout(
+                sb.from(c.table).select('*', { count: 'exact', head: true }), 4000, c.table
+            );
+            if (error) report.push(`❌ ${c.label}: ${error.message}`);
+            else report.push(`✅ ${c.label}: ${count} row(s)`);
+        } catch (e) {
+            report.push(`❌ ${c.label}: ${e.message}`);
+        }
+    }
+    console.log('📋 Schema check:\n' + report.join('\n'));
+    if (report.some(r => r.startsWith('❌ users') || r.startsWith('❌ agents'))) {
+        const box = document.getElementById('bootError');
+        if (box) {
+            box.style.display = 'block';
+            box.innerHTML =
+                '<div class="be-title">⚠️ Schema issue detected</div>' +
+                '<div class="be-detail">' + report.join('<br>') + '<br><br>' +
+                'Run the SQL migration to create the missing tables/columns.</div>';
+        }
+    }
+}
+
+// ============================================================
 // INIT
 // ============================================================
 async function initDashboard() {
-    // 1) Never leave the header stuck on "Connecting…" — set a state right away.
     setConnection('connecting');
     setTxLoadStatus('Connecting…', false);
-    updateApproveButton();   // paint the Approve button blue immediately
+    updateApproveButton();
 
-    // 2) Make sure the Supabase SDK actually loaded (with CDN fallbacks).
     const sdkOk = await ensureSupabaseSDK();
     if (!sdkOk) {
-        console.error('❌ Supabase SDK could not be loaded from any CDN.');
         setConnection('offline');
         renderSdkMissingNotice();
         markBootComplete();
         return;
     }
 
-    // 3) Create the client.
     try {
         sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         console.log('✅ Supabase client initialized (Dashboard)');
     } catch (e) {
-        logError('createClient', e);
         sb = null;
     }
     if (!sb) {
@@ -3438,23 +3472,17 @@ async function initDashboard() {
         return;
     }
 
-    // 4) Wire the UI. A single missing element must never kill the boot.
     try { setupEvents(); } catch (e) { logError('setupEvents', e); }
-
-    // 5) Mark boot as complete NOW so the watchdog timer stops.
-    // The UI is ready and the SDK is loaded. Data will populate as it arrives.
     markBootComplete();
 
-    // 6) Load data in the background (non-blocking).
     refreshAll().then(() => {
-        // 7) Realtime + polling only after initial data fetch is done.
         try { subscribeRealtime(); } catch (e) { logError('subscribeRealtime', e); }
         try { startPolling(); } catch (e) { logError('startPolling', e); }
     }).catch(e => logError('refreshAll', e));
 }
 
 function boot() {
-    initDashboard().catch(e => {
+    initDashboard().then(verifySchema).catch(e => {
         logError('boot', e);
         setConnection('offline');
         const wrap = $('listTx');
