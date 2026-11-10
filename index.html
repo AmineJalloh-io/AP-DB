@@ -6,16 +6,15 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 <meta http-equiv="Pragma" content="no-cache" />
 <meta http-equiv="Expires" content="0" />
-<title>AfriPay | Admin Dashboard — Real-Time v2.4</title>
+<title>AfriPay | Admin Dashboard — Real-Time v2.5</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='44' fill='%230a2b3c'/><text x='50' y='62' text-anchor='middle' font-family='Arial Black' font-size='40' font-weight='900' fill='%23FFD966'>AP</text></svg>">
 
 <script>
 // ============================================================
-// VERSION STAMP — confirm which file your browser loaded
-// Type `window.__AFRIPAY_VERSION` in the console to verify.
+// VERSION STAMP — v2.5 adds the Edit Biz tab & editor.
 // ============================================================
-window.__AFRIPAY_VERSION = '2.4';
-console.log('%c🏷️ Admin Dashboard v2.4 — schema check uses 15s+12s (NOT 4s)',
+window.__AFRIPAY_VERSION = '2.5';
+console.log('%c🏷️ Admin Dashboard v2.5 — Edit Biz tab added',
     'background:#0f2b3d;color:#FFD966;padding:4px 10px;border-radius:4px;font-weight:bold;font-size:13px');
 </script>
 
@@ -227,11 +226,39 @@ console.log('%c🏷️ Admin Dashboard v2.4 — schema check uses 15s+12s (NOT 4
     .load-status.done .mini-dot { background: #2ecc71; animation: none; }
     .load-status.failed .mini-dot { background: #e74c3c; animation: none; }
 
+    /* ====== EDIT BIZ FORM ====== */
+    .edit-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; }
+    .edit-form-grid .full { grid-column: span 2; }
+    .edit-field { display: flex; flex-direction: column; gap: 3px; }
+    .edit-field label { font-size: 0.68rem; font-weight: 800; color: #7f8c8d; text-transform: uppercase; letter-spacing: 0.3px; }
+    .edit-field input, .edit-field select, .edit-field textarea {
+        padding: 0.5rem 0.7rem; border-radius: 0.6rem; border: 1.5px solid #e0e8f0;
+        font-size: 0.85rem; outline: none; background: white; font-family: inherit;
+        transition: border-color .15s, box-shadow .15s;
+    }
+    .edit-field input:focus, .edit-field select:focus, .edit-field textarea:focus { border-color: #f4a261; box-shadow: 0 0 0 3px rgba(244,162,97,0.15); }
+    .edit-field input[type="number"] { font-variant-numeric: tabular-nums; }
+
+    .product-editor { margin-top: 0.7rem; padding: 0.7rem; background: #f8fafc; border-radius: 0.7rem; border: 1.5px dashed #d0dce8; }
+    .product-editor .pe-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; }
+    .product-editor .pe-head span { font-size: 0.72rem; font-weight: 800; color: #7f8c8d; text-transform: uppercase; letter-spacing: 0.3px; }
+    .pe-row { background: white; border-radius: 0.6rem; padding: 0.5rem; margin-bottom: 0.4rem; display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: 0.4rem; align-items: center; border: 1px solid #eef2f7; }
+    .pe-row input, .pe-row select { padding: 0.4rem 0.55rem; border-radius: 0.45rem; border: 1px solid #d8e3ea; font-size: 0.78rem; outline: none; font-family: inherit; width: 100%; }
+    .pe-row .pe-del { background: #fdeaea; border: none; color: #c0392b; border-radius: 0.45rem; width: 28px; height: 28px; cursor: pointer; font-weight: 800; }
+    .pe-row .pe-del:hover { background: #e74c3c; color: white; }
+    .pe-empty { text-align: center; color: #95a5a6; font-size: 0.78rem; padding: 0.6rem; }
+
+    .edit-biz-actions { display: flex; gap: 0.5rem; justify-content: flex-end; margin-top: 1rem; flex-wrap: wrap; }
+
     @media (max-width: 640px) {
         .kpi-value { font-size: 1.4rem; }
         .tab-btn { min-width: 80px; font-size: 0.68rem; padding: 0.5rem 0.4rem; }
         .detail-grid { grid-template-columns: 1fr; }
         .detail-item.full { grid-column: span 1; }
+        .edit-form-grid { grid-template-columns: 1fr; }
+        .edit-form-grid .full { grid-column: span 1; }
+        .pe-row { grid-template-columns: 1fr 1fr; }
+        .pe-row .pe-del { grid-column: 2; justify-self: end; }
         .list-row { padding: 0.6rem 0.6rem; }
         .row-actions { width: 100%; }
     }
@@ -249,7 +276,7 @@ console.log('%c🏷️ Admin Dashboard v2.4 — schema check uses 15s+12s (NOT 4
             <div class="brand">
                 <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='44' fill='%230a2b3c'/><text x='50' y='62' text-anchor='middle' font-family='Arial Black' font-size='40' font-weight='900' fill='%23FFD966'>AP</text></svg>" class="brand-logo" alt="AP" />
                 <div>
-                    <div class="brand-text">AfriPay <span class="brand-version">v2.4</span></div>
+                    <div class="brand-text">AfriPay <span class="brand-version">v2.5</span></div>
                     <div class="brand-sub">Admin Dashboard · Real-Time</div>
                 </div>
             </div>
@@ -282,6 +309,7 @@ console.log('%c🏷️ Admin Dashboard v2.4 — schema check uses 15s+12s (NOT 4
         <button class="tab-btn active" data-tab="transactions">💳 Transactions</button>
         <button class="tab-btn" data-tab="agents">🏢 Agents <span class="tab-badge danger" id="badgeAgents" style="display:none;">0</span></button>
         <button class="tab-btn" data-tab="businesses">🏪 Businesses <span class="tab-badge danger" id="badgeBusinesses" style="display:none;">0</span></button>
+        <button class="tab-btn" data-tab="editbiz">✏️ Edit Biz</button>
         <button class="tab-btn" data-tab="clients">👥 Clients <span class="tab-badge danger" id="badgeClients" style="display:none;">0</span></button>
         <button class="tab-btn" data-tab="users">🧑 Users <span class="tab-badge danger" id="badgeUsers" style="display:none;">0</span></button>
         <button class="tab-btn" data-tab="complaints">🚨 Complaints <span class="tab-badge" id="badgeComplaints" style="display:none;">0</span></button>
@@ -333,6 +361,23 @@ console.log('%c🏷️ Admin Dashboard v2.4 — schema check uses 15s+12s (NOT 4
         </div>
         <div style="margin-bottom:0.6rem;"><span class="pending-info">⏸️ Suspend halts activity · ▶️ Restore reactivates · 🗑️ Delete removes the business + its products</span></div>
         <div class="list-wrap" id="listBusinesses"><div class="empty-state"><div class="em-icon">⏳</div>Loading businesses…</div></div>
+    </div>
+
+    <!-- ===== NEW: EDIT BIZ PANEL ===== -->
+    <div class="panel" id="panel-editbiz">
+        <div class="panel-header">
+            <div class="panel-title">✏️ Edit Biz — Business Editor</div>
+            <div class="panel-actions">
+                <input type="text" class="search-input" id="searchEditBiz" placeholder="Search business, contact, city, PIN…" />
+                <select class="filter-select" id="editBizCountryFilter"><option value="all">All Countries</option></select>
+                <button class="btn-mini blue" id="refreshEditBiz">🔄 Refresh</button>
+            </div>
+        </div>
+        <div style="margin-bottom:0.6rem; display:flex; flex-wrap:wrap; gap:0.5rem; align-items:center;">
+            <span class="pending-info">✏️ Edit any business's profile, PIN, and product catalogue · 🔐 PIN gates Edit Biz in the user app</span>
+            <span class="pending-info" id="editBizCountInfo" style="background:#eef7ff;">—</span>
+        </div>
+        <div class="list-wrap" id="listEditBiz"><div class="empty-state"><div class="em-icon">⏳</div>Loading businesses…</div></div>
     </div>
 
     <div class="panel" id="panel-clients">
@@ -467,13 +512,88 @@ console.log('%c🏷️ Admin Dashboard v2.4 — schema check uses 15s+12s (NOT 4
     </div>
 </div>
 
+<!-- ===== NEW: EDIT BIZ MODAL ===== -->
+<div class="modal" id="editBizModal">
+    <div class="modal-card" style="max-width:720px;">
+        <button class="modal-close" id="closeEditBizModal">✕</button>
+        <h3 id="editBizModalTitle">✏️ Edit Business</h3>
+        <div id="editBizError" style="display:none; background:#fdeaea; color:#c0392b; border-radius:0.6rem; padding:0.5rem 0.8rem; margin-bottom:0.6rem; font-size:0.8rem; font-weight:700;"></div>
+
+        <div class="edit-form-grid">
+            <div class="edit-field full">
+                <label>🏢 Business Name *</label>
+                <input type="text" id="ebName" placeholder="e.g. Mama's Kitchen" />
+            </div>
+            <div class="edit-field">
+                <label>📞 Contact Phone *</label>
+                <input type="tel" id="ebContact" placeholder="+232 76 123 456" />
+            </div>
+            <div class="edit-field">
+                <label>💳 Mobile Money Phone *</label>
+                <input type="tel" id="ebMobileMoney" placeholder="+232 76 123 456" />
+            </div>
+            <div class="edit-field">
+                <label>🏷️ Business Type *</label>
+                <select id="ebType">
+                    <option>Restaurant</option><option>Electronics</option><option>Service</option>
+                    <option>Retail</option><option>Education</option><option>Healthcare</option>
+                    <option>Hardware</option><option>Fashion</option><option>Individual</option><option>Other</option>
+                </select>
+            </div>
+            <div class="edit-field">
+                <label>🎨 Icon (emoji)</label>
+                <input type="text" id="ebIcon" maxlength="2" placeholder="🏪" />
+            </div>
+            <div class="edit-field">
+                <label>📍 City *</label>
+                <input type="text" id="ebCity" placeholder="Freetown" />
+            </div>
+            <div class="edit-field">
+                <label>🌍 Country *</label>
+                <select id="ebCountry"></select>
+            </div>
+            <div class="edit-field full">
+                <label>🏠 Street Address</label>
+                <input type="text" id="ebAddress" placeholder="123 Main St" />
+            </div>
+            <div class="edit-field full">
+                <label>🌐 Website (optional)</label>
+                <input type="url" id="ebWebsite" placeholder="https://example.com" />
+            </div>
+            <div class="edit-field">
+                <label>🔢 Edit Biz PIN (5 digits)</label>
+                <input type="password" id="ebPin" maxlength="5" inputmode="numeric" placeholder="•••••" style="letter-spacing:6px;font-weight:700;text-align:center;" />
+            </div>
+            <div class="edit-field">
+                <label>👤 Owner Name (optional)</label>
+                <input type="text" id="ebOwnerName" placeholder="Owner full name" />
+            </div>
+        </div>
+
+        <div class="product-editor">
+            <div class="pe-head">
+                <span>📦 Products / Services</span>
+                <button class="btn-mini green" id="ebAddProduct" style="height:26px;font-size:0.7rem;">➕ Add Item</button>
+            </div>
+            <div id="ebProductsList">
+                <div class="pe-empty">No products yet — click ➕ Add Item</div>
+            </div>
+            <div class="modal-footnote" style="margin-top:0.4rem;">💡 These items appear in Quick Pay in the user app. Prices in local currency.</div>
+        </div>
+
+        <div class="edit-biz-actions">
+            <button class="btn-mini" id="ebCancel" style="height:34px;">Cancel</button>
+            <button class="btn-mini red" id="ebDelete" style="height:34px;">🗑️ Delete Business</button>
+            <button class="btn-mini green" id="ebSave" style="height:34px;">💾 Save Changes</button>
+        </div>
+    </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
 // ============================================================
-// IMMEDIATE BANNER CLEAR — runs before ANY async code
-// Guarantees no stale "Schema issue" banner survives from a
-// previous load or from the previous (broken) build.
+// IMMEDIATE BANNER CLEAR
 // ============================================================
 (function clearStaleBanner() {
     const box = document.getElementById('bootError');
@@ -614,6 +734,8 @@ const ACCOUNT_TABLES = {
     users:      { label: 'User',     emoji: '🧑', table: 'users' }
 };
 
+const COUNTRY_LIST = ['Sierra Leone','Guinea','Senegal','Mali','Ivory Coast','Ghana','Niger','Benin','Guinea Bissau','Gambia','Togo','Kenya','Central Africa Rep','Ethiopia','Gabon','Madagascar','Morocco','Rwanda','Uganda','DR Congo','Burkina Faso','Liberia'];
+
 const $ = id => document.getElementById(id);
 const val = id => { const el = $(id); return el ? el.value : ''; };
 function on(id, evt, fn) { const el = $(id); if (!el) return null; el.addEventListener(evt, fn); return el; }
@@ -682,11 +804,6 @@ function setTxLoadFailed(text) {
     const el = $('txLoadStatus'); if (!el) return;
     el.classList.remove('done'); el.classList.add('failed');
     el.innerHTML = '<span class="mini-dot"></span>' + escapeHTML(text);
-}
-
-function listSignature(arr, keys) {
-    if (!Array.isArray(arr) || !arr.length) return '0';
-    return arr.length + '#' + arr.map(r => keys.map(k => String(r[k] == null ? '' : r[k])).join('~')).join('|');
 }
 
 function isSuspended(rec) {
@@ -932,7 +1049,7 @@ async function deleteAccount(type, id) {
         touchLastUpdated();
         setTimeout(() => {
             fetchAgents().then(v => { State.agents = v; renderAgents(val('searchAgents')); updateKPIs(); }).catch(() => {});
-            fetchBusinesses().then(v => { State.businesses = v; renderBusinesses(val('searchBusinesses')); updateKPIs(); }).catch(() => {});
+            fetchBusinesses().then(v => { State.businesses = v; renderBusinesses(val('searchBusinesses')); renderEditBiz(val('searchEditBiz')); updateKPIs(); }).catch(() => {});
             fetchClients().then(v => { State.clients = v; renderClients(val('searchClients')); updateKPIs(); }).catch(() => {});
             fetchAgentClients().then(v => { State.agentClients = v; renderAgentClients(val('searchAgentClients')); updateKPIs(); }).catch(() => {});
         }, 600);
@@ -1275,7 +1392,57 @@ function renderBusinesses(filter = '') {
                     <span class="badge gray">📍 ${escapeHTML(b.city || '—')}</span>
                 </div>
             </div>
-            <div class="row-actions">${accountActionButtons('businesses', b)}</div>
+            <div class="row-actions">
+                <button class="btn-mini purple" onclick="openEditBiz('${safeId(b.id)}')">✏️ Edit Biz</button>
+                ${accountActionButtons('businesses', b)}
+            </div>
+        </div>`;
+    }).join('');
+}
+
+/* ===== NEW: Edit Biz panel render ===== */
+function renderEditBiz(filter = '') {
+    const wrap = $('listEditBiz'); if (!wrap) return;
+    const q = filter.toLowerCase();
+    const countryF = val('editBizCountryFilter') || 'all';
+    let items = State.businesses;
+    if (countryF !== 'all') items = items.filter(b => String(b.country || '').toLowerCase() === countryF.toLowerCase());
+    if (q) items = items.filter(b =>
+        (b.name || b.business_name || '').toLowerCase().includes(q) ||
+        (b.contact || '').toLowerCase().includes(q) ||
+        (b.mobile_money || '').toLowerCase().includes(q) ||
+        (b.city || '').toLowerCase().includes(q) ||
+        (b.country || '').toLowerCase().includes(q) ||
+        (b.type || '').toLowerCase().includes(q) ||
+        (b.pin || '').toLowerCase().includes(q)
+    );
+    const info = $('editBizCountInfo');
+    if (info) info.innerHTML = `🏪 <strong>${items.length}</strong> of <strong>${State.businesses.length}</strong> business(es)`;
+    if (!items.length) {
+        wrap.innerHTML = `<div class="empty-state"><div class="em-icon">✏️</div>No businesses match.</div>`;
+        return;
+    }
+    wrap.innerHTML = items.map(b => {
+        const suspended = isSuspended(b);
+        const goodsCount = (Array.isArray(b.goods) ? b.goods.length : 0);
+        const hasPin = !!b.pin;
+        return `<div class="list-row ${suspended ? 'suspended' : ''}" data-row-id="${safeId(b.id)}">
+            <div class="row-avatar ${suspended ? 'susp' : ''}" style="${suspended ? '' : 'background:#fef4e6;color:#c97e2a;'}">${escapeHTML(b.icon || '🏪')}</div>
+            <div class="row-main">
+                <div class="row-title">${escapeHTML(b.name || b.business_name || '—')}</div>
+                <div class="row-sub">📞 ${escapeHTML(b.contact || '—')} · 💳 ${escapeHTML(b.mobile_money || '—')}</div>
+                <div class="row-sub" style="margin-top:3px;">
+                    ${suspended ? '<span class="badge red">⏸ Suspended</span>' : '<span class="badge green">✅ Active</span>'}
+                    <span class="badge blue">🏷️ ${escapeHTML(b.type || b.business_type || 'Other')}</span>
+                    <span class="badge gray">📍 ${escapeHTML(b.city || '—')}</span>
+                    <span class="badge ${hasPin ? 'green' : 'orange'}">🔐 ${hasPin ? 'PIN set' : 'No PIN'}</span>
+                    <span class="badge purple">📦 ${goodsCount} item${goodsCount === 1 ? '' : 's'}</span>
+                </div>
+            </div>
+            <div class="row-actions">
+                <button class="btn-mini purple" onclick="openEditBiz('${safeId(b.id)}')">✏️ Edit Biz</button>
+                <button class="btn-mini blue" onclick="showAccountDetail('businesses','${safeId(b.id)}')">👁️ View</button>
+            </div>
         </div>`;
     }).join('');
 }
@@ -1578,6 +1745,7 @@ function showAccountDetail(type, id) {
     });
     const sid = safeId(id);
     const actions = `
+        ${type === 'businesses' ? `<button class="btn-mini purple" onclick="closeModal(); setTimeout(()=>openEditBiz('${sid}'),120);">✏️ Edit Biz</button>` : ''}
         ${suspended
             ? `<button class="btn-mini green" onclick="toggleSuspend('${type}','${sid}',false); closeModal();">▶️ Restore</button>`
             : `<button class="btn-mini orange" onclick="closeModal(); setTimeout(()=>toggleSuspend('${type}','${sid}',true),120);">⏸️ Suspend</button>`}
@@ -1699,7 +1867,6 @@ async function approvePendingItem(id) {
     const btn = document.querySelector(`button[onclick*="approvePendingItem('${safeId(id)}')"]`);
     if (btn) btn.classList.add('busy');
     try {
-        // Simplified approval — insert into live tables
         if (type === 'agent') {
             const ex = await sb.from('agents').select('*').ilike('business_name', title).limit(1);
             const payload = {
@@ -1762,7 +1929,7 @@ async function rejectPendingItem(id) {
             reviewed_by: 'admin'
         }).eq('id', p.id);
         const local = State.pendingItems.find(x => String(x.id) === String(id));
-        if (local) { local.status = 'rejected'; }
+        if (local) local.status = 'rejected';
         renderPending(val('searchPending')); updateKPIs();
         showToast('❌ Rejected', 'info', 3000);
     } catch (e) { showToast('❌ Failed: ' + (e.message || 'unknown'), 'error', 4500); }
@@ -1936,7 +2103,7 @@ async function refreshAll() {
         runStage2('chat', fetchChat, v => State.chat = v, renderChat),
         runStage2('pending', fetchPendingItems, v => State.pendingItems = v, () => renderPending(val('searchPending'))),
         runStage2('agentClients', fetchAgentClients, v => State.agentClients = v, () => renderAgentClients(val('searchAgentClients'))),
-        runStage2('businesses', fetchBusinesses, v => State.businesses = v, () => renderBusinesses(val('searchBusinesses'))),
+        runStage2('businesses', fetchBusinesses, v => { State.businesses = v; try { renderEditBiz(val('searchEditBiz')); } catch (e) {} }, () => renderBusinesses(val('searchBusinesses'))),
         runStage2('clients', fetchClients, v => State.clients = v, () => renderClients(val('searchClients'))),
         runStage2('users', fetchUsers, v => State.users = v, () => renderUsers(val('searchUsers')))
     ]);
@@ -1944,17 +2111,277 @@ async function refreshAll() {
     touchLastUpdated();
 }
 
+/* ============================================================
+   NEW: EDIT BIZ MODAL — open / save / delete
+   ============================================================ */
+let EditBizCtx = { id: null, snapshot: null, products: [] };
+
+function openEditBiz(id) {
+    const b = State.businesses.find(x => String(x.id) === String(id));
+    if (!b) { showToast('❌ Business not found', 'error'); return; }
+    EditBizCtx = { id: id, snapshot: Object.assign({}, b), products: [] };
+    $('editBizModalTitle').textContent = `✏️ Edit Business — ${b.name || b.business_name || '(unnamed)'}`;
+    $('editBizError').style.display = 'none';
+    $('editBizError').textContent = '';
+
+    // Populate fields
+    const setVal = (id, v) => { const el = $(id); if (el) el.value = v == null ? '' : v; };
+    setVal('ebName', b.name || b.business_name || '');
+    setVal('ebContact', b.contact || '');
+    setVal('ebMobileMoney', b.mobile_money || b.mobileMoney || '');
+    setVal('ebType', b.type || b.business_type || 'Other');
+    setVal('ebIcon', b.icon || b.emoji || '🏪');
+    setVal('ebCity', b.city || '');
+    setVal('ebAddress', b.address || '');
+    setVal('ebWebsite', b.website || '');
+    setVal('ebPin', b.pin || '');
+    setVal('ebOwnerName', b.owner_name || '');
+
+    // Country dropdown
+    const countrySel = $('ebCountry');
+    countrySel.innerHTML = COUNTRY_LIST.map(c => `<option value="${escapeHTML(c)}">${escapeHTML(c)}</option>`).join('');
+    if (b.country) countrySel.value = b.country;
+
+    // Products
+    let items = Array.isArray(b.goods) ? b.goods.slice() : [];
+    if (!items.length && Array.isArray(b.biz_images)) {
+        items = b.biz_images.map(s => ({
+            name: s.name || 'Item',
+            price: parseFloat(s.price) || 0,
+            kind: s.kind || 'product',
+            quality: s.quality || 'Standard',
+            delivery: s.delivery || '',
+            icon: s.icon || '📦'
+        }));
+    }
+    EditBizCtx.products = items;
+    renderEditBizProducts();
+
+    $('editBizModal').classList.add('open');
+}
+
+function renderEditBizProducts() {
+    const list = $('ebProductsList');
+    if (!EditBizCtx.products.length) {
+        list.innerHTML = `<div class="pe-empty">No products yet — click ➕ Add Item</div>`;
+        return;
+    }
+    list.innerHTML = EditBizCtx.products.map((p, i) => `
+        <div class="pe-row" data-idx="${i}">
+            <input type="text" placeholder="Item name" value="${escapeHTML(p.name || '')}" data-field="name" data-idx="${i}" />
+            <input type="number" step="any" placeholder="Price" value="${p.price != null ? p.price : ''}" data-field="price" data-idx="${i}" />
+            <select data-field="kind" data-idx="${i}">
+                <option value="product" ${p.kind === 'product' ? 'selected' : ''}>Product</option>
+                <option value="service" ${p.kind === 'service' ? 'selected' : ''}>Service</option>
+            </select>
+            <button class="pe-del" data-del-idx="${i}" title="Remove">✕</button>
+        </div>
+    `).join('');
+    list.querySelectorAll('input, select').forEach(el => {
+        el.addEventListener('input', (e) => {
+            const idx = parseInt(el.dataset.idx, 10);
+            const field = el.dataset.field;
+            if (isNaN(idx) || idx < 0 || idx >= EditBizCtx.products.length) return;
+            if (field === 'price') EditBizCtx.products[idx].price = parseFloat(el.value) || 0;
+            else EditBizCtx.products[idx][field] = el.value;
+        });
+        el.addEventListener('change', (e) => {
+            const idx = parseInt(el.dataset.idx, 10);
+            const field = el.dataset.field;
+            if (isNaN(idx) || idx < 0 || idx >= EditBizCtx.products.length) return;
+            if (field === 'price') EditBizCtx.products[idx].price = parseFloat(el.value) || 0;
+            else EditBizCtx.products[idx][field] = el.value;
+        });
+    });
+    list.querySelectorAll('[data-del-idx]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const idx = parseInt(btn.dataset.delIdx, 10);
+            if (isNaN(idx)) return;
+            EditBizCtx.products.splice(idx, 1);
+            renderEditBizProducts();
+        });
+    });
+}
+
+function ebAddProduct() {
+    EditBizCtx.products.push({ name: '', price: 0, kind: 'product', quality: 'Standard', delivery: '' });
+    renderEditBizProducts();
+    // Focus new name field
+    const rows = $('ebProductsList').querySelectorAll('.pe-row');
+    const last = rows[rows.length - 1];
+    if (last) { const inp = last.querySelector('input[data-field="name"]'); if (inp) inp.focus(); }
+}
+
+function closeEditBizModal() {
+    $('editBizModal').classList.remove('open');
+    EditBizCtx = { id: null, snapshot: null, products: [] };
+}
+
+async function saveEditBiz() {
+    if (!sb) { showToast('❌ Supabase not configured', 'error'); return; }
+    if (!EditBizCtx.id) { showToast('❌ No business selected', 'error'); return; }
+
+    const err = $('editBizError');
+    err.style.display = 'none';
+    err.textContent = '';
+
+    const name = (val('ebName') || '').trim();
+    const contact = (val('ebContact') || '').trim();
+    const mobileMoney = (val('ebMobileMoney') || '').trim();
+    if (!name) { err.textContent = '❌ Business name required.'; err.style.display = 'block'; return; }
+    if (!contact) { err.textContent = '❌ Contact phone required.'; err.style.display = 'block'; return; }
+    if (!mobileMoney) { err.textContent = '❌ Mobile money required.'; err.style.display = 'block'; return; }
+
+    const pin = (val('ebPin') || '').trim();
+    if (pin && !/^\d{5}$/.test(pin)) {
+        err.textContent = '❌ PIN must be exactly 5 digits.';
+        err.style.display = 'block';
+        return;
+    }
+
+    // Normalize products
+    const cleanProducts = EditBizCtx.products
+        .filter(p => (p.name || '').trim())
+        .map(p => ({
+            name: String(p.name).trim(),
+            price: parseFloat(p.price) || 0,
+            kind: p.kind === 'service' ? 'service' : 'product',
+            quality: p.quality || 'Standard',
+            delivery: p.delivery || '',
+            icon: p.icon || '📦'
+        }));
+
+    const payload = {
+        name: name,
+        contact: contact,
+        mobile_money: mobileMoney,
+        type: val('ebType') || 'Other',
+        icon: (val('ebIcon') || '🏪').trim() || '🏪',
+        city: (val('ebCity') || '').trim() || null,
+        country: val('ebCountry') || null,
+        address: (val('ebAddress') || '').trim() || null,
+        website: (val('ebWebsite') || '').trim() || null,
+        pin: pin || null,
+        owner_name: (val('ebOwnerName') || '').trim() || null,
+        goods: cleanProducts,
+        updated_at: new Date().toISOString()
+    };
+
+    const btn = $('ebSave');
+    if (btn) { btn.disabled = true; btn.textContent = '⏳ Saving…'; }
+
+    try {
+        // Optional columns — try full payload first, then degrade gracefully.
+        let lastErr = null;
+        const attempts = [
+            payload,
+            (() => { const p = Object.assign({}, payload); delete p.goods; return p; })(),
+            (() => { const p = Object.assign({}, payload); delete p.goods; delete p.pin; return p; })(),
+            (() => { const p = Object.assign({}, payload); delete p.goods; delete p.pin; delete p.owner_name; return p; })()
+        ];
+        let success = false;
+        for (const attempt of attempts) {
+            try {
+                const { error } = await sb.from('businesses').update(attempt).eq('id', EditBizCtx.id);
+                if (!error) { success = true; break; }
+                lastErr = error;
+                const msg = String(error.message || '');
+                // If error is about a missing column, try next degradation.
+                if (/column .* does not exist/i.test(msg) || /schema cache/i.test(msg)) continue;
+                // Otherwise it's a real failure — stop.
+                throw error;
+            } catch (e) { lastErr = e; }
+        }
+        if (!success) throw lastErr || new Error('Unknown save error');
+
+        // Update local State
+        const local = State.businesses.find(x => String(x.id) === String(EditBizCtx.id));
+        if (local) {
+            Object.assign(local, {
+                name: payload.name,
+                contact: payload.contact,
+                mobile_money: payload.mobile_money,
+                type: payload.type,
+                icon: payload.icon,
+                city: payload.city,
+                country: payload.country,
+                address: payload.address,
+                website: payload.website,
+                pin: payload.pin,
+                owner_name: payload.owner_name,
+                goods: payload.goods,
+                updated_at: payload.updated_at
+            });
+        }
+        renderBusinesses(val('searchBusinesses'));
+        renderEditBiz(val('searchEditBiz'));
+        updateKPIs();
+
+        // Audit log
+        try {
+            await sb.from('edit_biz_auth_log').insert({
+                business_id: String(EditBizCtx.id),
+                business_name: payload.name,
+                attempted_name: payload.name,
+                attempted_phone: payload.mobile_money,
+                success: true,
+                failure_reason: 'admin_edit',
+                attempts_in_session: 1,
+                device_info: 'admin_dashboard'
+            });
+        } catch (e) { /* optional */ }
+
+        showToast(`✅ Business saved: ${payload.name}`, 'success', 3200);
+        closeEditBizModal();
+    } catch (e) {
+        logError('saveEditBiz', e);
+        err.textContent = '❌ Save failed: ' + (e.message || 'unknown error');
+        err.style.display = 'block';
+        showToast('❌ Save failed', 'error', 3200);
+    } finally {
+        if (btn) { btn.disabled = false; btn.textContent = '💾 Save Changes'; }
+    }
+}
+
+async function deleteEditBiz() {
+    if (!sb) { showToast('❌ Supabase not configured', 'error'); return; }
+    if (!EditBizCtx.id) return;
+    const b = State.businesses.find(x => String(x.id) === String(EditBizCtx.id));
+    if (!b) return;
+    const title = b.name || b.business_name || '(unnamed)';
+    if (!confirm(`🗑️ DELETE BUSINESS PERMANENTLY?\n\n"${title}"\n\nThis will remove the business and its products. Cannot be undone.`)) return;
+    if (!confirm(`Are you absolutely sure?\n\nFinal confirmation for: ${title}`)) return;
+    try {
+        try { await sb.from('products').delete().eq('business_id', EditBizCtx.id); } catch (e) { }
+        const { error } = await sb.from('businesses').delete().eq('id', EditBizCtx.id);
+        if (error) throw error;
+        State.businesses = State.businesses.filter(x => String(x.id) !== String(EditBizCtx.id));
+        renderBusinesses(val('searchBusinesses'));
+        renderEditBiz(val('searchEditBiz'));
+        updateKPIs();
+        showToast(`🗑️ Deleted: ${title}`, 'success', 3200);
+        closeEditBizModal();
+    } catch (e) {
+        logError('deleteEditBiz', e);
+        showToast('❌ Delete failed: ' + (e.message || 'unknown error'), 'error', 4000);
+    }
+}
+
 function setupEvents() {
     document.querySelectorAll('.tab-btn').forEach(b => b.addEventListener('click', () => {
         State.activeTab = b.dataset.tab;
         document.querySelectorAll('.tab-btn').forEach(x => x.classList.toggle('active', x.dataset.tab === b.dataset.tab));
         document.querySelectorAll('.panel').forEach(p => p.classList.toggle('active', p.id === 'panel-' + b.dataset.tab));
+        if (b.dataset.tab === 'editbiz') {
+            try { renderEditBiz(val('searchEditBiz')); } catch (e) {}
+        }
     }));
     const searchMap = {
         searchTx: renderTransactions, searchAgents: renderAgents,
         searchBusinesses: renderBusinesses, searchClients: renderClients,
         searchUsers: renderUsers, searchComplaints: renderComplaints,
-        searchPaybacks: renderPaybacks, searchSubs: renderSubs
+        searchPaybacks: renderPaybacks, searchSubs: renderSubs,
+        searchEditBiz: renderEditBiz
     };
     Object.keys(searchMap).forEach(id => on(id, 'input', () => searchMap[id](val(id))));
     on('agentStatusFilter', 'change', () => renderAgents(val('searchAgents')));
@@ -1974,7 +2401,7 @@ function setupEvents() {
     });
     on('refreshTx', 'click', async () => { State.transactions = await fetchTransactions(); renderTransactions(val('searchTx')); updateKPIs(); });
     on('refreshAgents', 'click', async () => { State.agents = await fetchAgents(); renderAgents(val('searchAgents')); updateKPIs(); });
-    on('refreshBusinesses', 'click', async () => { State.businesses = await fetchBusinesses(); renderBusinesses(val('searchBusinesses')); updateKPIs(); });
+    on('refreshBusinesses', 'click', async () => { State.businesses = await fetchBusinesses(); renderBusinesses(val('searchBusinesses')); renderEditBiz(val('searchEditBiz')); updateKPIs(); });
     on('refreshClients', 'click', async () => { State.clients = await fetchClients(); renderClients(val('searchClients')); updateKPIs(); });
     on('refreshUsers', 'click', async () => {
         USER_RESOLVED_SOURCE = null;
@@ -1984,6 +2411,23 @@ function setupEvents() {
     on('refreshPaybacks', 'click', async () => { State.paybacks = await fetchPaybacks(); renderPaybacks(val('searchPaybacks')); updateKPIs(); });
     on('refreshSubs', 'click', async () => { State.subscribers = await fetchSubscribers(); renderSubs(val('searchSubs')); updateKPIs(); });
     on('refreshChat', 'click', async () => { State.chat = await fetchChat(); renderChat(); });
+
+    // Edit Biz panel handlers
+    on('refreshEditBiz', 'click', async () => {
+        State.businesses = await fetchBusinesses();
+        renderBusinesses(val('searchBusinesses'));
+        renderEditBiz(val('searchEditBiz'));
+        updateKPIs();
+        showToast('🔄 Businesses refreshed', 'info', 1600);
+    });
+    on('editBizCountryFilter', 'change', () => renderEditBiz(val('searchEditBiz')));
+    on('closeEditBizModal', 'click', closeEditBizModal);
+    on('ebCancel', 'click', closeEditBizModal);
+    on('ebSave', 'click', saveEditBiz);
+    on('ebDelete', 'click', deleteEditBiz);
+    on('ebAddProduct', 'click', ebAddProduct);
+    on('editBizModal', 'click', (e) => { if (e.target === $('editBizModal')) closeEditBizModal(); });
+
     on('showViolationLog', 'click', showViolationLog);
     on('approveHeaderBtn', 'click', () => { window.open('https://aminejalloh-io.github.io/fouzan-business/', '_blank', 'noopener,noreferrer'); });
     on('showUserSource', 'click', () => {
@@ -2017,7 +2461,8 @@ function setupEvents() {
     on('detailModal', 'click', (e) => { if (e.target === $('detailModal')) closeModal(); });
     document.addEventListener('keydown', (e) => {
         if (e.key !== 'Escape') return;
-        if ($('reasonModal').classList.contains('open')) closeReasonModal();
+        if ($('editBizModal').classList.contains('open')) closeEditBizModal();
+        else if ($('reasonModal').classList.contains('open')) closeReasonModal();
         else if ($('detailModal').classList.contains('open')) closeModal();
     });
     window.showTxDetail = showTxDetail;
@@ -2036,10 +2481,21 @@ function setupEvents() {
     window.deleteAgentClient = deleteAgentClient;
     window.closeModal = closeModal;
     window.closeReasonModal = closeReasonModal;
+    window.openEditBiz = openEditBiz;
+    window.closeEditBizModal = closeEditBizModal;
+
+    // Populate Edit Biz country filter
+    try {
+        const filter = $('editBizCountryFilter');
+        if (filter) {
+            filter.innerHTML = `<option value="all">All Countries</option>` +
+                COUNTRY_LIST.map(c => `<option value="${escapeHTML(c)}">${escapeHTML(c)}</option>`).join('');
+        }
+    } catch (e) {}
 }
 
 // ============================================================
-// SCHEMA VERIFICATION — 15s + 12s (NOT 4s)
+// SCHEMA VERIFICATION
 // ============================================================
 async function probeTable(table) {
     try {
@@ -2084,7 +2540,7 @@ async function verifySchema() {
         if (r.status === 'slow')    return `⏳ ${r.table}: slow`;
         return `❌ ${r.table}: ${r.error}`;
     });
-    console.log('📋 Schema check (v2.4):\n' + lines.join('\n'));
+    console.log('📋 Schema check (v2.5):\n' + lines.join('\n'));
 
     const missing = results.filter(r => r.status === 'missing');
     const slow    = results.filter(r => r.status === 'slow');
@@ -2126,26 +2582,29 @@ async function initDashboard() {
     if (!sdkOk) { setConnection('offline'); markBootComplete(); return; }
     try {
         sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        console.log('✅ Supabase client initialized (v2.4)');
+        console.log('✅ Supabase client initialized (v2.5)');
     } catch (e) { sb = null; }
     if (!sb) { setConnection('offline'); markBootComplete(); return; }
     try { setupEvents(); } catch (e) { logError('setupEvents', e); }
     markBootComplete();
     refreshAll().then(() => {
         try {
-            sb.channel('v24_agents').on('postgres_changes', { event: '*', schema: 'public', table: 'agents' }, async () => {
+            sb.channel('v25_agents').on('postgres_changes', { event: '*', schema: 'public', table: 'agents' }, async () => {
                 State.agents = await fetchAgents(); renderAgents(val('searchAgents')); updateKPIs();
             }).subscribe();
-            sb.channel('v24_users').on('postgres_changes', { event: '*', schema: 'public', table: 'users' }, async () => {
+            sb.channel('v25_users').on('postgres_changes', { event: '*', schema: 'public', table: 'users' }, async () => {
                 USER_RESOLVED_SOURCE = null; State.users = await fetchUsers(); renderUsers(val('searchUsers')); updateKPIs();
             }).subscribe();
-            sb.channel('v24_biz').on('postgres_changes', { event: '*', schema: 'public', table: 'businesses' }, async () => {
-                State.businesses = await fetchBusinesses(); renderBusinesses(val('searchBusinesses')); updateKPIs();
+            sb.channel('v25_biz').on('postgres_changes', { event: '*', schema: 'public', table: 'businesses' }, async () => {
+                State.businesses = await fetchBusinesses();
+                renderBusinesses(val('searchBusinesses'));
+                renderEditBiz(val('searchEditBiz'));
+                updateKPIs();
             }).subscribe();
-            sb.channel('v24_cli').on('postgres_changes', { event: '*', schema: 'public', table: 'clients' }, async () => {
+            sb.channel('v25_cli').on('postgres_changes', { event: '*', schema: 'public', table: 'clients' }, async () => {
                 State.clients = await fetchClients(); renderClients(val('searchClients')); updateKPIs();
             }).subscribe();
-            sb.channel('v24_pend').on('postgres_changes', { event: '*', schema: 'public', table: 'pending_items' }, async () => {
+            sb.channel('v25_pend').on('postgres_changes', { event: '*', schema: 'public', table: 'pending_items' }, async () => {
                 State.pendingItems = await fetchPendingItems(); renderPending(val('searchPending')); updateKPIs();
             }).subscribe();
         } catch (e) { logError('realtime', e); }
@@ -2161,6 +2620,7 @@ async function initDashboard() {
                 renderAgents(val('searchAgents'));
                 renderUsers(val('searchUsers'));
                 renderBusinesses(val('searchBusinesses'));
+                renderEditBiz(val('searchEditBiz'));
                 renderClients(val('searchClients'));
                 renderPending(val('searchPending'));
                 updateKPIs();
